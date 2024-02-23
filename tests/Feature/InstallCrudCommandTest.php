@@ -2,12 +2,12 @@
 
 namespace Mifra\Crud\Tests\Feature;
 
-use Orchestra\Testbench\TestCase;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Artisan;
 use Mifra\Crud\MifraCrudServiceProvider;
+use Orchestra\Testbench\TestCase;
 
 class InstallCrudCommandTest extends TestCase
 {
@@ -17,13 +17,13 @@ class InstallCrudCommandTest extends TestCase
 
         // Configura la connessione MongoDB per i test
         Config::set('mifracrud.database', [
-            'driver'   => env('DB_CONNECTION', 'mongodb'),
-            'host'     => env('DB_HOST', 'localhost'),
-            'port'     => env('DB_PORT', 27017),
+            'driver' => env('DB_CONNECTION', 'mongodb'),
+            'host' => env('DB_HOST', 'localhost'),
+            'port' => env('DB_PORT', 27017),
             'database' => env('DB_DATABASE', 'database'),
             'collection' => env('DB_COLLECTION', 'collection'),
             'username' => env('DB_USERNAME', 'username'),
-            'password' => env('DB_PASSWORD', 'password')
+            'password' => env('DB_PASSWORD', 'password'),
         ]);
     }
 
@@ -59,17 +59,39 @@ class InstallCrudCommandTest extends TestCase
         parent::tearDown();
 
         // Utilizza la facciata DB di Laravel per connetterti al database MongoDB
-        $collection = DB::connection('mongodb')->collection(env('DB_COLLECTION', 'collection'));
+        //$collection = DB::connection('mongodb')->collection(env('DB_COLLECTION', 'collection'));
 
         // Puoi cancellare documenti specifici utilizzando la funzione delete() con criteri specifici
         // $collection->where('campo', 'valore')->delete();
 
         // Oppure, per cancellare tutti i documenti in una collezione (Attenzione: questo rimuoverà TUTTI i documenti!)
-        $collection->delete();
+        //$collection->delete();
 
         // Alternativamente, se vuoi rimuovere interamente la collezione (Attenzione: questo rimuoverà la collezione stessa!)
         // $collection->drop();
-    }
 
+        // Rimuovere tutti i documenti dalla collezione specificata
+        DB::connection('mongodb')->collection(env('DB_COLLECTION'))->delete();
+
+        // Rimuovere i file di rotta generati
+        $directoryPath = base_path('routes/mifracruds');
+        File::deleteDirectory($directoryPath);
+
+        // Rimuovere il require da routes/web.php, se presente
+        $webRoutesPath = base_path('routes/web.php');
+        if (File::exists($webRoutesPath)) {
+            $webRoutesContent = File::get($webRoutesPath);
+
+            // Definisci il percorso che vuoi rimuovere, assicurati che corrisponda esattamente a quello che aggiungi
+            $mifracrudsPath = "__DIR__ . '/mifracruds/cruds.php';";
+            $requireString = "require {$mifracrudsPath};";
+
+            // Rimuovi la linea
+            $newContent = str_replace("<?php {$requireString}\n", '', $webRoutesContent);
+
+            // Sovrascrivi il file con il nuovo contenuto
+            File::put($webRoutesPath, $newContent);
+        }
+    }
 
 }

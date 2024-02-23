@@ -45,25 +45,33 @@ return [
             "id" => 1,
             "title" => "Crud",
             "desc" => "Pagina per la gestione dei CRUD",
-            "route_name" => "admin.menus"
+            "path" => "cruds/menus",
+            "controller_name" => "MifraCrudMenusController",
+            "route_name" => "cruds.menus"
         ],
         [
             "id" => 2,
             "title" => "Utenti",
             "desc" => "Pagina per la gestione degli Utenti",
-            "route_name" => "admin.users"
+            "path" => "cruds/users",
+            "controller_name" => "MifraCrudUsersController",
+            "route_name" => "cruds.users"
         ],
         [
             "id" => 3,
             "title" => "Ruoli",
             "desc" => "Pagina per la gestione dei Ruoli",
-            "route_name" => "admin.roles"
+            "path" => "cruds/roles",
+            "controller_name" => "MifraCrudRolesController",
+            "route_name" => "cruds.roles"
         ],
         [
             "id" => 4,
             "title" => "Permessi",
             "desc" => "Pagina per la gestione dei Permessi",
-            "route_name" => "admin.permissions"
+            "path" => "cruds/permissions",
+            "controller_name" => "MifraCrudPermissionsController",
+            "route_name" => "cruds.permissions"
         ]
     ]
     
