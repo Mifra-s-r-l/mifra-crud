@@ -50,15 +50,18 @@ class MifraInstallCrud extends Command
     {
         try {
             $this->info("Connessione al database...");
+            // Messaggio di separazione per migliorare la leggibilità dell'output
+            $this->info('');
 
             DB::connection('mongodb')->collection($this->databaseConfig['collection'])->delete();
 
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection'])->get();
 
             $this->info("Creazione voci di menù principali...");
+            // Messaggio di separazione per migliorare la leggibilità dell'output
+            $this->info('');
+            
             $this->insertMenuItems();
-
-            $this->info('Creazione delle rotte...');
 
             // Aggiungi il require a routes/web.php
             $this->addRequireToWebRoutes();
@@ -103,15 +106,20 @@ class MifraInstallCrud extends Command
                 // Crea il file di rotte per la nuova voce di menu
                 $routeContent .= $this->createRouteFile($menuItem);
                 $routeContentHead .= "use App\Http\Controllers\MifraCrud\\{$menuItem['controller_name']};\n";
+
+                // Messaggio di separazione per migliorare la leggibilità dell'output
+                $this->info('');
             } else {
                 // Opzionale: messaggio se l'elemento esiste già
                 $this->info("La voce di menu: {$menuItem['title']} esiste già.");
+
+                // Messaggio di separazione per migliorare la leggibilità dell'output
+                $this->info('');
             }
         }
 
         // Scrivi l'header e il contenuto delle rotte nel file
         File::append($routeFilePath, $routeContentHead . $routeContent);
-
     }
 
     protected function createControllerFile($menuItem, $directoryPathController)
@@ -143,8 +151,8 @@ class MifraInstallCrud extends Command
 
         $routeTemplate = File::get($stubPath);
         $routeContent = str_replace(['{{path}}', '{{controller_name}}', '{{route_name}}'], [$menuItem['path'], $menuItem['controller_name'], $menuItem['route_name']], $routeTemplate);
-
-        $this->info("Creato il file di rotte per: {$menuItem['title']}");
+        
+        $this->info("Inserita rotta nel file: routes/mifracruds/cruds.php");
 
         return $routeContent;
     }
@@ -164,10 +172,10 @@ class MifraInstallCrud extends Command
                 File::append($webRoutesPath, "\nrequire {$mifracrudsPath}\n");
                 $this->info("Aggiunto il require di mifracruds/cruds.php in routes/web.php");
             } else {
-                $this->comment("Il require di mifracruds/cruds.php è già presente in routes/web.php");
+                $this->info("Il require di mifracruds/cruds.php è già presente in routes/web.php");
             }
         } else {
-            $this->error("Il file routes/web.php non esiste quindi per far funzionare le rotte bisogna attivarle manualmente.");
+            $this->comment("Il file routes/web.php non esiste quindi per far funzionare le rotte bisogna attivarle manualmente.");
         }
     }
 
