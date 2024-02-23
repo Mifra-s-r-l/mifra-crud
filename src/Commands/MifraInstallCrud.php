@@ -17,6 +17,8 @@ class MifraInstallCrud extends Command
 
     protected $databaseConfig;
     protected $menusConfig;
+    protected $directoryPathController;
+    protected $directoryPathRoute;
 
     // Crea una nuova istanza del comando
     public function __construct()
@@ -43,6 +45,19 @@ class MifraInstallCrud extends Command
 
         // Carica il percorso del file JSON da un file di configurazione
         $this->jsonConfig = config('mifracrud.menus');
+
+
+        // Assicurati che questa directory esista o sia creata
+        $this->directoryPathController = base_path('app/Http/Controllers/MifraCrud');
+        if (!File::exists($this->directoryPathController)) {
+            File::makeDirectory($this->directoryPathController, 0755, true);
+        }
+
+        // Assicurati che questa directory esista o sia creata
+        $this->directoryPathRoute = base_path('routes/mifracruds'); 
+        if (!File::exists($this->directoryPathRoute)) {
+            File::makeDirectory($this->directoryPathRoute, 0755, true);
+        }
     }
 
     // Esegue il comando Artisan
@@ -53,7 +68,7 @@ class MifraInstallCrud extends Command
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
 
-            DB::connection('mongodb')->collection($this->databaseConfig['collection'])->delete();
+            //DB::connection('mongodb')->collection($this->databaseConfig['collection'])->delete();
 
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection'])->get();
 
@@ -74,20 +89,8 @@ class MifraInstallCrud extends Command
 
     public function insertMenuItems()
     {
-        // Assicurati che questa directory esista o sia creata
-        $directoryPathRoute = base_path('routes/mifracruds');
-        $directoryPathController = base_path('app/Http/Controllers/MifraCrud');
-        if (!File::exists($directoryPathRoute)) {
-            File::makeDirectory($directoryPathRoute, 0755, true);
-        }
-        if (!File::exists($directoryPathController)) {
-            File::makeDirectory($directoryPathController, 0755, true);
-        }
-
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
         $menuItems = $this->jsonConfig; // Voci di menu del file di config
-        $routeFilePath = $directoryPathRoute . '/cruds.php';
-        File::put($routeFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n");
 
         $routeContentHead = "";
         $routeContent = "";
@@ -99,30 +102,31 @@ class MifraInstallCrud extends Command
                 // Se non esiste, inseriscilo nel database
                 $collection->insert($menuItem);
                 $this->info("Inserita nuova voce di menu: {$menuItem['title']}");
-
-                // Creo il controller
-                $this->createControllerFile($menuItem, $directoryPathController);
-
-                // Crea il file di rotte per la nuova voce di menu
-                $routeContent .= $this->createRouteFile($menuItem);
-                $routeContentHead .= "use App\Http\Controllers\MifraCrud\\{$menuItem['controller_name']};\n";
-
-                // Messaggio di separazione per migliorare la leggibilità dell'output
-                $this->info('');
             } else {
-                // Opzionale: messaggio se l'elemento esiste già
-                $this->info("La voce di menu: {$menuItem['title']} esiste già.");
-
-                // Messaggio di separazione per migliorare la leggibilità dell'output
-                $this->info('');
+                // Se esiste, aggiornalo con i nuovi valori
+                $collection->where('id', $menuItem['id'])->update($menuItem);
+                $this->info("Aggiorno la voce di menu: {$menuItem['title']}");
             }
+            
+            // Creo il controller
+            $this->createControllerFile($menuItem);
+
+            // Crea contenuto per il file delle rotte per la nuova voce di menu
+            $routeContent .= $this->createContenRouteFile($menuItem);
+            $routeContentHead .= "use App\Http\Controllers\MifraCrud\\{$menuItem['controller_name']};\n";
+
+            // Messaggio di separazione per migliorare la leggibilità dell'output
+            $this->info('');
         }
 
+        // Creo il file delle rotte
+        $routeFilePath = $this->directoryPathRoute . '/cruds.php';
+        File::put($routeFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n");
         // Scrivi l'header e il contenuto delle rotte nel file
         File::append($routeFilePath, $routeContentHead . $routeContent);
     }
 
-    protected function createControllerFile($menuItem, $directoryPathController)
+    protected function createControllerFile($menuItem)
     {
         // Costruisci il percorso del file .stub
         $stubPath = __DIR__.'/../resources/stubs/CrudController.stub';
@@ -135,13 +139,13 @@ class MifraInstallCrud extends Command
         $controllerTemplate = File::get($stubPath);
         $controllerContent = str_replace(['{{controller_name}}'], [$menuItem['controller_name']], $controllerTemplate);
 
-        $controllerFilePath = $directoryPathController . "/{$menuItem['controller_name']}.php";
+        $controllerFilePath = $this->directoryPathController . "/{$menuItem['controller_name']}.php";
         File::put($controllerFilePath, $controllerContent);
 
         $this->info("Creato il controller: App\Http\Controllers\MifraCrud\\{$menuItem['controller_name']}");
     }
 
-    protected function createRouteFile($menuItem)
+    protected function createContenRouteFile($menuItem)
     {
         $stubPath = __DIR__ . '/../resources/stubs/route.stub';
         if (!File::exists($stubPath)) {
@@ -156,7 +160,6 @@ class MifraInstallCrud extends Command
 
         return $routeContent;
     }
-    
 
     protected function addRequireToWebRoutes()
     {

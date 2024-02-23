@@ -75,9 +75,11 @@ class InstallCrudCommandTest extends TestCase
 
         // Rimuovere i file di controller generati
 
+        // Rimuovere i file di view generati
+
         // Rimuovere i file di rotta generati
-        //$directoryPath = base_path('routes/mifracruds');
-        //File::deleteDirectory($directoryPath);
+        $directoryPath = base_path('routes/mifracruds');
+        File::deleteDirectory($directoryPath);
 
         // Rimuovere il require da routes/web.php, se presente
         $webRoutesPath = base_path('routes/web.php');

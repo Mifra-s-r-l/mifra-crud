@@ -11,7 +11,7 @@ return [
     |
      */
 
-    'template_path' => env('MIFRA_TEMPLATE_PATH', 'views/template'),
+    'template_path' => env('MIFRACRUD_TEMPLATE_PATH', 'views/template'),
 
     /*
     |--------------------------------------------------------------------------
@@ -23,12 +23,12 @@ return [
      */
     
     'database' => [
-        'host'          => env('MONGODB_HOST', 'localhost'),
-        'port'          => env('MONGODB_PORT', 27017),
-        'database'      => env('MONGODB_DATABASE', 'database'),
-        'collection'    => env('MONGODB_COLLECTION', 'collection'),
-        'username'      => env('MONGODB_USERNAME', 'username'),
-        'password'      => env('MONGODB_PASSWORD', 'password')
+        'host'          => env('MIFRACRUD_MONGODB_HOST', 'localhost'),
+        'port'          => env('MIFRACRUD_MONGODB_PORT', 27017),
+        'database'      => env('MIFRACRUD_MONGODB_DATABASE', 'database'),
+        'collection'    => env('MIFRACRUD_MONGODB_COLLECTION', 'collection'),
+        'username'      => env('MIFRACRUD_MONGODB_USERNAME', 'username'),
+        'password'      => env('MIFRACRUD_MONGODB_PASSWORD', 'password')
     ],
 
     /*

@@ -9,6 +9,6 @@ class {{controller_name}} extends Controller
 {
     public function index()
     {
-        //
+        return view('{{route_name}}');
     }
 }

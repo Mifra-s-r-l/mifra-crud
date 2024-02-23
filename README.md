@@ -18,19 +18,21 @@ Per il funzionamento del pacchetto sul tuo progetto laravel sono richieste quest
 Aggiungi le seguenti variabili al tuo file .env di laravel:
 
 ```
-MIFRA_TEMPLATE_PATH=views/template
+MIFRACRUD_TEMPLATE_PATH=views/template
 
-MONGODB_HOST=127.0.0.1
-MONGODB_PORT=27017
-MONGODB_DATABASE=myDatabase
-MONGODB_COLLECTION=myCollection
-MONGODB_USERNAME=myUsername
-MONGODB_PASSWORD=myPassword
+MIFRACRUD_MONGODB_HOST=127.0.0.1
+MIFRACRUD_MONGODB_PORT=27017
+MIFRACRUD_MONGODB_DATABASE=myDatabase
+MIFRACRUD_MONGODB_COLLECTION=myCollection
+MIFRACRUD_MONGODB_USERNAME=myUsername
+MIFRACRUD_MONGODB_PASSWORD=myPassword
 ```
 
 E lanciare questo comando per installare e creare i CRUD principali:
 
 `php artisan mifra:install`
+
+Si informa che lanciando questo comando tutti i file verrano ricreati e azzerati ma il database rimarrà invariato (prossimamente inseriremo qualcosa per evitare questo)
 
 ###### Comando per pubblicare il file di configurazione
 
