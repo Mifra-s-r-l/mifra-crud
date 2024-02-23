@@ -52,3 +52,4 @@
 /.php_cs.cache 
 /.php_cs.dist
 /scoper-autoload.php
+/.phpunit.cache

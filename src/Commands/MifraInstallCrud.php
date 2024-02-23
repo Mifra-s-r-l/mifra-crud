@@ -123,10 +123,10 @@ class MifraInstallCrud extends Command
             // Verifica se il require è già presente per evitare duplicati
             if (strpos($webRoutesContent, $mifracrudsPath) === false) {
                 // Aggiungi il require se non è presente
-                File::append($webRoutesPath, "\n<?php require {$mifracrudsPath}\n");
-                $this->warning("Aggiunto il require di mifracruds/cruds.php in routes/web.php");
+                File::append($webRoutesPath, "\nrequire {$mifracrudsPath}\n");
+                $this->comment("Aggiunto il require di mifracruds/cruds.php in routes/web.php");
             } else {
-                $this->warning("Il require di mifracruds/cruds.php è già presente in routes/web.php");
+                $this->comment("Il require di mifracruds/cruds.php è già presente in routes/web.php");
             }
         } else {
             $this->error("Il file routes/web.php non esiste quindi per far funzionare le rotte bisogna attivarle manualmente.");
