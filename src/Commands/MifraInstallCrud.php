@@ -51,6 +51,8 @@ class MifraInstallCrud extends Command
         try {
             $this->info("Connessione al database...");
 
+            DB::connection('mongodb')->collection($this->databaseConfig['collection'])->delete();
+
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection'])->get();
 
             $this->info("Creazione voci di menù principali...");
@@ -124,7 +126,7 @@ class MifraInstallCrud extends Command
             if (strpos($webRoutesContent, $mifracrudsPath) === false) {
                 // Aggiungi il require se non è presente
                 File::append($webRoutesPath, "\nrequire {$mifracrudsPath}\n");
-                $this->comment("Aggiunto il require di mifracruds/cruds.php in routes/web.php");
+                $this->info("Aggiunto il require di mifracruds/cruds.php in routes/web.php");
             } else {
                 $this->comment("Il require di mifracruds/cruds.php è già presente in routes/web.php");
             }
