@@ -71,7 +71,7 @@ class InstallCrudCommandTest extends TestCase
         // $collection->drop();
 
         // Rimuovere tutti i documenti dalla collezione specificata
-        DB::connection('mongodb')->collection(env('DB_COLLECTION'))->delete();
+        //DB::connection('mongodb')->collection(env('DB_COLLECTION'))->delete();
 
         // Rimuovere i file di controller generati
 

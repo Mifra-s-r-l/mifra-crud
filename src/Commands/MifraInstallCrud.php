@@ -89,15 +89,16 @@ class MifraInstallCrud extends Command
 
     public function insertMenuItems()
     {
-        $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
         $menuItems = $this->jsonConfig; // Voci di menu del file di config
 
         $routeContentHead = "";
         $routeContent = "";
 
         foreach ($menuItems as $menuItem) {
-            $exists = $collection->where('id', $menuItem['id'])->exists(); // Verifica l'esistenza dell'elemento
-
+            
+            $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
+            $exists = $collection->where('id', $menuItem['id'])->first(); // Verifica l'esistenza dell'elemento
+            
             if (!$exists) {
                 // Se non esiste, inseriscilo nel database
                 $collection->insert($menuItem);
