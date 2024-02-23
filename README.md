@@ -1,3 +1,9 @@
+<p align="center"><a href="https://www.mifra.com" target="_blank"><img src="https://www.mifra.eu/images/Logo_mifra_10anni.png" width="150" alt="Laravel Logo"></a></p>
+
+<p align="center">
+<a href="https://www.mifra.eu"><img src="https://img.shields.io/badge/version-1.0.x--dev-blue" alt="Versione"></a>
+</p>
+
 ### Pacchetto per la creazioni di nuovi CRUD in modo automatico
 
 Per il funzionamento del pacchetto sul tuo progetto laravel sono richieste queste dipendenze da installare:
