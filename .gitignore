@@ -1,0 +1,54 @@
+/vendor/ 
+/node_modules/
+
+# File di configurazione specifici dell'ambiente
+/.env 
+/.env.local 
+/.env.*.local
+
+# File di log
+*.log 
+*.phpstorm.meta.php
+
+# File di cache e sessione
+/cache/ 
+/sessions/ 
+/vendor/ 
+/node_modules/
+
+# IDE specific (es. PhpStorm, VSCode, etc.)
+.idea/ 
+.vscode/ 
+*.swp 
+*.swo 
+*.sublime-workspace
+
+# File di configurazione di Composer
+/composer.lock 
+/composer.phar 
+/composer-installers/
+
+# Dumps di database, esportazioni SQL, etc.
+*.sql 
+*.sql.gz
+
+# File temporanei
+/tmp/ 
+/temp/
+
+# Altri file che potrebbero contenere informazioni 
+# sensibili o non necessarie
+/config.php 
+/phpunit.xml 
+/phpunit.xml.dist
+
+# Escludi file specifici del progetto se necessario 
+# /path/to/exclude/ File e cartelle generati durante i test
+/tests/_output/ 
+/tests/_data/ 
+/tests/_support/_generated/
+
+# File generati da strumenti o librerie
+/.php_cs.cache 
+/.php_cs.dist
+/scoper-autoload.php

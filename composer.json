@@ -1,0 +1,37 @@
+{
+    "name": "mifra/crud",
+    "description": "Pacchetto per la creazioni di nuovi CRUD in modo automatico",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Mifra\\Crud\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "GiuPic",
+            "email": "piccoloposta@gmail.com"
+        }
+    ],
+    "require": {
+        "mongodb/laravel-mongodb": "^4.1"
+    },
+    "require-dev": {
+        "illuminate/console": "^10.0",
+        "laravel/framework": "^10.0",
+        "phpunit/phpunit": "^10.5",
+        "orchestra/testbench": "^8.21"
+    },    
+    "license": "MIT",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Mifra\\Crud\\MifraCrudServiceProvider"
+            ]
+        },
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+    
+}

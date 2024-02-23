@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    image: mifra-crud:latest
+    container_name: mifra-crud
+    volumes:
+      - ./:/app
+    working_dir: /app
+
+volumes:
+  mongodb-data:
