@@ -46,7 +46,7 @@ return [
             "title" => "Crud",
             "desc" => "Pagina per la gestione dei CRUD",
             "path" => "mifracruds/menus",
-            "controller_name" => "MifraCrudMenusController",
+            "crud_name" => "MifraCrudMenus",
             "route_name" => "mifracruds.menus"
         ],
         [
@@ -54,7 +54,7 @@ return [
             "title" => "Utenti",
             "desc" => "Pagina per la gestione degli Utenti",
             "path" => "mifracruds/users",
-            "controller_name" => "MifraCrudUsersController",
+            "crud_name" => "MifraCrudMenus",
             "route_name" => "mifracruds.users"
         ],
         [
@@ -62,7 +62,7 @@ return [
             "title" => "Ruoli",
             "desc" => "Pagina per la gestione dei Ruoli",
             "path" => "mifracruds/roles",
-            "controller_name" => "MifraCrudRolesController",
+            "crud_name" => "MifraCrudMenus",
             "route_name" => "mifracruds.roles"
         ],
         [
@@ -70,7 +70,7 @@ return [
             "title" => "Permessi",
             "desc" => "Pagina per la gestione dei Permessi",
             "path" => "mifracruds/permissions",
-            "controller_name" => "MifraCrudPermissionsController",
+            "crud_name" => "MifraCrudMenus",
             "route_name" => "mifracruds.permissions"
         ]
     ]

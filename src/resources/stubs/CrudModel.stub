@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Models\MifraCrud;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class {{crud_name}}Model extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        // Definisci qui i campi assegnabili in massa
+    ];
+
+    protected $hidden = [
+        // Definisci qui i campi nascosti
+    ];
+
+    // Aggiungi qui eventuali relazioni, accessori, mutatori o metodi personalizzati
+}
