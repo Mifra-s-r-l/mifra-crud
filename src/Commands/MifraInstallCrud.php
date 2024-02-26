@@ -187,7 +187,7 @@ class MifraInstallCrud extends Command
         $controllerTemplate = File::get($stubPath);
         $controllerContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, $menuItem['route_name']], $controllerTemplate);
 
-        $controllerFilePath = $this->directoryPathController . "/{$className}.php";
+        $controllerFilePath = $this->directoryPathController . "/{$className}Controller.php";
         File::put($controllerFilePath, $controllerContent);
 
         $this->info("Creato/Aggiornato il controller: App\Http\Controllers\MifraCruds\\{$className}Controller, qui puoi inserire il tuo codice per gestire la logica della vista");
@@ -208,7 +208,7 @@ class MifraInstallCrud extends Command
         $modelTemplate = File::get($stubPath);
         $modelContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, $menuItem['route_name']], $modelTemplate);
 
-        $modelFilePath = $this->directoryPathModel . "/{$className}.php";
+        $modelFilePath = $this->directoryPathModel . "/{$className}Model.php";
         File::put($modelFilePath, $modelContent);
 
         $this->info("Creato/Aggiornato il model: App\Models\MifraCruds\\{$className}Model, qui puoi inserire il tuo codice per gestire il database della vista");
