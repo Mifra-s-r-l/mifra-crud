@@ -160,7 +160,7 @@ class MifraInstallCrud extends Command
         } 
 
         $viewTemplate = File::get($stubPath);
-        $viewContent = str_replace(['%%route_name%%'], [ucwords($menuItem['route_name'])], $viewTemplate);
+        $viewContent = str_replace(['%%route_name%%'], [$menuItem['route_name']], $viewTemplate);
 
         // Assicurati che questa directory esista o sia creata
         $route_names = explode(".", $menuItem['route_name']);
