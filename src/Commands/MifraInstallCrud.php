@@ -47,15 +47,14 @@ class MifraInstallCrud extends Command
         // Carica il percorso del file JSON da un file di configurazione
         $this->jsonConfig = config('mifracrud.menus');
 
-
         // Assicurati che questa directory esista o sia creata
-        $this->directoryPathController = base_path('app/Http/Controllers/MifraCrud');
+        $this->directoryPathController = base_path('app/Http/Controllers/MifraCruds');
         if (!File::exists($this->directoryPathController)) {
             File::makeDirectory($this->directoryPathController, 0755, true);
         }
 
         // Assicurati che questa directory esista o sia creata
-        $this->directoryPathModel = base_path('app/Http/Models/MifraCrud');
+        $this->directoryPathModel = base_path('app/Http/Models/MifraCruds');
         if (!File::exists($this->directoryPathModel)) {
             File::makeDirectory($this->directoryPathModel, 0755, true);
         }
@@ -94,6 +93,28 @@ class MifraInstallCrud extends Command
         }
     }
 
+    public function converionRouteName($route_name, $return)
+    {  
+        $result = ''; 
+
+        switch($return){
+
+            case "path":
+                $result = str_replace(".", "/", $route_name);
+                break;
+            
+            case "className":
+                $items = explode(".", $route_name);
+                foreach ($items as $item) {
+                    $result .= ucwords($item);
+                }
+                break;
+
+        }
+
+        return $result;
+    }
+
     public function insertMenuItems()
     {
         $menuItems = $this->jsonConfig; // Voci di menu del file di config
@@ -125,9 +146,11 @@ class MifraInstallCrud extends Command
             // Creo la view
             $this->createViewFile($menuItem);
 
+            $className = $this->converionRouteName($menuItem['route_name'], 'className');
+
             // Crea contenuto per il file delle rotte per la nuova voce di menu
             $routeContent .= $this->createContenRouteFile($menuItem);
-            $routeContentHead .= "use App\Http\Controllers\MifraCrud\\{$menuItem['crud_name']}Controller;\n";
+            $routeContentHead .= "use App\Http\Controllers\MifraCrud\\{$className}Controller;\n";
 
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
@@ -150,13 +173,15 @@ class MifraInstallCrud extends Command
             return 1;
         } 
 
-        $controllerTemplate = File::get($stubPath);
-        $controllerContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$menuItem['crud_name'], $menuItem['route_name']], $controllerTemplate);
+        $className = $this->converionRouteName($menuItem['route_name'], 'className');
 
-        $controllerFilePath = $this->directoryPathController . "/{$menuItem['crud_name']}.php";
+        $controllerTemplate = File::get($stubPath);
+        $controllerContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, $menuItem['route_name']], $controllerTemplate);
+
+        $controllerFilePath = $this->directoryPathController . "/{$className}.php";
         File::put($controllerFilePath, $controllerContent);
 
-        $this->info("Creato il controller: App\Http\Controllers\MifraCrud\\{$menuItem['crud_name']}Controller, qui puoi inseri il tuo codice per gestire la vista");
+        $this->info("Creato il controller: App\Http\Controllers\MifraCrud\\{$className}Controller, qui puoi inseri il tuo codice per gestire la vista");
     }
 
     protected function createModelFile($menuItem)
@@ -169,13 +194,15 @@ class MifraInstallCrud extends Command
             return 1;
         } 
 
-        $modelTemplate = File::get($stubPath);
-        $modelContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$menuItem['crud_name'], $menuItem['route_name']], $modelTemplate);
+        $className = $this->converionRouteName($menuItem['route_name'], 'className');
 
-        $modelFilePath = $this->directoryPathModel . "/{$menuItem['crud_name']}.php";
+        $modelTemplate = File::get($stubPath);
+        $modelContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, $menuItem['route_name']], $modelTemplate);
+
+        $modelFilePath = $this->directoryPathModel . "/{$className}.php";
         File::put($modelFilePath, $modelContent);
 
-        $this->info("Creato il model: App\Http\Models\MifraCrud\\{$menuItem['crud_name']}Model, qui puoi inseri il tuo codice per gestire il database");
+        $this->info("Creato il model: App\Http\Models\MifraCrud\\{$className}Model, qui puoi inseri il tuo codice per gestire il database");
     }
 
     protected function createViewFile($menuItem)
@@ -219,8 +246,11 @@ class MifraInstallCrud extends Command
             return 1;
         }
 
+        $className = $this->converionRouteName($menuItem['route_name'], 'className');
+        $path = $this->converionRouteName($menuItem['route_name'], 'path');
+
         $routeTemplate = File::get($stubPath);
-        $routeContent = str_replace(['{{path}}', '{{crud_name}}', '{{route_name}}'], [$menuItem['path'], $menuItem['crud_name'], $menuItem['route_name']], $routeTemplate);
+        $routeContent = str_replace(['{{path}}', '{{crud_name}}', '{{route_name}}'], [$path, $className, $menuItem['route_name']], $routeTemplate);
         
         $this->info("Inserita rotta nel file: routes/mifracruds/cruds.php, adesso per utilizzarla basta fare cosi, es: route('".$menuItem['route_name']."') o inserirla nella gestione del menu del template");
 

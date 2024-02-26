@@ -45,32 +45,24 @@ return [
             "id" => 1,
             "title" => "Crud",
             "desc" => "Pagina per la gestione dei CRUD",
-            "path" => "mifracruds/menus",
-            "crud_name" => "MifraCrudMenus",
             "route_name" => "mifracruds.menus"
         ],
         [
             "id" => 2,
             "title" => "Utenti",
             "desc" => "Pagina per la gestione degli Utenti",
-            "path" => "mifracruds/users",
-            "crud_name" => "MifraCrudMenus",
             "route_name" => "mifracruds.users"
         ],
         [
             "id" => 3,
             "title" => "Ruoli",
             "desc" => "Pagina per la gestione dei Ruoli",
-            "path" => "mifracruds/roles",
-            "crud_name" => "MifraCrudMenus",
             "route_name" => "mifracruds.roles"
         ],
         [
             "id" => 4,
             "title" => "Permessi",
             "desc" => "Pagina per la gestione dei Permessi",
-            "path" => "mifracruds/permissions",
-            "crud_name" => "MifraCrudMenus",
             "route_name" => "mifracruds.permissions"
         ]
     ]

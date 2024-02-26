@@ -5,7 +5,7 @@ namespace App\Http\Controllers\MifraCrud;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
-class {{controller_name}}Controller extends Controller
+class {{crud_name}}Controller extends Controller
 {
     public function index()
     {
