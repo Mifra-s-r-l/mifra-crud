@@ -1,4 +1,4 @@
-@if(view()->exists('pages.%%route_name%%'))
+@if(view()->exists('pages.%%route_name%%.index'))
     @include('pages.%%route_name%%.index')
 @else
     Devi creare il file della vista in questo percorso pages/%%path%%

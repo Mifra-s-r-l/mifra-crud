@@ -179,7 +179,7 @@ class MifraInstallCrud extends Command
         $viewFilePath = $directoryPathViewCrud  . "/index.blade.php";
         File::put($viewFilePath, $viewContent);
 
-        $this->info("Creato il file view: resources/views/{$dirPathResources}/index.blade.php, adesso basta creare il file index.blade.php questo percorso pages/".$dirPathResources);
+        $this->info("Creato il file view: resources/views/{$dirPathResources}/index.blade.php, adesso basta creare il file index.blade.php in questo percorso pages/".$dirPathResources);
     }
 
     protected function createContenRouteFile($menuItem)
