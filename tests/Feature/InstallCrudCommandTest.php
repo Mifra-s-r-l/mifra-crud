@@ -78,11 +78,7 @@ class InstallCrudCommandTest extends TestCase
         File::deleteDirectory($directoryPath);
 
         // Rimuovere i file di models generati
-        $directoryPath = base_path('app/Http/Models/MifraCruds');
-        File::deleteDirectory($directoryPath);
-
-        // Rimuovere i file di view generati
-        $directoryPath = base_path('app/Http/Controllers/MifraCruds');
+        $directoryPath = base_path('app/Models/MifraCruds');
         File::deleteDirectory($directoryPath);
 
         // Rimuovere i file di view generati

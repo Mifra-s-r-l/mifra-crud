@@ -190,7 +190,7 @@ class MifraInstallCrud extends Command
         $controllerFilePath = $this->directoryPathController . "/{$className}.php";
         File::put($controllerFilePath, $controllerContent);
 
-        $this->info("Creato il controller: App\Http\Controllers\MifraCruds\\{$className}Controller, qui puoi inserire il tuo codice per gestire la logica della vista");
+        $this->info("Creato/Aggiornato il controller: App\Http\Controllers\MifraCruds\\{$className}Controller, qui puoi inserire il tuo codice per gestire la logica della vista");
     }
 
     protected function createModelFile($menuItem)
@@ -211,7 +211,7 @@ class MifraInstallCrud extends Command
         $modelFilePath = $this->directoryPathModel . "/{$className}.php";
         File::put($modelFilePath, $modelContent);
 
-        $this->info("Creato il model: App\Models\MifraCruds\\{$className}Model, qui puoi inserire il tuo codice per gestire il database della vista");
+        $this->info("Creato/Aggiornato il model: App\Models\MifraCruds\\{$className}Model, qui puoi inserire il tuo codice per gestire il database della vista");
     }
 
     protected function createViewFile($menuItem)
@@ -244,7 +244,7 @@ class MifraInstallCrud extends Command
         $viewFilePath = $directoryPathViewCrud  . "/index.blade.php";
         File::put($viewFilePath, $viewContent);
 
-        $this->info("Creato il file view: resources/views/{$dirPathResources}/index.blade.php, adesso basta creare il file index.blade.php in questo percorso pages/".$dirPathResources." per la grafica della vista");
+        $this->info("Creato/Aggiornato il file view: resources/views/{$dirPathResources}/index.blade.php, adesso basta creare il file index.blade.php in questo percorso pages/".$dirPathResources." per la grafica della vista");
     }
 
     protected function createContenRouteFile($menuItem)
@@ -261,7 +261,7 @@ class MifraInstallCrud extends Command
         $routeTemplate = File::get($stubPath);
         $routeContent = str_replace(['{{path}}', '{{crud_name}}', '{{route_name}}'], [$path, $className, $menuItem['route_name']], $routeTemplate);
         
-        $this->info("Inserita rotta nel file: routes/mifracruds/cruds.php, adesso per utilizzarla basta fare cosi, es: route('".$menuItem['route_name']."') o inserirla nella gestione del menu del template");
+        $this->info("Inserita/Aggiornata rotta nel file: routes/mifracruds/cruds.php, adesso per utilizzarla basta fare cosi, es: route('".$menuItem['route_name']."') o inserirla nella gestione del menu del template");
 
         return $routeContent;
     }
