@@ -179,7 +179,7 @@ class MifraInstallCrud extends Command
         $viewFilePath = $directoryPathViewCrud  . "/index.blade.php";
         File::put($viewFilePath, $viewContent);
 
-        $this->info("Creato il file view: resources/views/{$dirPathResources}/index.blade.php, adesso basta creare la vista in questo percorso pages/".$dirPathResources);
+        $this->info("Creato il file view: resources/views/{$dirPathResources}/index.blade.php, adesso basta creare il file index.blade.php questo percorso pages/".$dirPathResources);
     }
 
     protected function createContenRouteFile($menuItem)
@@ -193,7 +193,7 @@ class MifraInstallCrud extends Command
         $routeTemplate = File::get($stubPath);
         $routeContent = str_replace(['{{path}}', '{{controller_name}}', '{{route_name}}'], [$menuItem['path'], $menuItem['controller_name'], $menuItem['route_name']], $routeTemplate);
         
-        $this->info("Inserita rotta nel file: routes/mifracruds/cruds.php, adesso per utilizzarla basta fare cosi, es: route('".$menuItem['route_name']."')");
+        $this->info("Inserita rotta nel file: routes/mifracruds/cruds.php, adesso per utilizzarla basta fare cosi, es: route('".$menuItem['route_name']."') o inserirla nella gestione del menu del template");
 
         return $routeContent;
     }
