@@ -54,7 +54,7 @@ class MifraInstallCrud extends Command
         }
 
         // Assicurati che questa directory esista o sia creata
-        $this->directoryPathModel = base_path('app/Http/Models/MifraCruds');
+        $this->directoryPathModel = base_path('app/Models/MifraCruds');
         if (!File::exists($this->directoryPathModel)) {
             File::makeDirectory($this->directoryPathModel, 0755, true);
         }
@@ -63,6 +63,15 @@ class MifraInstallCrud extends Command
         $this->directoryPathRoute = base_path('routes/mifracruds'); 
         if (!File::exists($this->directoryPathRoute)) {
             File::makeDirectory($this->directoryPathRoute, 0755, true);
+        }
+
+        $filePathWeb =  base_path('routes/web.php');
+        if (!File::exists($filePathWeb)) {
+            // Contenuto che vuoi scrivere nel file
+            $fileContent = "<?php\nrequire __DIR__ . '/mifracruds/cruds.php';";
+
+            // Crea il file e scrivi il contenuto
+            File::put($filePathWeb, $fileContent);
         }
     }
 
@@ -181,7 +190,7 @@ class MifraInstallCrud extends Command
         $controllerFilePath = $this->directoryPathController . "/{$className}.php";
         File::put($controllerFilePath, $controllerContent);
 
-        $this->info("Creato il controller: App\Http\Controllers\MifraCruds\\{$className}Controller, qui puoi inserire il tuo codice per gestire la vista");
+        $this->info("Creato il controller: App\Http\Controllers\MifraCruds\\{$className}Controller, qui puoi inserire il tuo codice per gestire la logica della vista");
     }
 
     protected function createModelFile($menuItem)
@@ -202,7 +211,7 @@ class MifraInstallCrud extends Command
         $modelFilePath = $this->directoryPathModel . "/{$className}.php";
         File::put($modelFilePath, $modelContent);
 
-        $this->info("Creato il model: App\Http\Models\MifraCruds\\{$className}Model, qui puoi inserire il tuo codice per gestire il database");
+        $this->info("Creato il model: App\Models\MifraCruds\\{$className}Model, qui puoi inserire il tuo codice per gestire il database della vista");
     }
 
     protected function createViewFile($menuItem)
@@ -235,7 +244,7 @@ class MifraInstallCrud extends Command
         $viewFilePath = $directoryPathViewCrud  . "/index.blade.php";
         File::put($viewFilePath, $viewContent);
 
-        $this->info("Creato il file view: resources/views/{$dirPathResources}/index.blade.php, adesso basta creare il file index.blade.php in questo percorso pages/".$dirPathResources);
+        $this->info("Creato il file view: resources/views/{$dirPathResources}/index.blade.php, adesso basta creare il file index.blade.php in questo percorso pages/".$dirPathResources." per la grafica della vista");
     }
 
     protected function createContenRouteFile($menuItem)

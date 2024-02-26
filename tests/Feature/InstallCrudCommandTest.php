@@ -74,12 +74,24 @@ class InstallCrudCommandTest extends TestCase
         //DB::connection('mongodb')->collection(env('DB_COLLECTION'))->delete();
 
         // Rimuovere i file di controller generati
+        $directoryPath = base_path('app/Http/Controllers/MifraCruds');
+        File::deleteDirectory($directoryPath);
+
+        // Rimuovere i file di models generati
+        $directoryPath = base_path('app/Http/Models/MifraCruds');
+        File::deleteDirectory($directoryPath);
 
         // Rimuovere i file di view generati
+        $directoryPath = base_path('app/Http/Controllers/MifraCruds');
+        File::deleteDirectory($directoryPath);
+
+        // Rimuovere i file di view generati
+        $directoryPath = base_path('resources/views/mifracruds');
+        File::deleteDirectory($directoryPath);
 
         // Rimuovere i file di rotta generati
-        //$directoryPath = base_path('routes/mifracruds');
-        //File::deleteDirectory($directoryPath);
+        $directoryPath = base_path('routes/mifracruds');
+        File::deleteDirectory($directoryPath);
 
         // Rimuovere il require da routes/web.php, se presente
         $webRoutesPath = base_path('routes/web.php');
