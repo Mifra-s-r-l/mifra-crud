@@ -1,2 +1,2 @@
 
-Route::get('{{path}}', [{{controller_name}}::class, 'index'])->name('{{route_name}}');
+Route::get('{{path}}', [{{crud_name}}Controller::class, 'index'])->name('{{route_name}}');
