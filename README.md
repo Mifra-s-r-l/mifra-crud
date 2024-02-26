@@ -32,6 +32,8 @@ E lanciare questo comando per installare e creare i CRUD principali:
 
 `php artisan mifra:install`
 
+- una volta installato il pacchetto basta creare le voci di menu come indicato durante l'installazione
+
 Si informa che lanciando questo comando tutti i file verrano ricreati e azzerati ma il database rimarrà invariato (prossimamente inseriremo qualcosa per evitare questo)
 
 

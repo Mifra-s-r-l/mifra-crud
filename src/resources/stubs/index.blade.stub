@@ -1,5 +1,5 @@
 @if(view()->exists('pages.%%route_name%%'))
     @include('pages.%%route_name%%')
 @else
-    Devi creare il file in questo percorso pages.%%route_name%%
+    Devi creare il file della vista in questo percorso pages/%%path%%
 @endif
