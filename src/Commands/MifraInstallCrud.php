@@ -95,7 +95,7 @@ class MifraInstallCrud extends Command
         $routeContent = "";
 
         foreach ($menuItems as $menuItem) {
-            
+
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
             $exists = $collection->where('id', $menuItem['id'])->first(); // Verifica l'esistenza dell'elemento
             
@@ -111,6 +111,9 @@ class MifraInstallCrud extends Command
             
             // Creo il controller
             $this->createControllerFile($menuItem);
+            
+            // Creo la view
+            $this->createViewFile($menuItem);
 
             // Crea contenuto per il file delle rotte per la nuova voce di menu
             $routeContent .= $this->createContenRouteFile($menuItem);
@@ -138,12 +141,45 @@ class MifraInstallCrud extends Command
         } 
 
         $controllerTemplate = File::get($stubPath);
-        $controllerContent = str_replace(['{{controller_name}}'], [$menuItem['controller_name']], $controllerTemplate);
+        $controllerContent = str_replace(['{{controller_name}}', '{{route_name}}'], [$menuItem['controller_name'], $menuItem['route_name']], $controllerTemplate);
 
         $controllerFilePath = $this->directoryPathController . "/{$menuItem['controller_name']}.php";
         File::put($controllerFilePath, $controllerContent);
 
         $this->info("Creato il controller: App\Http\Controllers\MifraCrud\\{$menuItem['controller_name']}");
+    }
+
+    protected function createViewFile($menuItem)
+    {
+        // Costruisci il percorso del file .stub
+        $stubPath = __DIR__.'/../resources/stubs/index.blade.stub';
+
+        if (!file_exists($stubPath)) {
+            $this->error("Il file stub {$stubPath} non esiste.");
+            return 1;
+        } 
+
+        $viewTemplate = File::get($stubPath);
+        $viewContent = str_replace(['%%route_name%%'], [ucwords($menuItem['route_name'])], $viewTemplate);
+
+        // Assicurati che questa directory esista o sia creata
+        $route_names = explode(".", $menuItem['route_name']);
+        $dirPathResources = "";
+
+        foreach ($route_names as $route_name) {
+            $dirPathResources .= $route_name."/";
+        }
+        $dirPathResources = rtrim($dirPathResources, '/');
+
+        $directoryPathViewCrud = base_path('resources/views/'.$dirPathResources); 
+        if (!File::exists($directoryPathViewCrud)) {
+            File::makeDirectory($directoryPathViewCrud, 0755, true);
+        }
+
+        $viewFilePath = $directoryPathViewCrud  . "/index.blade.php";
+        File::put($viewFilePath, $viewContent);
+
+        $this->info("Creato il file view: resources/views/{$dirPathResources}/index.blade.php");
     }
 
     protected function createContenRouteFile($menuItem)

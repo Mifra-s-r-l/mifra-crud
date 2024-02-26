@@ -34,9 +34,14 @@ E lanciare questo comando per installare e creare i CRUD principali:
 
 Si informa che lanciando questo comando tutti i file verrano ricreati e azzerati ma il database rimarrà invariato (prossimamente inseriremo qualcosa per evitare questo)
 
+
+
 ###### Comando per pubblicare il file di configurazione
 
 `php artisan vendor:publish --provider="Mifra\Crud\MifraCrudServiceProvider"`
+
+Importante:
+- se viene modificata la lista per funzionare e importate che il parametro "route_name" mantenga il nome.nome per delimitare perchè viene usato nell'installazione per creare la struttura del template nella cartella resources
 
 ##### Comando per creare una versione del pacchetto specifica:
 
