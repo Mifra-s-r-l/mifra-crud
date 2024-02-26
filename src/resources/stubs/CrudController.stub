@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\MifraCrud;
+namespace App\Http\Controllers\MifraCruds;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

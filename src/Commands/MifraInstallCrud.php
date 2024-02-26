@@ -181,7 +181,7 @@ class MifraInstallCrud extends Command
         $controllerFilePath = $this->directoryPathController . "/{$className}.php";
         File::put($controllerFilePath, $controllerContent);
 
-        $this->info("Creato il controller: App\Http\Controllers\MifraCrud\\{$className}Controller, qui puoi inserire il tuo codice per gestire la vista");
+        $this->info("Creato il controller: App\Http\Controllers\MifraCruds\\{$className}Controller, qui puoi inserire il tuo codice per gestire la vista");
     }
 
     protected function createModelFile($menuItem)
@@ -202,7 +202,7 @@ class MifraInstallCrud extends Command
         $modelFilePath = $this->directoryPathModel . "/{$className}.php";
         File::put($modelFilePath, $modelContent);
 
-        $this->info("Creato il model: App\Http\Models\MifraCrud\\{$className}Model, qui puoi inserire il tuo codice per gestire il database");
+        $this->info("Creato il model: App\Http\Models\MifraCruds\\{$className}Model, qui puoi inserire il tuo codice per gestire il database");
     }
 
     protected function createViewFile($menuItem)
