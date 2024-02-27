@@ -14,13 +14,14 @@
         }
     ],
     "require": {
-        "mongodb/laravel-mongodb": "^4.1"
+        
     },
     "require-dev": {
         "illuminate/console": "^10.0",
         "laravel/framework": "^10.0",
         "phpunit/phpunit": "^10.5",
-        "orchestra/testbench": "^8.21"
+        "orchestra/testbench": "^8.21",
+        "mongodb/laravel-mongodb": "^4.1"
     },    
     "license": "MIT",
     "extra": {
