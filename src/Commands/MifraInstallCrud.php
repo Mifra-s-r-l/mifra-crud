@@ -28,7 +28,7 @@ class MifraInstallCrud extends Command
 
         $database = config('mifracrud.database');
 
-        // Configura la connessione MongoDB per i test
+        // Configura la connessione MongoDB 
         Config::set('database.connections.mongodb', [
             'driver' => 'mongodb',
             'host' => $database['host'],
@@ -38,8 +38,8 @@ class MifraInstallCrud extends Command
             'password' => $database['password'],
         ]);
 
-        // Imposta 'mongodb' come connessione di database predefinita per i test
-        Config::set('database.default', 'mongodb');
+        // Imposta 'mongodb' come connessione di database predefinita 
+        //Config::set('database.default', 'mongodb');
 
         // Carica la configurazione del database da un file di configurazione
         $this->databaseConfig = $database;
