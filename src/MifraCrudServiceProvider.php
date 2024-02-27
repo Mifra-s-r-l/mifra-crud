@@ -30,7 +30,8 @@ class MifraCrudServiceProvider extends ServiceProvider
         // Controlla se il service provider di MongoDB è già registrato
         if (!app()->getProvider(\MongoDB\Laravel\MongoDBServiceProvider::class,)) {
             // Registra il ServiceProvider
-            app()->register(\MongoDB\Laravel\MongoDBServiceProvider::class,);
+            //app()->register(\MongoDB\Laravel\MongoDBServiceProvider::class,);
+            echo 'Devi installare composer require mongodb/laravel-mongodb';
         }
 
         // Registra il file di configurazione

@@ -14,7 +14,6 @@
         }
     ],
     "require": {
-        
     },
     "require-dev": {
         "illuminate/console": "^10.0",
