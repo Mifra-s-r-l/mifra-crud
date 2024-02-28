@@ -64,7 +64,7 @@ return [
             "id" => 1,
             "title" => "Crud",
             "desc" => "Pagina per la gestione dei CRUD",
-            "route_name" => "mifracruds.menus",
+            "route_name" => "mifracruds.cruds",
             "group" => "managements"
         ],
         [

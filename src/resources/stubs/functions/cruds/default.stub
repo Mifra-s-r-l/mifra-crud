@@ -4,7 +4,7 @@
             'id' => intval($id),
             'title' => $request->title,
             'desc' => $request->desc,
-            'route_name' => 'mifracrud.'.$request->route_name,
+            'route_name' => 'mifracruds.'.$request->route_name,
         ];
 
         Artisan::call('mifra:createcrud', [
