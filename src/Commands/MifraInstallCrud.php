@@ -112,7 +112,15 @@ class MifraInstallCrud extends Command
             //DB::connection('mongodb')->collection($this->databaseConfig['collection'])->delete();
 
             // Creo il gruppo dei CRUD di default
-            DB::connection('mongodb')->collection($this->databaseConfig['group'])->insert($this->groupsMenus);
+            $group = DB::connection('mongodb')->collection($this->databaseConfig['group']);
+            $exists = $group->where('id', 1)->first(); // Verifica l'esistenza dell'elemento
+            if (!$exists) {
+                // Se non esiste, inseriscilo nel database
+                $group->insert($this->groupsMenus);
+            } else {
+                // Se esiste, aggiornalo con i nuovi valori
+                $group->where('id', 1)->update($this->groupsMenus);
+            }
 
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection'])->get();
 
@@ -246,7 +254,7 @@ class MifraInstallCrud extends Command
         $controllerContent = preg_replace($pattern, "\n", $controllerTemplate);
 
         // Prepara la linea da aggiungere
-        $useArtisanLine = "use Illuminate\Support\Facades\Artisan;\n";
+        $useArtisanLine = "use Illuminate\Support\Facades\Artisan;";
         
         // Trova la posizione del segnaposto per l'header e aggiungi la nuova linea dopo
         $newControllerContent = preg_replace("/(" . preg_quote($placeholderHead, '/') . ")/", "$1\n" . $useArtisanLine, $controllerContent);
