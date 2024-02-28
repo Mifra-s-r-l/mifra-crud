@@ -11,4 +11,6 @@ class {{crud_name}}Controller extends Controller
     {
         return view('{{route_name}}.index');
     }
+
+    // PLACEHOLDER_FOR_NEW_METHODS
 }

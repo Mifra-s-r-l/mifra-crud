@@ -197,7 +197,7 @@ class MifraInstallCrud extends Command
 
         // Creo il file delle rotte
         $routeFilePath = $this->directoryPathRoute . '/cruds.php';
-        File::put($routeFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n");
+        File::put($routeFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n\nuse App\Http\Controllers\MifraCruds\MifracrudsController;\n");
         // Scrivi l'header e il contenuto delle rotte nel file
         File::append($routeFilePath, $routeContentHead . $routeContent);
 
@@ -207,8 +207,48 @@ class MifraInstallCrud extends Command
 
     protected function createCommandsDefault($routeFilePath)
     {
+        $menuItem['route_name'] = 'mifracruds';
+        $this->createControllerFile($menuItem);
+
+        // Segnaposto da cercare
+        $placeholder = '// PLACEHOLDER_FOR_NEW_METHODS';
+
+        // Definizione del pattern per identificare esattamente il metodo index()
+        $pattern = '/\s*public\s+function\s+index\(\)\s*\{\s*return\s+view\(\'\{\{route_name\}\}\.index\'\);\s*\}\s*/';
+
+        // Costruisci i percorsi del file .stub
+        $stubPathController = base_path('app/Http/Controllers/MifraCruds/MifraCrudsController.php');
+
+        if (!file_exists($stubPathController)) {
+            $this->error("Il file stub {$stubPathController} non esiste.");
+            return 1;
+        } 
+
+        $stubPathCreate = __DIR__.'/../resources/stubs/functions/cruds/create.stub';
+
+        if (!file_exists($stubPathCreate)) {
+            $this->error("Il file stub {$stubPathCreate} non esiste.");
+            return 1;
+        } 
+
+        $stubPathDelete = __DIR__.'/../resources/stubs/functions/cruds/delete.stub';
+
+        if (!file_exists($stubPathDelete)) {
+            $this->error("Il file stub {$stubPathDelete} non esiste.");
+            return 1;
+        } 
+
+        // Rimozione del metodo index()
+        $controllerContent = preg_replace($pattern, '', $stubPathController);
+
+        // Sostituisci il segnaposto con il contenuto delle nuove funzioni
+        $newControllerContent = str_replace($placeholder, $stubPathCreate . "\n    " . $placeholder, $controllerContent);
+        $fineControllerContent = str_replace($placeholder, $stubPathDelete . "\n    " . $placeholder, $newControllerContent);
+
+        File::put($stubPathController, $fineControllerContent);
+
         // Costruisci il percorso del file .stub
-        $stubPath = __DIR__.'/../resources/stubs/routes_create.stub';
+        $stubPath = __DIR__.'/../resources/stubs/routes/cruds/create.stub';
 
         if (!file_exists($stubPath)) {
             $this->error("Il file stub {$stubPath} non esiste.");

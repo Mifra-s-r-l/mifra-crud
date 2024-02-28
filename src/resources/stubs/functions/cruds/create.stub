@@ -1,0 +1,16 @@
+public function create(Request $request, $id)
+{
+    $elements =[
+        'id' => intval($id),
+        'title' => $request->title,
+        'desc' => $request->desc,
+        'route_name' => 'mifracrud.'.$request->route_name,
+    ];
+
+    Artisan::call('mifra:createcrud', [
+        'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
+        '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
+    ]);
+
+    return view('mifracruds.menus.index');
+}
