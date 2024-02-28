@@ -81,7 +81,7 @@ class MifraCreateCrud extends Command
             $this->info("Inserita nuova voce di menu: {$this->elements['title']}");
         } else {
             // Se esiste, aggiornalo con i nuovi valori
-            $collection->where('id', $this->elements['id'])->update($this->elements);
+            $collection->where('id', intval($this->elements['id']))->update($this->elements);
             $this->info("Aggiorno la voce di menu: {$this->elements['title']}");
         }
     }
