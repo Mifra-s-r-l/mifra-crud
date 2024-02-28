@@ -74,15 +74,14 @@ class MifraCreateCrud extends Command
     public function insertMenuItem()
     {
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
+        $exists = $collection->where('id', intval($this->elements['id']))->first(); // Verifica l'esistenza dell'elemento
         
-        if (!$this->elements['id']) {
+        if (!$exists) {
             // Se non esiste, inseriscilo nel database
             $collection->insert($this->elements);
-            $this->info("Inserita nuova voce di menu: {$this->elements['title']}");
         } else {
             // Se esiste, aggiornalo con i nuovi valori
             $collection->where('id', intval($this->elements['id']))->update($this->elements);
-            $this->info("Aggiorno la voce di menu: {$this->elements['title']}");
         }
     }
 
