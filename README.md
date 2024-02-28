@@ -4,7 +4,7 @@
 <a href="https://www.mifra.eu"><img src="https://img.shields.io/badge/version-1.0.x--dev-blue" alt="Versione"></a>
 </p>
 
-In generale, un sistema CRUD in un'applicazione Laravel, per la creazione di file di controller, model, e view necessari, e la configurazione delle rotte per l'accesso alle funzionalità CRUD. Questo facilita lo sviluppo e la manutenzione dell'applicazione, permettendo agli sviluppatori di concentrarsi sulla logica specifica dell'applicazione piuttosto che sulla configurazione iniziale e sul boilerplate code.
+In generale, un sistema CRUD in un'applicazione Laravel, serve per la creazione di file di controller, model, e view necessari, e la configurazione delle rotte per l'accesso alle funzionalità CRUD. Questo facilita lo sviluppo e la manutenzione dell'applicazione, permettendo agli sviluppatori di concentrarsi sulla logica specifica dell'applicazione piuttosto che sulla configurazione iniziale e sul boilerplate code.
 
 ### Pacchetto per la creazioni di nuovi CRUD in modo automatico
 
