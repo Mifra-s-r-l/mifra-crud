@@ -247,23 +247,13 @@ class MifraInstallCrud extends Command
 
         // Prepara la linea da aggiungere
         $useArtisanLine = "use Illuminate\Support\Facades\Artisan;\n";
-<<<<<<< HEAD
-
-        // Trova la posizione del segnaposto per l'header e aggiungi la nuova linea dopo
-        $newControllerContent = preg_replace("/(" . preg_quote($placeholderHead, '/') . ")/", "$1\n" . $useArtisanLine, $controllerContent);
-
-        // Sostituisci il segnaposto con il contenuto delle nuove funzioni
-        $newControllerContent = str_replace($placeholder, $defaultContent . "\n    " . $placeholder, $controllerContent);
-
-=======
-
+        
         // Trova la posizione del segnaposto per l'header e aggiungi la nuova linea dopo
         $newControllerContent = preg_replace("/(" . preg_quote($placeholderHead, '/') . ")/", "$1\n" . $useArtisanLine, $controllerContent);
 
         // Sostituisci il segnaposto con il contenuto delle nuove funzioni
         $newControllerContent = str_replace($placeholder, $defaultContent . "\n    " . $placeholder, $newControllerContent);
 
->>>>>>> 6f53a9b (update)
         File::put($stubPathController, $newControllerContent);
 
         // Costruisci il percorso del file .stub
