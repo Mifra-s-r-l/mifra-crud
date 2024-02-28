@@ -213,7 +213,7 @@ class MifraInstallCrud extends Command
         $placeholder = '// PLACEHOLDER_FOR_NEW_METHODS';
 
         // Definizione del pattern per identificare esattamente il metodo index()
-        $pattern = '/\s*public\s+function\s+index\(\)\s*\{\s*return\s+view\(\'\{\{route_name\}\}\.index\'\);\s*\}\s*/';
+        $pattern = '/\s*public\s+function\s+index\(\)\s*\{[^\}]*\}\s*/s';
 
         // Percorsi e lettura dei file stub per le funzioni create e delete
         $stubPathCreate = __DIR__ . '/../resources/stubs/functions/cruds/create.stub';

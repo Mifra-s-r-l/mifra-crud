@@ -1,13 +1,13 @@
 public function delete(Request $request, $id)
-{
-    $elements =[
-        'id' => intval($id)
-    ];
+    {
+        $elements =[
+            'id' => intval($id)
+        ];
 
-    Artisan::call('mifra:createcrud', [
-        'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
-        '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
-    ]);
+        Artisan::call('mifra:createcrud', [
+            'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
+            '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
+        ]);
 
-    return view('mifracruds.menus.index');
-}
+        return view('mifracruds.menus.index');
+    }
