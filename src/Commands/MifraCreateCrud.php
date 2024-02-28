@@ -54,7 +54,7 @@ class MifraCreateCrud extends Command
 
         if (File::exists($alreadyInstalledFlagPath)) {
 
-            $nameCapitalize = ucwords($this->argument('name'));
+            //$nameCapitalize = ucwords($this->argument('name'));
 
             try {
                 $this->info("Creazione voce di menù principali...");
