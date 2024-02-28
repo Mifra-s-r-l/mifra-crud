@@ -109,17 +109,12 @@ class MifraInstallCrud extends Command
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
 
-            //DB::connection('mongodb')->collection($this->databaseConfig['collection'])->delete();
-
             // Creo il gruppo dei CRUD di default
             $group = DB::connection('mongodb')->collection($this->databaseConfig['group']);
-            $exists = $group->where('id', 1)->first(); // Verifica l'esistenza dell'elemento
-            if (!$exists) {
-                // Se non esiste, inseriscilo nel database
-                $group->insert($this->groupsMenus);
-            } else {
-                // Se esiste, aggiornalo con i nuovi valori
-                $group->where('id', 1)->update(['$set' => $this->groupsMenus]);
+            // Se esiste, aggiornalo con i nuovi valori
+            foreach ($this->groupsMenus as $groupsMenu) {
+                # code...
+                $group->where('id', $groupsMenu['id'])->update($groupsMenu);
             }
 
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection'])->get();
