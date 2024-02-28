@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\File;
 class MifraCreateCrud extends Command
 {
     // Il nome e la firma del comando Artisan
-    protected $signature = 'mifra:createcrud {elements : Stringa JSON degli elementi per il CRUD}';
+    protected $signature = 'mifra:createcrud
+                        {elements : Stringa JSON degli elementi per il CRUD}
+                        {--delete : Elimina l\'elemento specificato tramite ID}';
 
     // Descrizione del comando Artisan
     protected $description = 'Creazione di un nuovo CRUD';
@@ -54,20 +56,43 @@ class MifraCreateCrud extends Command
 
         if (File::exists($alreadyInstalledFlagPath)) {
 
-            //$nameCapitalize = ucwords($this->argument('name'));
+            if ($this->option('delete')) {
+                $this->deleteMenuItem();
+            } else {
+                try {
+                    $this->info("Creazione voce di menù principali...");
+                    // Messaggio di separazione per migliorare la leggibilità dell'output
+                    $this->info('');
 
-            try {
-                $this->info("Creazione voce di menù principali...");
-                // Messaggio di separazione per migliorare la leggibilità dell'output
-                $this->info('');
+                    $this->insertMenuItem();
 
-                $this->insertMenuItem();
-
-            } catch (\Exception $e) {
-                $this->info("Errore handle: " . $e->getMessage());
-                return 1;
+                } catch (\Exception $e) {
+                    $this->info("Errore handle: " . $e->getMessage());
+                    return 1;
+                }
             }
 
+            //$nameCapitalize = ucwords($this->argument('name'));
+
+        }
+    }
+
+    protected function deleteMenuItem()
+    {
+        $id = $this->elements['id'] ?? null;
+
+        if (!$id) {
+            $this->error('ID non specificato per l\'eliminazione.');
+            return;
+        }
+
+        $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
+        $deletedCount = $collection->where('id', intval($id))->delete();
+
+        if ($deletedCount > 0) {
+            $this->info("Elemento con ID {$id} eliminato con successo.");
+        } else {
+            $this->error("Nessun elemento trovato con ID {$id} da eliminare.");
         }
     }
 
@@ -75,13 +100,13 @@ class MifraCreateCrud extends Command
     {
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
         $exists = $collection->where('id', intval($this->elements['id']))->first(); // Verifica l'esistenza dell'elemento
-        
+
         if (!$exists) {
-            // Se non esiste, inseriscilo nel database
             $collection->insert($this->elements);
+            $this->info("Inserita nuova voce di menu: {$this->elements['title']}");
         } else {
-            // Se esiste, aggiornalo con i nuovi valori
             $collection->where('id', intval($this->elements['id']))->update($this->elements);
+            $this->info("Aggiornata la voce di menu: {$this->elements['title']}");
         }
     }
 

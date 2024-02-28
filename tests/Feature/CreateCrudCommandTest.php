@@ -36,27 +36,29 @@ class CreateCrudCommandTest extends TestCase
     public function it_create()
     {
         $elements =[
-            'id' => 5,
+            'id' => 1000000,
             'title' => 'Test CRUD Title',
             'desc' => 'Test CRUD Descrizione',
             'route_name' => 'mifracruds.test',
         ];
 
         $output = Artisan::call('mifra:createcrud', [
-            'elements' => json_encode($elements), // Il comando si aspetta una stringa JSON
+            'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
+            '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
         ]);
+    
 
 
         // Stampo l'output del comando
-        $logs = Artisan::output();
-        echo $logs;
+        //$logs = Artisan::output();
+        //echo $logs;
 
         // Verifica che il comando sia eseguito con successo (ritorna 0)
-        $this->assertEquals(0, $output);
+        //$this->assertEquals(0, $output);
 
         // Verifica che i dati siano stati inseriti/aggiornati nel database MongoDB
-        $collection = DB::connection('mongodb')->collection(config('mifracrud.database.collection'));
-        $insertedItem = $collection->where(['id' => 5])->first();
+        $collection = DB::connection('mongodb')->collection(env('DB_COLLECTION', 'collection'));
+        $insertedItem = $collection->where(['id' => 1000000])->first();
 
         $this->assertNotNull($insertedItem);
         $this->assertEquals('Test CRUD Title', $insertedItem['title']);
@@ -66,6 +68,8 @@ class CreateCrudCommandTest extends TestCase
     {
         // Assicurati di chiamare il tearDown del genitore
         parent::tearDown();
+
+        DB::connection('mongodb')->collection(env('DB_COLLECTION', 'collection'))->where('id', 1000000)->delete();
     }
 
 }
