@@ -22,6 +22,7 @@ class InstallCrudCommandTest extends TestCase
             'port' => env('DB_PORT', 27017),
             'database' => env('DB_DATABASE', 'database'),
             'collection' => env('DB_COLLECTION', 'collection'),
+            'group' => env('DB_GROUP', 'group'),
             'username' => env('DB_USERNAME', 'username'),
             'password' => env('DB_PASSWORD', 'password'),
         ]);

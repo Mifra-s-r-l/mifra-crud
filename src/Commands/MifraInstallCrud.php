@@ -16,6 +16,7 @@ class MifraInstallCrud extends Command
     protected $description = 'Installazione del sistema CRUD';
 
     protected $databaseConfig;
+    protected $groupsMenus;
     protected $jsonConfig;
     protected $directoryPathController;
     protected $directoryPathModel;
@@ -43,6 +44,8 @@ class MifraInstallCrud extends Command
 
         // Carica la configurazione del database da un file di configurazione
         $this->databaseConfig = $database;
+
+        $this->groupsMenus = config('mifracrud.groups_menus');
 
         // Carica il percorso del file JSON da un file di configurazione
         $this->jsonConfig = config('mifracrud.menus');
@@ -108,6 +111,9 @@ class MifraInstallCrud extends Command
 
             //DB::connection('mongodb')->collection($this->databaseConfig['collection'])->delete();
 
+            // Creo il gruppo dei CRUD di default
+            DB::connection('mongodb')->collection($this->databaseConfig['group'])->insert($this->groupsMenus);
+            
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection'])->get();
 
             $this->info("Creazione voci di menù principali...");
@@ -187,12 +193,32 @@ class MifraInstallCrud extends Command
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
         }
+        
 
         // Creo il file delle rotte
         $routeFilePath = $this->directoryPathRoute . '/cruds.php';
         File::put($routeFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n");
         // Scrivi l'header e il contenuto delle rotte nel file
         File::append($routeFilePath, $routeContentHead . $routeContent);
+
+        // Aggiungo le rotte per la creazione e eliminazione dei CRUD di default
+        $this->createCommandsDefault($routeFilePath);
+    }
+
+    protected function createCommandsDefault($routeFilePath)
+    {
+        // Costruisci il percorso del file .stub
+        $stubPath = __DIR__.'/../resources/stubs/routes_create.stub';
+
+        if (!file_exists($stubPath)) {
+            $this->error("Il file stub {$stubPath} non esiste.");
+            return 1;
+        } 
+
+        $commandsTemplate = File::get($stubPath);
+
+        File::append($routeFilePath, $commandsTemplate);
+
     }
 
     protected function createControllerFile($menuItem)

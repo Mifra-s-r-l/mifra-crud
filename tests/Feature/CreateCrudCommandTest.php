@@ -22,6 +22,7 @@ class CreateCrudCommandTest extends TestCase
             'port' => env('DB_PORT', 27017),
             'database' => env('DB_DATABASE', 'database'),
             'collection' => env('DB_COLLECTION', 'collection'),
+            'group' => env('DB_GROUP', 'group'),
             'username' => env('DB_USERNAME', 'username'),
             'password' => env('DB_PASSWORD', 'password'),
         ]);
@@ -46,8 +47,6 @@ class CreateCrudCommandTest extends TestCase
             'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
             '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
         ]);
-    
-
 
         // Stampo l'output del comando
         //$logs = Artisan::output();

@@ -44,55 +44,52 @@ class MifraCreateCrud extends Command
     // Esegue il comando Artisan
     public function handle()
     {
-        $jsonElements = $this->argument('elements');
-        $this->elements = json_decode($jsonElements, true); // Decodifica la stringa JSON come array associativo
+        try {
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $this->error('Errore nella decodifica della stringa JSON.');
-            return 1;
-        }
+            $jsonElements = $this->argument('elements');
+            $this->elements = json_decode($jsonElements, true); // Decodifica la stringa JSON come array associativo
 
-        $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
-
-        if (File::exists($alreadyInstalledFlagPath)) {
-
-            if ($this->option('delete')) {
-                $this->deleteMenuItem();
-            } else {
-                try {
-                    $this->info("Creazione voce di menù principali...");
-                    // Messaggio di separazione per migliorare la leggibilità dell'output
-                    $this->info('');
-
-                    $this->insertMenuItem();
-
-                } catch (\Exception $e) {
-                    $this->info("Errore handle: " . $e->getMessage());
-                    return 1;
-                }
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $this->error('Errore nella decodifica della stringa JSON.');
+                return 1;
             }
 
-            //$nameCapitalize = ucwords($this->argument('name'));
+            $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
 
+            if (File::exists($alreadyInstalledFlagPath)) {
+
+                $id = $this->elements['id'] ?? null;
+
+                if (!$id) {
+                    $this->error('ID non specificato per l\'eliminazione.');
+                    return 1;
+                }
+
+                if ($this->option('delete')) {
+                    $this->deleteMenuItem();
+                } else {
+                    $this->insertMenuItem();
+                }
+
+                //$nameCapitalize = ucwords($this->argument('name'));
+
+            }
+
+        } catch (\Exception $e) {
+            $this->info("Errore handle: " . $e->getMessage());
+            return 1;
         }
     }
 
     protected function deleteMenuItem()
     {
-        $id = $this->elements['id'] ?? null;
-
-        if (!$id) {
-            $this->error('ID non specificato per l\'eliminazione.');
-            return;
-        }
-
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
-        $deletedCount = $collection->where('id', intval($id))->delete();
+        $deletedCount = $collection->where('id', intval($this->elements['id']))->delete();
 
         if ($deletedCount > 0) {
-            $this->info("Elemento con ID {$id} eliminato con successo.");
+            $this->info("Elemento con ID {$this->elements['id']} eliminato con successo.");
         } else {
-            $this->error("Nessun elemento trovato con ID {$id} da eliminare.");
+            $this->error("Nessun elemento trovato con ID {$this->elements['id']} da eliminare.");
         }
     }
 
