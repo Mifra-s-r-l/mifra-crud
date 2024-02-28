@@ -70,7 +70,7 @@ class MifraCreateCrud extends Command
                     $this->deleteMenuItem();
                 } else {
                     $this->insertMenuItem();
-                    $this->createRoute();
+                    //$this->createRoute();
                 }
 
                 //$nameCapitalize = ucwords($this->argument('name'));
@@ -115,7 +115,7 @@ class MifraCreateCrud extends Command
         $className = CrudHelpers::conversionRouteName($this->elements['route_name'], 'className');
         $methodName = $this->elements['method'] ?? 'index';
 
-        $routeDefinition = "\nRoute::get('/$path', ['$className'Controller, '$methodName'])->name('$this->elements['route_name']');\n";
+        $routeDefinition = "\nRoute::get('mifracruds/$path', ['$className'Controller, '$methodName'])->name('mifracruds.$this->elements['route_name'].index');\n";
 
         // Assicurati che il file esista o crealo
         $routesFilePath = base_path('routes/mifracruds/'.$path.'.php');
