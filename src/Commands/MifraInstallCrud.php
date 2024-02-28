@@ -240,7 +240,7 @@ class MifraInstallCrud extends Command
         }
 
         // Rimozione del metodo index()
-        $controllerContent = preg_replace($pattern, '', $controllerTemplate);
+        $controllerContent = preg_replace($pattern, "\n", $controllerTemplate);
 
         // Sostituisci il segnaposto con il contenuto delle nuove funzioni
         $newControllerContent = str_replace($placeholder, $createContent . "\n    " . $placeholder, $controllerContent);
