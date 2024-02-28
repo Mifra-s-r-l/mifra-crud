@@ -1,5 +1,5 @@
 @if(view()->exists('pages.%%route_name%%.index'))
     @include('pages.%%route_name%%.index')
 @else
-    Devi creare il file della vista in questo percorso pages/%%path%%
+    Devi creare il file della vista in questo percorso pages/%%path%%, fai riferimento a questo link https://github.com/Mifra-s-r-l/mifra-crud
 @endif

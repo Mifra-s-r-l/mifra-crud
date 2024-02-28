@@ -4,6 +4,8 @@
 <a href="https://www.mifra.eu"><img src="https://img.shields.io/badge/version-1.0.x--dev-blue" alt="Versione"></a>
 </p>
 
+In generale, un sistema CRUD in un'applicazione Laravel, per la creazione di file di controller, model, e view necessari, e la configurazione delle rotte per l'accesso alle funzionalità CRUD. Questo facilita lo sviluppo e la manutenzione dell'applicazione, permettendo agli sviluppatori di concentrarsi sulla logica specifica dell'applicazione piuttosto che sulla configurazione iniziale e sul boilerplate code.
+
 ### Pacchetto per la creazioni di nuovi CRUD in modo automatico
 
 Per il funzionamento del pacchetto sul tuo progetto laravel sono richieste queste dipendenze da installare:
@@ -38,14 +40,17 @@ Si informa che lanciando questo comando tutti i file verrano ricreati e azzerati
 
 
 
+
 ###### Comando per pubblicare il file di configurazione
 
 `php artisan vendor:publish --provider="Mifra\Crud\MifraCrudServiceProvider"`
 
 Importante:
-- se viene modificata la lista per funzionare e importate che il parametro "route_name" mantenga il nome.nome per delimitare perchè viene usato nell'installazione per creare la struttura del template nella cartella resources
+- se viene modificata la lista delle voci di menù principali, per un corretto funzionamento il parametro "route_name" deve mantenere il formato nome.nome
 
-##### Comando per creare una versione del pacchetto specifica:
 
-`git tag -a v1.0.0 -m "Creazione versione 1.0.0"`
-`git push origin v1.0.0`
+
+
+##### Creazione delle viste principali :
+
+Inserire qui la guida che spiega il messaggio di avviso quando non trova le viste

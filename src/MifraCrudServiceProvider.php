@@ -20,9 +20,9 @@ class MifraCrudServiceProvider extends ServiceProvider
             ]);
         }
         // comandi da web
-        /* $this->commands([
+        $this->commands([
             Commands\MifraCreateCrud::class
-        ]); */
+        ]);
     }
 
     public function register()
