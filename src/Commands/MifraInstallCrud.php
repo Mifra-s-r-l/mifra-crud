@@ -119,7 +119,7 @@ class MifraInstallCrud extends Command
                 $group->insert($this->groupsMenus);
             } else {
                 // Se esiste, aggiornalo con i nuovi valori
-                $group->where('id', 1)->update($this->groupsMenus);
+                $group->where('id', 1)->update(['$set' => $this->groupsMenus]);
             }
 
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection'])->get();
@@ -134,7 +134,7 @@ class MifraInstallCrud extends Command
             $this->addRequireToWebRoutes();
 
         } catch (\Exception $e) {
-            $this->info("Errore durante la connessione al database MongoDB: " . $e->getMessage());
+            $this->info("Errore installCrud: " . $e->getMessage());
             return 1;
         }
     }
