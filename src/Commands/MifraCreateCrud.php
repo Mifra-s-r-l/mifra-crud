@@ -3,9 +3,10 @@
 namespace Mifra\Crud\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Mifra\Crud\Helpers\CrudHelpers;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Config;
 
 class MifraCreateCrud extends Command
 {
@@ -69,6 +70,7 @@ class MifraCreateCrud extends Command
                     $this->deleteMenuItem();
                 } else {
                     $this->insertMenuItem();
+                    $this->createRoute();
                 }
 
                 //$nameCapitalize = ucwords($this->argument('name'));
@@ -105,6 +107,28 @@ class MifraCreateCrud extends Command
             $collection->where('id', intval($this->elements['id']))->update($this->elements);
             $this->info("Aggiornata la voce di menu: {$this->elements['title']}");
         }
+    }
+
+    protected function createRoute()
+    {
+        $path = CrudHelpers::conversionRouteName($this->elements['route_name'], 'path');
+        $className = CrudHelpers::conversionRouteName($this->elements['route_name'], 'className');
+        $methodName = $this->elements['method'] ?? 'index';
+
+        $routeDefinition = "\nRoute::get('/$path', ['$className'Controller, '$methodName'])->name('$this->elements['route_name']');\n";
+
+        // Assicurati che il file esista o crealo
+        $routesFilePath = base_path('routes/mifracruds/'.$path.'.php');
+        if (!File::exists($routesFilePath)) {
+            File::put($routesFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n");
+        }
+
+        // Aggiungi la nuova definizione di rotta al file
+        File::append($routesFilePath, $routeDefinition);
+
+        $this->info("Aggiunta nuova rotta per $routePath nel file $routesFilePath");
+
+        CrudHelper::createControllerFile($this->elements['route_name']);
     }
 
 }

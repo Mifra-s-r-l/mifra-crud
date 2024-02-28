@@ -3,9 +3,10 @@
 namespace Mifra\Crud\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Mifra\Crud\Helpers\CrudHelpers;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Config;
 
 class MifraInstallCrud extends Command
 {
@@ -134,28 +135,6 @@ class MifraInstallCrud extends Command
         }
     }
 
-    public function converionRouteName($route_name, $return)
-    {
-        $result = '';
-
-        switch ($return) {
-
-            case "path":
-                $result = str_replace(".", "/", $route_name);
-                break;
-
-            case "className":
-                $items = explode(".", $route_name);
-                foreach ($items as $item) {
-                    $result .= ucwords($item);
-                }
-                break;
-
-        }
-
-        return $result;
-    }
-
     public function insertMenuItems()
     {
         $menuItems = $this->jsonConfig; // Voci di menu del file di config
@@ -187,7 +166,7 @@ class MifraInstallCrud extends Command
             // Creo la view
             $this->createViewFile($menuItem);
 
-            $className = $this->converionRouteName($menuItem['route_name'], 'className');
+            $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
 
             // Crea contenuto per il file delle rotte per la nuova voce di menu
             $routeContent .= $this->createContenRouteFile($menuItem);
@@ -283,7 +262,7 @@ class MifraInstallCrud extends Command
             return 1;
         }
 
-        $className = $this->converionRouteName($menuItem['route_name'], 'className');
+        $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
 
         $controllerTemplate = File::get($stubPath);
         $controllerContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, $menuItem['route_name']], $controllerTemplate);
@@ -304,7 +283,7 @@ class MifraInstallCrud extends Command
             return 1;
         }
 
-        $className = $this->converionRouteName($menuItem['route_name'], 'className');
+        $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
 
         $modelTemplate = File::get($stubPath);
         $modelContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, $menuItem['route_name']], $modelTemplate);
@@ -356,8 +335,8 @@ class MifraInstallCrud extends Command
             return 1;
         }
 
-        $className = $this->converionRouteName($menuItem['route_name'], 'className');
-        $path = $this->converionRouteName($menuItem['route_name'], 'path');
+        $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
+        $path = CrudHelpers::conversionRouteName($menuItem['route_name'], 'path');
 
         $routeTemplate = File::get($stubPath);
         $routeContent = str_replace(['{{path}}', '{{crud_name}}', '{{route_name}}'], [$path, $className, $menuItem['route_name']], $routeTemplate);
