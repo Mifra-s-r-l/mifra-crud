@@ -210,6 +210,9 @@ class MifraInstallCrud extends Command
         $this->createControllerFile($menuItem);
 
         // Segnaposto da cercare
+        $placeholderHead = 'use Illuminate\Routing\Controller;';
+
+        // Segnaposto da cercare
         $placeholder = '// PLACEHOLDER_FOR_NEW_METHODS';
 
         // Definizione del pattern per identificare esattamente il metodo index()
@@ -244,8 +247,9 @@ class MifraInstallCrud extends Command
 
         // Sostituisci il segnaposto con il contenuto delle nuove funzioni
         $newControllerContent = str_replace($placeholder, $defaultContent . "\n    " . $placeholder, $controllerContent);
+        $fineControllerContent = str_replace($placeholderHead, $defaultContent . "use Illuminate\Support\Facades\Artisan;" . $placeholderHead, $newControllerContent);
 
-        File::put($stubPathController, $newControllerContent);
+        File::put($stubPathController, $fineControllerContent);
 
         // Costruisci il percorso del file .stub
         $stubPath = __DIR__ . '/../resources/stubs/routes/cruds/default.stub';
