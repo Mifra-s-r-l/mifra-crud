@@ -17,9 +17,6 @@ class MifraCreateCrud extends Command
 
     protected $databaseConfig;
     protected $elements;
-    protected $directoryPathController;
-    protected $directoryPathModel;
-    protected $directoryPathRoute;
 
     // Crea una nuova istanza del comando
     public function __construct()
@@ -40,7 +37,11 @@ class MifraCreateCrud extends Command
 
         // Carica la configurazione del database da un file di configurazione
         $this->databaseConfig = $database;
+    }
 
+    // Esegue il comando Artisan
+    public function handle()
+    {
         $jsonElements = $this->argument('elements');
         $this->elements = json_decode($jsonElements, true); // Decodifica la stringa JSON come array associativo
 
@@ -48,11 +49,7 @@ class MifraCreateCrud extends Command
             $this->error('Errore nella decodifica della stringa JSON.');
             return 1;
         }
-    }
 
-    // Esegue il comando Artisan
-    public function handle()
-    {
         $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
 
         if (File::exists($alreadyInstalledFlagPath)) {
