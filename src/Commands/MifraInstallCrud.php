@@ -216,22 +216,19 @@ class MifraInstallCrud extends Command
         $pattern = '/\s*public\s+function\s+index\(\)\s*\{[^\}]*\}\s*/s';
 
         // Percorsi e lettura dei file stub per le funzioni create e delete
-        $stubPathCreate = __DIR__ . '/../resources/stubs/functions/cruds/create.stub';
-        $stubPathDelete = __DIR__ . '/../resources/stubs/functions/cruds/delete.stub';
+        $stubPathDefault = __DIR__ . '/../resources/stubs/functions/cruds/default.stub';
 
         // Verifica dell'esistenza e lettura dei contenuti degli stub
-        if (!file_exists($stubPathCreate) || !file_exists($stubPathDelete)) {
-            $this->error("Uno dei file stub non esiste.");
+        if (!file_exists($stubPathDefault)) {
+            $this->error("Il file stub {$stubPathDefault} non esiste.");
             return 1;
         }
         
         // Lettura del contenuto dei file stub
-        $createContent = file_get_contents($stubPathCreate);
-        $deleteContent = file_get_contents($stubPathDelete);
+        $defaultContent = File::get($stubPathDefault);
 
         // Costruisci i percorsi del file .stub
         $stubPathController = base_path('app/Http/Controllers/MifraCruds/MifracrudsController.php');
-        $controllerTemplate = File::get($stubPathController);
 
         // Verifica dell'esistenza dello stub
         if (!file_exists($stubPathController)) {
@@ -239,14 +236,16 @@ class MifraInstallCrud extends Command
             return 1;
         }
 
+        // Lettura del contenuto dei file controller
+        $controllerTemplate = File::get($stubPathController);
+
         // Rimozione del metodo index()
         $controllerContent = preg_replace($pattern, "\n", $controllerTemplate);
 
         // Sostituisci il segnaposto con il contenuto delle nuove funzioni
-        $newControllerContent = str_replace($placeholder, $createContent . "\n    " . $placeholder, $controllerContent);
-        $fineControllerContent = str_replace($placeholder, $deleteContent . "\n    " . $placeholder, $newControllerContent);
+        $newControllerContent = str_replace($placeholder, $defaultContent . "\n    " . $placeholder, $controllerContent);
 
-        File::put($stubPathController, $fineControllerContent);
+        File::put($stubPathController, $newControllerContent);
 
         // Costruisci il percorso del file .stub
         $stubPath = __DIR__ . '/../resources/stubs/routes/cruds/create.stub';
