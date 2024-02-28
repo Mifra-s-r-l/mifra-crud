@@ -1,4 +1,4 @@
-public function create(Request $request, $id)
+    public function create(Request $request, $id)
     {
         $elements =[
             'id' => intval($id),
@@ -14,3 +14,4 @@ public function create(Request $request, $id)
 
         return view('mifracruds.menus.index');
     }
+    
