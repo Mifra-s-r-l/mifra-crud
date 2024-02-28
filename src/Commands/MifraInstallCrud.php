@@ -13,10 +13,10 @@ class MifraInstallCrud extends Command
     protected $signature = 'mifra:installcrud {--reset : Reinstalla il CRUD sovrascrivendo i file esistenti}';
 
     // Descrizione del comando Artisan
-    protected $description = 'Creazione delle voci rotte principali e connessione al database';
+    protected $description = 'Installazione del sistema CRUD';
 
     protected $databaseConfig;
-    protected $menusConfig;
+    protected $jsonConfig;
     protected $directoryPathController;
     protected $directoryPathModel;
     protected $directoryPathRoute;
@@ -32,7 +32,7 @@ class MifraInstallCrud extends Command
         Config::set('database.connections.mongodb', [
             'driver' => 'mongodb',
             'host' => $database['host'],
-            'port' => 27017,
+            'port' => $database['port'],
             'database' => $database['database'],
             'username' => $database['username'],
             'password' => $database['password'],
