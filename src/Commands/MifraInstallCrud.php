@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\File;
 class MifraInstallCrud extends Command
 {
     // Il nome e la firma del comando Artisan
-    protected $signature = 'mifra:installcrud';
+    protected $signature = 'mifra:installcrud {--reset : Reinstalla il CRUD sovrascrivendo i file esistenti}';
 
     // Descrizione del comando Artisan
     protected $description = 'Creazione delle voci rotte principali e connessione al database';
@@ -77,6 +77,29 @@ class MifraInstallCrud extends Command
 
     // Esegue il comando Artisan
     public function handle()
+    {
+        $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
+
+        if (File::exists($alreadyInstalledFlagPath) && !$this->option('reset')) {
+            $this->info("Il CRUD Mifra è già stato installato. Usa l'opzione --reset per reinstallarlo.");
+            return;
+        }
+
+        // Se --reset è specificato o se il CRUD non è stato ancora installato, procedi con l'installazione
+        if ($this->option('reset')) {
+            $this->info("Reinstallazione del CRUD Mifra...");
+
+            $this->installCrud();
+        } else {
+            $this->info("Installazione del CRUD Mifra...");
+            // Crea un file di flag per indicare che l'installazione è stata completata
+            File::put($alreadyInstalledFlagPath, 'Installed');
+
+            $this->installCrud();
+        }
+    }
+
+    public function installCrud()
     {
         try {
             $this->info("Connessione al database...");
