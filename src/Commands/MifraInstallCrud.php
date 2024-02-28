@@ -226,7 +226,7 @@ class MifraInstallCrud extends Command
             $this->error("Il file stub {$stubPathDefault} non esiste.");
             return 1;
         }
-        
+
         // Lettura del contenuto dei file stub
         $defaultContent = File::get($stubPathDefault);
 
@@ -245,11 +245,16 @@ class MifraInstallCrud extends Command
         // Rimozione del metodo index()
         $controllerContent = preg_replace($pattern, "\n", $controllerTemplate);
 
+        // Prepara la linea da aggiungere
+        $useArtisanLine = "use Illuminate\Support\Facades\Artisan;\n";
+
+        // Trova la posizione del segnaposto per l'header e aggiungi la nuova linea dopo
+        $newControllerContent = preg_replace("/(" . preg_quote($placeholderHead, '/') . ")/", "$1\n" . $useArtisanLine, $controllerContent);
+
         // Sostituisci il segnaposto con il contenuto delle nuove funzioni
         $newControllerContent = str_replace($placeholder, $defaultContent . "\n    " . $placeholder, $controllerContent);
-        $fineControllerContent = str_replace($placeholderHead, $defaultContent . "use Illuminate\Support\Facades\Artisan;" . $placeholderHead, $newControllerContent);
 
-        File::put($stubPathController, $fineControllerContent);
+        File::put($stubPathController, $newControllerContent);
 
         // Costruisci il percorso del file .stub
         $stubPath = __DIR__ . '/../resources/stubs/routes/cruds/default.stub';
@@ -261,7 +266,7 @@ class MifraInstallCrud extends Command
 
         $commandsTemplate = File::get($stubPath);
 
-        File::append($routeFilePath, "\n".$commandsTemplate);
+        File::append($routeFilePath, "\n" . $commandsTemplate);
 
     }
 
