@@ -217,7 +217,7 @@ class MifraInstallCrud extends Command
         $pattern = '/\s*public\s+function\s+index\(\)\s*\{\s*return\s+view\(\'\{\{route_name\}\}\.index\'\);\s*\}\s*/';
 
         // Costruisci i percorsi del file .stub
-        $stubPathController = base_path('app/Http/Controllers/MifraCruds/MifraCrudsController.php');
+        $stubPathController = base_path('app/Http/Controllers/MifraCruds/MifracrudsController.php');
 
         if (!file_exists($stubPathController)) {
             $this->error("Il file stub {$stubPathController} non esiste.");
