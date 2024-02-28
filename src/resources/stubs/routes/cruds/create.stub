@@ -1,3 +1,3 @@
 
-Route::post('/mifracruds/create/{id}',[MifraCrudsController::class, 'create'])->name('mifracruds.create');
-Route::post('/mifracruds/delete/{id}',[MifraCrudsController::class, 'delete'])->name('mifracruds.delete');
+Route::post('/mifracruds/create/{id}',[MifracrudsController::class, 'create'])->name('mifracruds.create');
+Route::post('/mifracruds/delete/{id}',[MifracrudsController::class, 'delete'])->name('mifracruds.delete');

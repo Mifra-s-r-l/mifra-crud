@@ -29,7 +29,7 @@ class MifraInstallCrud extends Command
 
         $database = config('mifracrud.database');
 
-        // Configura la connessione MongoDB 
+        // Configura la connessione MongoDB
         Config::set('database.connections.mongodb', [
             'driver' => 'mongodb',
             'host' => $database['host'],
@@ -39,7 +39,7 @@ class MifraInstallCrud extends Command
             'password' => $database['password'],
         ]);
 
-        // Imposta 'mongodb' come connessione di database predefinita 
+        // Imposta 'mongodb' come connessione di database predefinita
         //Config::set('database.default', 'mongodb');
 
         // Carica la configurazione del database da un file di configurazione
@@ -63,12 +63,12 @@ class MifraInstallCrud extends Command
         }
 
         // Assicurati che questa directory esista o sia creata
-        $this->directoryPathRoute = base_path('routes/mifracruds'); 
+        $this->directoryPathRoute = base_path('routes/mifracruds');
         if (!File::exists($this->directoryPathRoute)) {
             File::makeDirectory($this->directoryPathRoute, 0755, true);
         }
 
-        $filePathWeb =  base_path('routes/web.php');
+        $filePathWeb = base_path('routes/web.php');
         if (!File::exists($filePathWeb)) {
             // Contenuto che vuoi scrivere nel file
             $fileContent = "<?php\nrequire __DIR__ . '/mifracruds/cruds.php';";
@@ -113,13 +113,13 @@ class MifraInstallCrud extends Command
 
             // Creo il gruppo dei CRUD di default
             DB::connection('mongodb')->collection($this->databaseConfig['group'])->insert($this->groupsMenus);
-            
+
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection'])->get();
 
             $this->info("Creazione voci di menù principali...");
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
-            
+
             $this->insertMenuItems();
 
             // Aggiungi il require a routes/web.php
@@ -132,15 +132,15 @@ class MifraInstallCrud extends Command
     }
 
     public function converionRouteName($route_name, $return)
-    {  
-        $result = ''; 
+    {
+        $result = '';
 
-        switch($return){
+        switch ($return) {
 
             case "path":
                 $result = str_replace(".", "/", $route_name);
                 break;
-            
+
             case "className":
                 $items = explode(".", $route_name);
                 foreach ($items as $item) {
@@ -164,7 +164,7 @@ class MifraInstallCrud extends Command
 
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
             $exists = $collection->where('id', $menuItem['id'])->first(); // Verifica l'esistenza dell'elemento
-            
+
             if (!$exists) {
                 // Se non esiste, inseriscilo nel database
                 $collection->insert($menuItem);
@@ -174,13 +174,13 @@ class MifraInstallCrud extends Command
                 $collection->where('id', $menuItem['id'])->update($menuItem);
                 $this->info("Aggiorno la voce di menu: {$menuItem['title']}");
             }
-            
+
             // Creo il controller
             $this->createControllerFile($menuItem);
-            
+
             // Creo il model
             $this->createModelFile($menuItem);
-            
+
             // Creo la view
             $this->createViewFile($menuItem);
 
@@ -193,7 +193,6 @@ class MifraInstallCrud extends Command
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
         }
-        
 
         // Creo il file delle rotte
         $routeFilePath = $this->directoryPathRoute . '/cruds.php';
@@ -216,30 +215,28 @@ class MifraInstallCrud extends Command
         // Definizione del pattern per identificare esattamente il metodo index()
         $pattern = '/\s*public\s+function\s+index\(\)\s*\{\s*return\s+view\(\'\{\{route_name\}\}\.index\'\);\s*\}\s*/';
 
+        // Percorsi e lettura dei file stub per le funzioni create e delete
+        $stubPathCreate = __DIR__ . '/../resources/stubs/functions/cruds/create.stub';
+        $stubPathDelete = __DIR__ . '/../resources/stubs/functions/cruds/delete.stub';
+
+        // Verifica dell'esistenza e lettura dei contenuti degli stub
+        if (!file_exists($stubPathCreate) || !file_exists($stubPathDelete)) {
+            $this->error("Uno dei file stub non esiste.");
+            return 1;
+        }
+
         // Costruisci i percorsi del file .stub
         $stubPathController = base_path('app/Http/Controllers/MifraCruds/MifracrudsController.php');
+        $controllerTemplate = File::get($stubPathController);
 
+        // Verifica dell'esistenza dello stub
         if (!file_exists($stubPathController)) {
             $this->error("Il file stub {$stubPathController} non esiste.");
             return 1;
-        } 
-
-        $stubPathCreate = __DIR__.'/../resources/stubs/functions/cruds/create.stub';
-
-        if (!file_exists($stubPathCreate)) {
-            $this->error("Il file stub {$stubPathCreate} non esiste.");
-            return 1;
-        } 
-
-        $stubPathDelete = __DIR__.'/../resources/stubs/functions/cruds/delete.stub';
-
-        if (!file_exists($stubPathDelete)) {
-            $this->error("Il file stub {$stubPathDelete} non esiste.");
-            return 1;
-        } 
+        }
 
         // Rimozione del metodo index()
-        $controllerContent = preg_replace($pattern, '', $stubPathController);
+        $controllerContent = preg_replace($pattern, '', $controllerTemplate);
 
         // Sostituisci il segnaposto con il contenuto delle nuove funzioni
         $newControllerContent = str_replace($placeholder, $stubPathCreate . "\n    " . $placeholder, $controllerContent);
@@ -248,12 +245,12 @@ class MifraInstallCrud extends Command
         File::put($stubPathController, $fineControllerContent);
 
         // Costruisci il percorso del file .stub
-        $stubPath = __DIR__.'/../resources/stubs/routes/cruds/create.stub';
+        $stubPath = __DIR__ . '/../resources/stubs/routes/cruds/create.stub';
 
         if (!file_exists($stubPath)) {
             $this->error("Il file stub {$stubPath} non esiste.");
             return 1;
-        } 
+        }
 
         $commandsTemplate = File::get($stubPath);
 
@@ -264,12 +261,12 @@ class MifraInstallCrud extends Command
     protected function createControllerFile($menuItem)
     {
         // Costruisci il percorso del file .stub
-        $stubPath = __DIR__.'/../resources/stubs/CrudController.stub';
+        $stubPath = __DIR__ . '/../resources/stubs/CrudController.stub';
 
         if (!file_exists($stubPath)) {
             $this->error("Il file stub {$stubPath} non esiste.");
             return 1;
-        } 
+        }
 
         $className = $this->converionRouteName($menuItem['route_name'], 'className');
 
@@ -285,12 +282,12 @@ class MifraInstallCrud extends Command
     protected function createModelFile($menuItem)
     {
         // Costruisci il percorso del file .stub
-        $stubPath = __DIR__.'/../resources/stubs/CrudModel.stub';
+        $stubPath = __DIR__ . '/../resources/stubs/CrudModel.stub';
 
         if (!file_exists($stubPath)) {
             $this->error("Il file stub {$stubPath} non esiste.");
             return 1;
-        } 
+        }
 
         $className = $this->converionRouteName($menuItem['route_name'], 'className');
 
@@ -306,23 +303,23 @@ class MifraInstallCrud extends Command
     protected function createViewFile($menuItem)
     {
         // Costruisci il percorso del file .stub
-        $stubPath = __DIR__.'/../resources/stubs/index.blade.stub';
+        $stubPath = __DIR__ . '/../resources/stubs/index.blade.stub';
 
         if (!file_exists($stubPath)) {
             $this->error("Il file stub {$stubPath} non esiste.");
             return 1;
-        } 
+        }
 
         // Assicurati che questa directory esista o sia creata
         $route_names = explode(".", $menuItem['route_name']);
         $dirPathResources = "";
 
         foreach ($route_names as $route_name) {
-            $dirPathResources .= $route_name."/";
+            $dirPathResources .= $route_name . "/";
         }
         $dirPathResources = rtrim($dirPathResources, '/');
 
-        $directoryPathViewCrud = base_path('resources/views/'.$dirPathResources); 
+        $directoryPathViewCrud = base_path('resources/views/' . $dirPathResources);
         if (!File::exists($directoryPathViewCrud)) {
             File::makeDirectory($directoryPathViewCrud, 0755, true);
         }
@@ -330,10 +327,10 @@ class MifraInstallCrud extends Command
         $viewTemplate = File::get($stubPath);
         $viewContent = str_replace(['%%route_name%%', '%%path%%'], [$menuItem['route_name'], $dirPathResources], $viewTemplate);
 
-        $viewFilePath = $directoryPathViewCrud  . "/index.blade.php";
+        $viewFilePath = $directoryPathViewCrud . "/index.blade.php";
         File::put($viewFilePath, $viewContent);
 
-        $this->info("Creato/Aggiornato il file view: resources/views/{$dirPathResources}/index.blade.php, adesso basta creare il file index.blade.php in questo percorso pages/".$dirPathResources." per la grafica della vista");
+        $this->info("Creato/Aggiornato il file view: resources/views/{$dirPathResources}/index.blade.php, adesso basta creare il file index.blade.php in questo percorso pages/" . $dirPathResources . " per la grafica della vista");
     }
 
     protected function createContenRouteFile($menuItem)
@@ -349,8 +346,8 @@ class MifraInstallCrud extends Command
 
         $routeTemplate = File::get($stubPath);
         $routeContent = str_replace(['{{path}}', '{{crud_name}}', '{{route_name}}'], [$path, $className, $menuItem['route_name']], $routeTemplate);
-        
-        $this->info("Inserita/Aggiornata rotta nel file: routes/mifracruds/cruds.php, adesso per utilizzarla basta fare cosi, es: route('".$menuItem['route_name']."') o inserirla nella gestione del menu del template");
+
+        $this->info("Inserita/Aggiornata rotta nel file: routes/mifracruds/cruds.php, adesso per utilizzarla basta fare cosi, es: route('" . $menuItem['route_name'] . "') o inserirla nella gestione del menu del template");
 
         return $routeContent;
     }
