@@ -224,6 +224,10 @@ class MifraInstallCrud extends Command
             $this->error("Uno dei file stub non esiste.");
             return 1;
         }
+        
+        // Lettura del contenuto dei file stub
+        $createContent = file_get_contents($stubPathCreate);
+        $deleteContent = file_get_contents($stubPathDelete);
 
         // Costruisci i percorsi del file .stub
         $stubPathController = base_path('app/Http/Controllers/MifraCruds/MifracrudsController.php');
@@ -239,8 +243,8 @@ class MifraInstallCrud extends Command
         $controllerContent = preg_replace($pattern, '', $controllerTemplate);
 
         // Sostituisci il segnaposto con il contenuto delle nuove funzioni
-        $newControllerContent = str_replace($placeholder, $stubPathCreate . "\n    " . $placeholder, $controllerContent);
-        $fineControllerContent = str_replace($placeholder, $stubPathDelete . "\n    " . $placeholder, $newControllerContent);
+        $newControllerContent = str_replace($placeholder, $createContent . "\n    " . $placeholder, $controllerContent);
+        $fineControllerContent = str_replace($placeholder, $deleteContent . "\n    " . $placeholder, $newControllerContent);
 
         File::put($stubPathController, $fineControllerContent);
 
