@@ -12,7 +12,7 @@
             '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
         ]);
 
-        return view('mifracruds.menus.index');
+        return view('index');
     }
     
     public function delete(Request $request, $id)
@@ -26,6 +26,6 @@
             '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
         ]);
 
-        return view('mifracruds.menus.index');
+        return view('index');
     }
     
