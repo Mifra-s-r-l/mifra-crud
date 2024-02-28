@@ -257,7 +257,7 @@ class MifraInstallCrud extends Command
 
         $commandsTemplate = File::get($stubPath);
 
-        File::append($routeFilePath, $commandsTemplate);
+        File::append($routeFilePath, "\n".$commandsTemplate);
 
     }
 
