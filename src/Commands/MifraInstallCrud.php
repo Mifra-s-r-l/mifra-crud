@@ -248,7 +248,7 @@ class MifraInstallCrud extends Command
         File::put($stubPathController, $newControllerContent);
 
         // Costruisci il percorso del file .stub
-        $stubPath = __DIR__ . '/../resources/stubs/routes/cruds/create.stub';
+        $stubPath = __DIR__ . '/../resources/stubs/routes/cruds/default.stub';
 
         if (!file_exists($stubPath)) {
             $this->error("Il file stub {$stubPath} non esiste.");
