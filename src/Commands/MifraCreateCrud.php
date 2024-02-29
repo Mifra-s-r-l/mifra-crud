@@ -138,8 +138,11 @@ class MifraCreateCrud extends Command
         }
 
         // Aggiungi la nuova definizione di rotta al file
-        $routeDefinition = "<?php\n\nuse Illuminate\Support\Facades\Route;\nuse App\Http\Controllers\MifraCruds\\".$className."Controller;\n\nRoute::get('".$routePath."', [".$className."Controller::class, '".$methodName."'])->name('mifracruds.".$routeName.".index');\n";
+        $routeDefinition = "<?php\n\nuse Illuminate\Support\Facades\Route;\nuse App\Http\Controllers\MifraCruds\\".$className."Controller;\n\nRoute::get('".$routePath."', [".$className."Controller::class, '".$methodName."'])->name('".$routeName."');\n";
         File::put($routesFilePath, $routeDefinition);
+
+        $routeFilePathCruds = base_path('routes/mifracruds/cruds.php');
+        File::append($routeFilePath, "\n\nrequire __DIR__ . '/prova.php';");
     }
 
 }
