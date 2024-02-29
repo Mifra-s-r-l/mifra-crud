@@ -119,8 +119,17 @@ class MifraCreateCrud extends Command
         $methodName = $this->elements['method'] ?? 'index';
         $routeName = $this->elements['route_name'];
 
+        // Creo il controller
+        CrudHelpers::createControllerFile($this, $routeName, 'app/Http/Controllers/MifraCruds');
+
+        // Creo il model
+        CrudHelpers::createModelFile($this, $routeName, 'app/Models/MifraCruds');
+
+        // Creo il view
+        CrudHelpers::createViewFile($this, $routeName);
+
         // Assicurati che il file esista o crealo
-        $routesFilePath = base_path('routes/mifracruds/' . $routePath . '.php');
+        $routesFilePath = base_path('routes/' . $routePath . '.php');
         $directoryPath = dirname($routesFilePath); // Ottiene il percorso della directory
 
         // Crea la directory se non esiste
@@ -129,11 +138,8 @@ class MifraCreateCrud extends Command
         }
 
         // Aggiungi la nuova definizione di rotta al file
-        $routeDefinition = "<?php\n\nuse Illuminate\Support\Facades\Route;\nuse App\Http\Controllers\MifraCruds\\".$className."Controller;\n\nRoute::get('mifracruds/".$routePath."', [".$className."Controller::class, '".$methodName."'])->name('mifracruds.".$routeName.".index');\n";
+        $routeDefinition = "<?php\n\nuse Illuminate\Support\Facades\Route;\nuse App\Http\Controllers\MifraCruds\\".$className."Controller;\n\nRoute::get('".$routePath."', [".$className."Controller::class, '".$methodName."'])->name('mifracruds.".$routeName.".index');\n";
         File::put($routesFilePath, $routeDefinition);
-
-        // Creo il controller
-        CrudHelpers::createControllerFile($this, $routeName, 'app/Http/Controllers/MifraCruds');
     }
 
 }

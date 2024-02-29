@@ -40,7 +40,7 @@ class CreateCrudCommandTest extends TestCase
             'id' => 1000000,
             'title' => 'Test CRUD Title',
             'desc' => 'Test CRUD Descrizione',
-            'route_name' => 'test',
+            'route_name' => 'mifracruds.test',
             'group' => 'managements',
         ];
 
@@ -64,8 +64,20 @@ class CreateCrudCommandTest extends TestCase
         $this->assertEquals('Test CRUD Title', $insertedItem['title']);
 
         // Oppure, se stai creando file, verifica che il file esista
-        //$path = base_path('routes/mifracruds/test.php');
-        //$this->assertTrue(File::exists($path));
+        $path = base_path('routes/mifracruds/test.php');
+        $this->assertTrue(File::exists($path));
+
+        $path = base_path('app/Http/Controllers/MifraCruds/MifracrudsTestController.php');
+        $this->assertTrue(File::exists($path));
+
+        $path = base_path('app/Models/MifraCruds/MifracrudsTestModel.php');
+        $this->assertTrue(File::exists($path));
+
+        $path = base_path('resources/views/mifracruds/test/index.blade.php');
+        $this->assertTrue(File::exists($path));
+
+        $path = base_path('routes/mifracruds/test.php');
+        $this->assertTrue(File::exists($path));
     }
 
     protected function tearDown(): void
@@ -74,14 +86,22 @@ class CreateCrudCommandTest extends TestCase
         parent::tearDown();
 
         // Rimuovere i file di controller generati
-        //$directoryPath = base_path('app/Http/Controllers/MifraCruds');
-        //File::deleteDirectory($directoryPath);
+        $directoryPath = base_path('app/Http/Controllers/MifraCruds');
+        File::deleteDirectory($directoryPath);
+
+        // Rimuovere i file di model generati
+        $directoryPath = base_path('app/Models/MifraCruds');
+        File::deleteDirectory($directoryPath);
+
+        // Rimuovere i file view generati
+        $directoryPath = base_path('resources/views/mifracruds');
+        File::deleteDirectory($directoryPath);
 
         // Rimuovere i file di rotta generati
-        //$directoryPath = base_path('routes/mifracruds');
-        //File::deleteDirectory($directoryPath);
+        $directoryPath = base_path('routes/mifracruds');
+        File::deleteDirectory($directoryPath);
 
-        //DB::connection('mongodb')->collection(env('DB_COLLECTION', 'collection'))->where('id', 1000000)->delete();
+        DB::connection('mongodb')->collection(env('DB_COLLECTION', 'collection'))->where('id', 1000000)->delete();
     }
 
 }

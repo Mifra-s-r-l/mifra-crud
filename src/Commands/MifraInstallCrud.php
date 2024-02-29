@@ -158,13 +158,16 @@ class MifraInstallCrud extends Command
             }
 
             // Creo il controller
-            $this->createControllerFile($menuItem);
+            CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds');
+            //$this->createControllerFile($menuItem);
 
             // Creo il model
-            $this->createModelFile($menuItem);
+            CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds');
+            //$this->createModelFile($menuItem);
 
             // Creo la view
-            $this->createViewFile($menuItem);
+            CrudHelpers::createViewFile($this, $menuItem['route_name']);
+            //$this->createViewFile($menuItem);
 
             $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
 
