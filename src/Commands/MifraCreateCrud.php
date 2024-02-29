@@ -76,7 +76,7 @@ class MifraCreateCrud extends Command
                 //$nameCapitalize = ucwords($this->argument('name'));
 
             } else {
-                $this->error('Devi prima installare il pacchetto.');
+                $this->error('Devi prima installare il pacchetto con il comando da terminale "php artisan mifra:installcrud".');
                 return 1;
             }
 
@@ -142,7 +142,7 @@ class MifraCreateCrud extends Command
         File::put($routesFilePath, $routeDefinition);
 
         $routeFilePathCruds = base_path('routes/mifracruds/cruds.php');
-        File::append($routeFilePath, "\n\nrequire __DIR__ . '/prova.php';");
+        File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/prova.php';");
     }
 
 }

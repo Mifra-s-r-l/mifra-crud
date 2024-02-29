@@ -26,6 +26,10 @@ class CreateCrudCommandTest extends TestCase
             'username' => env('DB_USERNAME', 'username'),
             'password' => env('DB_PASSWORD', 'password'),
         ]);
+
+        // Crea il file di flag per simulare la condizione di "pacchetto già installato"
+        $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
+        File::put($alreadyInstalledFlagPath, 'installed'); // Il contenuto del file non è rilevante, basta che il file esista
     }
 
     protected function getPackageProviders($app)
@@ -50,8 +54,8 @@ class CreateCrudCommandTest extends TestCase
         ]);
 
         // Stampo l'output del comando
-        $logs = Artisan::output();
-        echo $logs;
+        //$logs = Artisan::output();
+        //echo $logs;
 
         // Verifica che il comando sia eseguito con successo (ritorna 0)
         //$this->assertEquals(0, $output);
@@ -82,6 +86,10 @@ class CreateCrudCommandTest extends TestCase
 
     protected function tearDown(): void
     {
+        // Rimuovere il file di flag
+        $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
+        File::delete($alreadyInstalledFlagPath);
+        
         // Assicurati di chiamare il tearDown del genitore
         parent::tearDown();
 

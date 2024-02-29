@@ -49,6 +49,7 @@ class InstallCrudCommandTest extends TestCase
         // Verifica che la configurazione del database sia stata impostata correttamente
         $this->assertEquals('mongodb', config('database.default'));
         $this->assertNotEmpty(config('database.connections.mongodb'));
+
     }
 
     protected function tearDown(): void
@@ -87,6 +88,12 @@ class InstallCrudCommandTest extends TestCase
             // Sovrascrivi il file con il nuovo contenuto
             File::put($webRoutesPath, $newContent);
         }
+
+        DB::connection('mongodb')->getMongoDB()->drop();
+
+        // Percorso del file che vuoi eliminare
+        $filePath = base_path('.mifra_crud_installed');
+        File::delete($filePath);
     }
 
 }
