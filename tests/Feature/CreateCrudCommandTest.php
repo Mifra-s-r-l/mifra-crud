@@ -34,13 +34,14 @@ class CreateCrudCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_create()
+    public function it_creates_a_new_crud()
     {
         $elements =[
             'id' => 1000000,
             'title' => 'Test CRUD Title',
             'desc' => 'Test CRUD Descrizione',
-            'route_name' => 'mifracruds.test',
+            'route_name' => 'test',
+            'group' => 'managements',
         ];
 
         $output = Artisan::call('mifra:createcrud', [
@@ -49,8 +50,8 @@ class CreateCrudCommandTest extends TestCase
         ]);
 
         // Stampo l'output del comando
-        //$logs = Artisan::output();
-        //echo $logs;
+        $logs = Artisan::output();
+        echo $logs;
 
         // Verifica che il comando sia eseguito con successo (ritorna 0)
         //$this->assertEquals(0, $output);
@@ -61,6 +62,10 @@ class CreateCrudCommandTest extends TestCase
 
         $this->assertNotNull($insertedItem);
         $this->assertEquals('Test CRUD Title', $insertedItem['title']);
+
+        // Oppure, se stai creando file, verifica che il file esista
+        //$path = base_path('routes/mifracruds/test.php');
+        //$this->assertTrue(File::exists($path));
     }
 
     protected function tearDown(): void
@@ -68,7 +73,15 @@ class CreateCrudCommandTest extends TestCase
         // Assicurati di chiamare il tearDown del genitore
         parent::tearDown();
 
-        DB::connection('mongodb')->collection(env('DB_COLLECTION', 'collection'))->where('id', 1000000)->delete();
+        // Rimuovere i file di controller generati
+        //$directoryPath = base_path('app/Http/Controllers/MifraCruds');
+        //File::deleteDirectory($directoryPath);
+
+        // Rimuovere i file di rotta generati
+        //$directoryPath = base_path('routes/mifracruds');
+        //File::deleteDirectory($directoryPath);
+
+        //DB::connection('mongodb')->collection(env('DB_COLLECTION', 'collection'))->where('id', 1000000)->delete();
     }
 
 }

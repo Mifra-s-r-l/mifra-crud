@@ -2,6 +2,8 @@
 
 namespace Mifra\Crud\Helpers;
 
+use Illuminate\Support\Facades\File;
+
 class CrudHelpers
 {
     public static function conversionRouteName($routeName, $returnType)
@@ -21,8 +23,13 @@ class CrudHelpers
         }
     }
 
-    public static function createControllerFile($commands, $route_name)
+    public static function createControllerFile($commands, $route_name, $directoryPathController)
     {
+        // Assicurati che la directory esista o creala
+        if (!File::exists($directoryPathController)) {
+            File::makeDirectory($directoryPathController, 0755, true); // Il terzo parametro consente la creazione ricorsiva
+        }
+
         // Costruisci il percorso del file .stub
         $stubPath = __DIR__ . '/../resources/stubs/CrudController.stub';
 
@@ -36,9 +43,9 @@ class CrudHelpers
         $controllerTemplate = File::get($stubPath);
         $controllerContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, $route_name], $controllerTemplate);
 
-        $controllerFilePath = $commands->directoryPathController . "/{$className}Controller.php";
+        $controllerFilePath = $directoryPathController . "/{$className}Controller.php";
         File::put($controllerFilePath, $controllerContent);
 
-        $commands->info("Creato/Aggiornato il controller: App\Http\Controllers\MifraCruds\\{$className}Controller, qui puoi inserire il tuo codice per gestire la logica della vista");
+        $commands->info("Creato/Aggiornato il controller: ".$controllerFilePath.", qui puoi inserire il tuo codice per gestire la logica della vista");
     }
 }

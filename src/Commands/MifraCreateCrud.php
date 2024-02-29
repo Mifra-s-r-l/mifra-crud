@@ -114,14 +114,13 @@ class MifraCreateCrud extends Command
 
     protected function createRoute()
     {
-        $path = CrudHelpers::conversionRouteName($this->elements['route_name'], 'path');
+        $routePath = CrudHelpers::conversionRouteName($this->elements['route_name'], 'path');
         $className = CrudHelpers::conversionRouteName($this->elements['route_name'], 'className');
         $methodName = $this->elements['method'] ?? 'index';
-
-        $routeDefinition = "\nRoute::get('mifracruds/$path', ['$className'Controller, '$methodName'])->name('mifracruds.$this->elements['route_name'].index');\n";
+        $routeName = $this->elements['route_name'];
 
         // Assicurati che il file esista o crealo
-        $routesFilePath = base_path('routes/mifracruds/' . $path . '.php');
+        $routesFilePath = base_path('routes/mifracruds/' . $routePath . '.php');
         $directoryPath = dirname($routesFilePath); // Ottiene il percorso della directory
 
         // Crea la directory se non esiste
@@ -129,16 +128,12 @@ class MifraCreateCrud extends Command
             File::makeDirectory($directoryPath, 0755, true); // Il terzo parametro "true" consente la creazione di directory nidificate
         }
 
-        if (!File::exists($routesFilePath)) {
-            File::put($routesFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n");
-        }
-
         // Aggiungi la nuova definizione di rotta al file
-        File::append($routesFilePath, $routeDefinition);
+        $routeDefinition = "<?php\n\nuse Illuminate\Support\Facades\Route;\nuse App\Http\Controllers\MifraCruds\\".$className."Controller;\n\nRoute::get('mifracruds/".$routePath."', [".$className."Controller::class, '".$methodName."'])->name('mifracruds.".$routeName.".index');\n";
+        File::put($routesFilePath, $routeDefinition);
 
-        $this->info("Aggiunta nuova rotta per $routePath nel file $routesFilePath");
-
-        CrudHelper::createControllerFile($this->elements['route_name']);
+        // Creo il controller
+        CrudHelpers::createControllerFile($this, $routeName, 'app/Http/Controllers/MifraCruds');
     }
 
 }
