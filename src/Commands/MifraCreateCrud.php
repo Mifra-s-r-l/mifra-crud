@@ -3,10 +3,10 @@
 namespace Mifra\Crud\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Mifra\Crud\Helpers\CrudHelpers;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Mifra\Crud\Helpers\CrudHelpers;
 
 class MifraCreateCrud extends Command
 {
@@ -70,11 +70,14 @@ class MifraCreateCrud extends Command
                     $this->deleteMenuItem();
                 } else {
                     $this->insertMenuItem();
-                    //$this->createRoute();
+                    $this->createRoute();
                 }
 
                 //$nameCapitalize = ucwords($this->argument('name'));
 
+            } else {
+                $this->error('Devi prima installare il pacchetto.');
+                return 1;
             }
 
         } catch (\Exception $e) {
@@ -118,7 +121,14 @@ class MifraCreateCrud extends Command
         $routeDefinition = "\nRoute::get('mifracruds/$path', ['$className'Controller, '$methodName'])->name('mifracruds.$this->elements['route_name'].index');\n";
 
         // Assicurati che il file esista o crealo
-        $routesFilePath = base_path('routes/mifracruds/'.$path.'.php');
+        $routesFilePath = base_path('routes/mifracruds/' . $path . '.php');
+        $directoryPath = dirname($routesFilePath); // Ottiene il percorso della directory
+
+        // Crea la directory se non esiste
+        if (!File::exists($directoryPath)) {
+            File::makeDirectory($directoryPath, 0755, true); // Il terzo parametro "true" consente la creazione di directory nidificate
+        }
+
         if (!File::exists($routesFilePath)) {
             File::put($routesFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n");
         }

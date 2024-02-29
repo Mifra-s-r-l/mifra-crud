@@ -5,6 +5,7 @@
             'title' => $request->title,
             'desc' => $request->desc,
             'route_name' => 'mifracruds.'.$request->route_name,
+            'group' => $request->group,
         ];
 
         Artisan::call('mifra:createcrud', [
