@@ -52,7 +52,7 @@ class MifraCreateCrud extends Command
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $this->error('Errore nella decodifica della stringa JSON.');
-                return 1;
+                return;
             }
 
             $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
@@ -63,7 +63,7 @@ class MifraCreateCrud extends Command
 
                 if (!$id) {
                     $this->error('ID non specificato per l\'eliminazione.');
-                    return 1;
+                    return;
                 }
 
                 if ($this->option('delete')) {
@@ -77,12 +77,12 @@ class MifraCreateCrud extends Command
 
             } else {
                 $this->error('Devi prima installare il pacchetto con il comando da terminale "php artisan mifra:installcrud".');
-                return 1;
+                return;
             }
 
         } catch (\Exception $e) {
             $this->info("Errore handle: " . $e->getMessage());
-            return 1;
+            return;
         }
     }
 

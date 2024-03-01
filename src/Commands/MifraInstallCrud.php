@@ -87,7 +87,7 @@ class MifraInstallCrud extends Command
     {
         $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
 
-        if (File::exists($alreadyInstalledFlagPath) && (!$this->option('hardreset') || !$this->option('reset') || !$this->option('uninstall'))) {
+        if (File::exists($alreadyInstalledFlagPath) && (!$this->option('hardreset') && !$this->option('reset') && !$this->option('uninstall'))) {
             $this->info("Il CRUD Mifra è già stato installato. Usa il comando 'php artisan mifra:installcrud --help' per visualizzare i comandi a disposizione.");
             return;
         }
