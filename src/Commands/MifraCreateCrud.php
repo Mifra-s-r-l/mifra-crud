@@ -118,6 +118,7 @@ class MifraCreateCrud extends Command
         $className = CrudHelpers::conversionRouteName($this->elements['route_name'], 'className');
         $methodName = $this->elements['method'] ?? 'index';
         $routeName = $this->elements['route_name'];
+        $cleanedRoutePath = str_replace("mifracruds/", "", $routePath);
 
         // Creo il controller
         CrudHelpers::createControllerFile($this, $routeName, 'app/Http/Controllers/MifraCruds');
@@ -142,7 +143,7 @@ class MifraCreateCrud extends Command
         File::put($routesFilePath, $routeDefinition);
 
         $routeFilePathCruds = base_path('routes/mifracruds/cruds.php');
-        File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/".$routePath.".php';");
+        File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/".$cleanedRoutePath.".php';");
     }
 
 }
