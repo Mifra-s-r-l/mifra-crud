@@ -217,7 +217,8 @@ class MifraInstallCrud extends Command
 
     protected function createCommandsDefault($routeFilePath)
     {
-        CrudHelpers::createControllerFile($this, 'mifracruds', 'app/Models/MifraCruds');
+        $menuItem['route_name'] = 'mifracruds';
+        $this->createControllerFile($menuItem);
 
         // Segnaposto da cercare
         $placeholderHead = 'use Illuminate\Routing\Controller;';
@@ -278,6 +279,27 @@ class MifraInstallCrud extends Command
 
         File::append($routeFilePath, "\n" . $commandsTemplate);
 
+    }
+
+    protected function createControllerFile($menuItem)
+    {
+        // Costruisci il percorso del file .stub
+        $stubPath = __DIR__ . '/../resources/stubs/CrudController.stub';
+
+        if (!file_exists($stubPath)) {
+            $this->error("Il file stub {$stubPath} non esiste.");
+            return 1;
+        }
+
+        $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
+
+        $controllerTemplate = File::get($stubPath);
+        $controllerContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, $menuItem['route_name']], $controllerTemplate);
+
+        $controllerFilePath = $this->directoryPathController . "/{$className}Controller.php";
+        File::put($controllerFilePath, $controllerContent);
+
+        $this->info("Creato/Aggiornato il controller: App\Http\Controllers\MifraCruds\\{$className}Controller, qui puoi inserire il tuo codice per gestire la logica della vista");
     }
 
     protected function createContenRouteFile($menuItem)
