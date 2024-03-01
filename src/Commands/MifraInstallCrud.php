@@ -12,6 +12,7 @@ class MifraInstallCrud extends Command
 {
     // Il nome e la firma del comando Artisan
     protected $signature = 'mifra:installcrud 
+                        {--uninstall : Disinstallazione di CRUD}
                         {--reset : Reinstalla il CRUD sovrascrivendo i file di default}
                         {--hardreset : Reinstalla il CRUD sovrascrivendo tutti i file esistenti}';
 
@@ -116,6 +117,25 @@ class MifraInstallCrud extends Command
             File::deleteDirectory($directoryPath);
 
             $this->installCrud();
+        } else if ($this->option('uninstall')) {
+            $this->info("Disinstallazione del CRUD Mifra...");
+
+            // Rimuovere i file di controller generati
+            $directoryPath = base_path('app/Http/Controllers/MifraCruds');
+            File::deleteDirectory($directoryPath);
+
+            // Rimuovere i file di models generati
+            $directoryPath = base_path('app/Models/MifraCruds');
+            File::deleteDirectory($directoryPath);
+
+            // Rimuovere i file di view generati
+            $directoryPath = base_path('resources/views/mifracruds');
+            File::deleteDirectory($directoryPath);
+
+            // Rimuovere i file di rotta generati
+            $directoryPath = base_path('routes/mifracruds');
+            File::deleteDirectory($directoryPath);
+
         } else {
             $this->info("Installazione del CRUD Mifra...");
             // Crea un file di flag per indicare che l'installazione è stata completata
