@@ -19,7 +19,6 @@ class MifraInstallCrud extends Command
     // Descrizione del comando Artisan
     protected $description = 'Installazione del sistema CRUD';
 
-    protected $databaseConfig;
     protected $groupsMenus;
     protected $jsonConfig;
     protected $directoryPathRoute;
@@ -51,11 +50,6 @@ class MifraInstallCrud extends Command
 
         // Carica il percorso del file JSON da un file di configurazione
         $this->jsonConfig = config('mifracrud.menus');
-
-        // Assicurati che questa directory esista o sia creata
-        $this->directoryPathRoute = base_path('routes/mifracruds');
-
-        
     }
 
     // Esegue il comando Artisan
@@ -102,7 +96,8 @@ class MifraInstallCrud extends Command
         File::deleteDirectory($directoryPath);
 
         // Rimuovere i file di rotta generati
-        File::deleteDirectory($this->directoryPathRoute);
+        $directoryPath = base_path('routes/mifracruds');
+        File::deleteDirectory($directoryPath);
 
         // Percorso al file web.php
         $fileRouteWeb = base_path('routes/web.php');
@@ -115,13 +110,16 @@ class MifraInstallCrud extends Command
 
         // Salva il file aggiornato
         File::put($fileRouteWeb, $updatedContentRouteWeb);
+
+        DB::connection('mongodb')->getMongoDB()->drop();
     }
 
     public function installCrud()
     {
         // Assicurati che questa directory esista o sia creata
-        if (!File::exists($this->directoryPathRoute)) {
-            File::makeDirectory($this->directoryPathRoute, 0755, true);
+        $directoryPath = base_path('routes/mifracruds');
+        if (!File::exists($directoryPath)) {
+            File::makeDirectory($directoryPath, 0755, true);
         }
         $filePathWeb = base_path('routes/web.php');
         if (!File::exists($filePathWeb)) {
