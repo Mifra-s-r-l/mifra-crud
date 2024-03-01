@@ -75,8 +75,6 @@ class MifraInstallCrud extends Command
             $this->deleteData();
         } else {
             $this->info("Installazione del CRUD Mifra...");
-            // Crea un file di flag per indicare che l'installazione è stata completata
-            File::put($alreadyInstalledFlagPath, 'Installed');
             $this->installCrud();
         }
     }
@@ -124,6 +122,9 @@ class MifraInstallCrud extends Command
 
     public function installCrud()
     {
+        // Crea un file di flag per indicare che l'installazione è stata completata
+        File::put($alreadyInstalledFlagPath, 'Installed');
+
         // Assicurati che questa directory esista o sia creata
         $directoryPathRoute = base_path('routes/mifracruds');
         if (!File::exists($directoryPathRoute)) {

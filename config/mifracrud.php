@@ -43,7 +43,11 @@ return [
     
     'groups_menus' => [
         [
-            "id" => 1,
+            "title" => "Ronda",
+            "icon" => "home",
+            "group" => "ronda"
+        ],
+        [
             "title" => "Gestione",
             "icon" => "settings",
             "group" => "managements"
