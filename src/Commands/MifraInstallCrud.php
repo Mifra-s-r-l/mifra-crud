@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Config;
 class MifraInstallCrud extends Command
 {
     // Il nome e la firma del comando Artisan
-    protected $signature = 'mifra:installcrud {--reset : Reinstalla il CRUD sovrascrivendo i file esistenti}';
+    protected $signature = 'mifra:installcrud 
+                        {--reset : Reinstalla il CRUD sovrascrivendo i file di default}
+                        {--hardreset : Reinstalla il CRUD sovrascrivendo tutti i file esistenti}';
 
     // Descrizione del comando Artisan
     protected $description = 'Installazione del sistema CRUD';
@@ -91,7 +93,27 @@ class MifraInstallCrud extends Command
 
         // Se --reset è specificato o se il CRUD non è stato ancora installato, procedi con l'installazione
         if ($this->option('reset')) {
-            $this->info("Reinstallazione del CRUD Mifra...");
+            $this->info("Reinstallazione del CRUD Mifra di default...");
+
+            $this->installCrud();
+        } else if ($this->option('hardreset')) {
+            $this->info("Reinstallazione del CRUD Mifra totale...");
+
+            // Rimuovere i file di controller generati
+            $directoryPath = base_path('app/Http/Controllers/MifraCruds');
+            File::deleteDirectory($directoryPath);
+
+            // Rimuovere i file di models generati
+            $directoryPath = base_path('app/Models/MifraCruds');
+            File::deleteDirectory($directoryPath);
+
+            // Rimuovere i file di view generati
+            $directoryPath = base_path('resources/views/mifracruds');
+            File::deleteDirectory($directoryPath);
+
+            // Rimuovere i file di rotta generati
+            $directoryPath = base_path('routes/mifracruds');
+            File::deleteDirectory($directoryPath);
 
             $this->installCrud();
         } else {
