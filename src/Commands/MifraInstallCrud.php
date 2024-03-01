@@ -22,8 +22,6 @@ class MifraInstallCrud extends Command
     protected $databaseConfig;
     protected $groupsMenus;
     protected $jsonConfig;
-    protected $directoryPathController;
-    protected $directoryPathModel;
     protected $directoryPathRoute;
 
     // Crea una nuova istanza del comando
@@ -55,31 +53,9 @@ class MifraInstallCrud extends Command
         $this->jsonConfig = config('mifracrud.menus');
 
         // Assicurati che questa directory esista o sia creata
-        $this->directoryPathController = base_path('app/Http/Controllers/MifraCruds');
-        if (!File::exists($this->directoryPathController)) {
-            File::makeDirectory($this->directoryPathController, 0755, true);
-        }
-
-        // Assicurati che questa directory esista o sia creata
-        $this->directoryPathModel = base_path('app/Models/MifraCruds');
-        if (!File::exists($this->directoryPathModel)) {
-            File::makeDirectory($this->directoryPathModel, 0755, true);
-        }
-
-        // Assicurati che questa directory esista o sia creata
         $this->directoryPathRoute = base_path('routes/mifracruds');
-        if (!File::exists($this->directoryPathRoute)) {
-            File::makeDirectory($this->directoryPathRoute, 0755, true);
-        }
 
-        $filePathWeb = base_path('routes/web.php');
-        if (!File::exists($filePathWeb)) {
-            // Contenuto che vuoi scrivere nel file
-            $fileContent = "<?php\nrequire __DIR__ . '/mifracruds/cruds.php';";
-
-            // Crea il file e scrivi il contenuto
-            File::put($filePathWeb, $fileContent);
-        }
+        
     }
 
     // Esegue il comando Artisan
@@ -95,58 +71,67 @@ class MifraInstallCrud extends Command
         // Se --reset è specificato o se il CRUD non è stato ancora installato, procedi con l'installazione
         if ($this->option('reset')) {
             $this->info("Reinstallazione del CRUD Mifra di default...");
-
             $this->installCrud();
         } else if ($this->option('hardreset')) {
             $this->info("Reinstallazione del CRUD Mifra totale...");
-
-            // Rimuovere i file di controller generati
-            $directoryPath = base_path('app/Http/Controllers/MifraCruds');
-            File::deleteDirectory($directoryPath);
-
-            // Rimuovere i file di models generati
-            $directoryPath = base_path('app/Models/MifraCruds');
-            File::deleteDirectory($directoryPath);
-
-            // Rimuovere i file di view generati
-            $directoryPath = base_path('resources/views/mifracruds');
-            File::deleteDirectory($directoryPath);
-
-            // Rimuovere i file di rotta generati
-            $directoryPath = base_path('routes/mifracruds');
-            File::deleteDirectory($directoryPath);
-
+            $this->deleteData();
             $this->installCrud();
         } else if ($this->option('uninstall')) {
             $this->info("Disinstallazione del CRUD Mifra...");
-
-            // Rimuovere i file di controller generati
-            $directoryPath = base_path('app/Http/Controllers/MifraCruds');
-            File::deleteDirectory($directoryPath);
-
-            // Rimuovere i file di models generati
-            $directoryPath = base_path('app/Models/MifraCruds');
-            File::deleteDirectory($directoryPath);
-
-            // Rimuovere i file di view generati
-            $directoryPath = base_path('resources/views/mifracruds');
-            File::deleteDirectory($directoryPath);
-
-            // Rimuovere i file di rotta generati
-            $directoryPath = base_path('routes/mifracruds');
-            File::deleteDirectory($directoryPath);
-
+            $this->deleteData();
         } else {
             $this->info("Installazione del CRUD Mifra...");
             // Crea un file di flag per indicare che l'installazione è stata completata
             File::put($alreadyInstalledFlagPath, 'Installed');
-
             $this->installCrud();
         }
     }
 
+    public function deleteData()
+    {
+        // Rimuovere i file di controller generati
+        $directoryPath = base_path('app/Http/Controllers/MifraCruds');
+        File::deleteDirectory($directoryPath);
+
+        // Rimuovere i file di models generati
+        $directoryPath = base_path('app/Models/MifraCruds');
+        File::deleteDirectory($directoryPath);
+
+        // Rimuovere i file di view generati
+        $directoryPath = base_path('resources/views/mifracruds');
+        File::deleteDirectory($directoryPath);
+
+        // Rimuovere i file di rotta generati
+        File::deleteDirectory($this->directoryPathRoute);
+
+        // Percorso al file web.php
+        $fileRouteWeb = base_path('routes/web.php');
+
+        // Leggi il contenuto del file
+        $contentRouteWeb = File::get($fileRouteWeb);
+
+        // Rimuovi la riga
+        $updatedContentRouteWeb = str_replace("require __DIR__ . '/mifracruds/cruds.php';\n", '', $contentRouteWeb);
+
+        // Salva il file aggiornato
+        File::put($fileRouteWeb, $updatedContentRouteWeb);
+    }
+
     public function installCrud()
     {
+        // Assicurati che questa directory esista o sia creata
+        if (!File::exists($this->directoryPathRoute)) {
+            File::makeDirectory($this->directoryPathRoute, 0755, true);
+        }
+        $filePathWeb = base_path('routes/web.php');
+        if (!File::exists($filePathWeb)) {
+            // Contenuto che vuoi scrivere nel file
+            $fileContent = "<?php\nrequire __DIR__ . '/mifracruds/cruds.php';";
+
+            // Crea il file e scrivi il contenuto
+            File::put($filePathWeb, $fileContent);
+        }
+
         try {
             $this->info("Connessione al database...");
             // Messaggio di separazione per migliorare la leggibilità dell'output
@@ -203,15 +188,12 @@ class MifraInstallCrud extends Command
 
             // Creo il controller
             CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds');
-            //$this->createControllerFile($menuItem);
 
             // Creo il model
             CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds');
-            //$this->createModelFile($menuItem);
 
             // Creo la view
             CrudHelpers::createViewFile($this, $menuItem['route_name']);
-            //$this->createViewFile($menuItem);
 
             $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
 
@@ -236,7 +218,7 @@ class MifraInstallCrud extends Command
     protected function createCommandsDefault($routeFilePath)
     {
         $menuItem['route_name'] = 'mifracruds';
-        $this->createControllerFile($menuItem);
+        CrudHelpers::createControllerFile($menuItem);
 
         // Segnaposto da cercare
         $placeholderHead = 'use Illuminate\Routing\Controller;';
@@ -251,7 +233,7 @@ class MifraInstallCrud extends Command
         $stubPathDefault = __DIR__ . '/../resources/stubs/functions/cruds/default.stub';
 
         // Verifica dell'esistenza e lettura dei contenuti degli stub
-        if (!file_exists($stubPathDefault)) {
+        if (!File::exists($stubPathDefault)) {
             $this->error("Il file stub {$stubPathDefault} non esiste.");
             return;
         }
@@ -263,7 +245,7 @@ class MifraInstallCrud extends Command
         $stubPathController = base_path('app/Http/Controllers/MifraCruds/MifracrudsController.php');
 
         // Verifica dell'esistenza dello stub
-        if (!file_exists($stubPathController)) {
+        if (!File::exists($stubPathController)) {
             $this->error("Il file stub {$stubPathController} non esiste.");
             return;
         }
@@ -288,7 +270,7 @@ class MifraInstallCrud extends Command
         // Costruisci il percorso del file .stub
         $stubPath = __DIR__ . '/../resources/stubs/routes/cruds/default.stub';
 
-        if (!file_exists($stubPath)) {
+        if (!File::exists($stubPath)) {
             $this->error("Il file stub {$stubPath} non esiste.");
             return;
         }
@@ -297,81 +279,6 @@ class MifraInstallCrud extends Command
 
         File::append($routeFilePath, "\n" . $commandsTemplate);
 
-    }
-
-    protected function createControllerFile($menuItem)
-    {
-        // Costruisci il percorso del file .stub
-        $stubPath = __DIR__ . '/../resources/stubs/CrudController.stub';
-
-        if (!file_exists($stubPath)) {
-            $this->error("Il file stub {$stubPath} non esiste.");
-            return;
-        }
-
-        $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
-
-        $controllerTemplate = File::get($stubPath);
-        $controllerContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, $menuItem['route_name']], $controllerTemplate);
-
-        $controllerFilePath = $this->directoryPathController . "/{$className}Controller.php";
-        File::put($controllerFilePath, $controllerContent);
-
-        $this->info("Creato/Aggiornato il controller: App\Http\Controllers\MifraCruds\\{$className}Controller, qui puoi inserire il tuo codice per gestire la logica della vista");
-    }
-
-    protected function createModelFile($menuItem)
-    {
-        // Costruisci il percorso del file .stub
-        $stubPath = __DIR__ . '/../resources/stubs/CrudModel.stub';
-
-        if (!file_exists($stubPath)) {
-            $this->error("Il file stub {$stubPath} non esiste.");
-            return;
-        }
-
-        $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
-
-        $modelTemplate = File::get($stubPath);
-        $modelContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, $menuItem['route_name']], $modelTemplate);
-
-        $modelFilePath = $this->directoryPathModel . "/{$className}Model.php";
-        File::put($modelFilePath, $modelContent);
-
-        $this->info("Creato/Aggiornato il model: App\Models\MifraCruds\\{$className}Model, qui puoi inserire il tuo codice per gestire il database della vista");
-    }
-
-    protected function createViewFile($menuItem)
-    {
-        // Costruisci il percorso del file .stub
-        $stubPath = __DIR__ . '/../resources/stubs/index.blade.stub';
-
-        if (!file_exists($stubPath)) {
-            $this->error("Il file stub {$stubPath} non esiste.");
-            return;
-        }
-
-        // Assicurati che questa directory esista o sia creata
-        $route_names = explode(".", $menuItem['route_name']);
-        $dirPathResources = "";
-
-        foreach ($route_names as $route_name) {
-            $dirPathResources .= $route_name . "/";
-        }
-        $dirPathResources = rtrim($dirPathResources, '/');
-
-        $directoryPathViewCrud = base_path('resources/views/' . $dirPathResources);
-        if (!File::exists($directoryPathViewCrud)) {
-            File::makeDirectory($directoryPathViewCrud, 0755, true);
-        }
-
-        $viewTemplate = File::get($stubPath);
-        $viewContent = str_replace(['%%route_name%%', '%%path%%'], [$menuItem['route_name'], $dirPathResources], $viewTemplate);
-
-        $viewFilePath = $directoryPathViewCrud . "/index.blade.php";
-        File::put($viewFilePath, $viewContent);
-
-        $this->info("Creato/Aggiornato il file view: resources/views/{$dirPathResources}/index.blade.php, adesso basta creare il file index.blade.php in questo percorso pages/" . $dirPathResources . " per la grafica della vista");
     }
 
     protected function createContenRouteFile($menuItem)
