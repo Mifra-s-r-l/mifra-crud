@@ -55,7 +55,7 @@
             'group' => $request->group,
         ];
 
-        Artisan::call('mifra:createcrud', [
+        Artisan::call('mifra:creategroupcrud', [
             'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
             '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
         ]);
@@ -77,7 +77,7 @@
             'id' => intval($id)
         ];
 
-        Artisan::call('mifra:createcrud', [
+        Artisan::call('mifra:creategroupcrud', [
             'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
             '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
         ]);
