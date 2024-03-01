@@ -84,7 +84,7 @@ class MifraCreateGroupCrud extends Command
 
     protected function deleteMenuItem()
     {
-        $group = DB::connection('mongodb')->group($this->databaseConfig['group']);
+        $group = DB::connection('mongodb')->collection($this->databaseConfig['group']);
         $deletedCount = $group->where('id', intval($this->elements['id']))->delete();
 
         if ($deletedCount > 0) {
@@ -96,7 +96,7 @@ class MifraCreateGroupCrud extends Command
 
     public function insertMenuItem()
     {
-        $group = DB::connection('mongodb')->group($this->databaseConfig['group']);
+        $group = DB::connection('mongodb')->collection($this->databaseConfig['group']);
         $exists = $group->where('id', intval($this->elements['id']))->first(); // Verifica l'esistenza dell'elemento
 
         if (!$exists) {
