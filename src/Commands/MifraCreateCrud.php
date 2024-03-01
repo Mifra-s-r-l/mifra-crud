@@ -142,7 +142,7 @@ class MifraCreateCrud extends Command
         File::put($routesFilePath, $routeDefinition);
 
         $routeFilePathCruds = base_path('routes/mifracruds/cruds.php');
-        File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/prova.php';");
+        File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/".$routePath.".php';");
     }
 
 }
