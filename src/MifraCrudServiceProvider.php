@@ -21,7 +21,8 @@ class MifraCrudServiceProvider extends ServiceProvider
         }
         // comandi da web
         $this->commands([
-            Commands\MifraCreateCrud::class
+            Commands\MifraCreateCrud::class,
+            Commands\MifraCreateGroupCrud::class,
         ]);
     }
 

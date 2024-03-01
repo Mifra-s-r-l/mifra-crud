@@ -45,4 +45,51 @@
             return redirect('/')->with('message', 'Elemento eliminato con successo');
         }
     }
+
+    public function createGroup(Request $request, $id)
+    {
+        $elements =[
+            'id' => intval($id),
+            'title' => $request->title,
+            'icon' => $request->icon,
+            'group' => $request->group,
+        ];
+
+        Artisan::call('mifra:createcrud', [
+            'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
+            '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'title' => 'Successo',
+                'message' => 'Elemento creato con successo'
+            ]);
+        } else {
+            return redirect('/')->with('message', 'Elemento creato con successo');
+        }
+    }
+    
+    public function deleteGroup(Request $request, $id)
+    {
+        $elements =[
+            'id' => intval($id)
+        ];
+
+        Artisan::call('mifra:createcrud', [
+            'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
+            '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'title' => 'Successo',
+                'message' => 'Elemento eliminato con successo'
+            ]);
+        } else {
+            return redirect('/')->with('message', 'Elemento eliminato con successo');
+        }
+    }
     
