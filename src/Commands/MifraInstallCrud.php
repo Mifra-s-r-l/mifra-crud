@@ -19,9 +19,9 @@ class MifraInstallCrud extends Command
     // Descrizione del comando Artisan
     protected $description = 'Installazione del sistema CRUD';
 
+    protected $databaseConfig;
     protected $groupsMenus;
     protected $jsonConfig;
-    protected $directoryPathRoute;
 
     // Crea una nuova istanza del comando
     public function __construct()
@@ -125,10 +125,11 @@ class MifraInstallCrud extends Command
     public function installCrud()
     {
         // Assicurati che questa directory esista o sia creata
-        $directoryPath = base_path('routes/mifracruds');
-        if (!File::exists($directoryPath)) {
-            File::makeDirectory($directoryPath, 0755, true);
+        $directoryPathRoute = base_path('routes/mifracruds');
+        if (!File::exists($directoryPathRoute)) {
+            File::makeDirectory($directoryPathRoute, 0755, true);
         }
+        
         $filePathWeb = base_path('routes/web.php');
         if (!File::exists($filePathWeb)) {
             // Contenuto che vuoi scrivere nel file
@@ -159,7 +160,7 @@ class MifraInstallCrud extends Command
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
 
-            $this->insertMenuItems();
+            $this->insertMenuItems($directoryPathRoute);
 
             // Aggiungi il require a routes/web.php
             $this->addRequireToWebRoutes();
@@ -170,7 +171,7 @@ class MifraInstallCrud extends Command
         }
     }
 
-    public function insertMenuItems()
+    public function insertMenuItems($directoryPathRoute)
     {
         $menuItems = $this->jsonConfig; // Voci di menu del file di config
 
@@ -212,7 +213,7 @@ class MifraInstallCrud extends Command
         }
 
         // Creo il file delle rotte
-        $routeFilePath = $this->directoryPathRoute . '/cruds.php';
+        $routeFilePath = $directoryPathRoute . '/cruds.php';
         File::put($routeFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n\nuse App\Http\Controllers\MifraCruds\MifracrudsController;\n");
         // Scrivi l'header e il contenuto delle rotte nel file
         File::append($routeFilePath, $routeContentHead . $routeContent);
