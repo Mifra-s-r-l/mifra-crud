@@ -87,7 +87,7 @@ class MifraInstallCrud extends Command
     {
         $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
 
-        if (File::exists($alreadyInstalledFlagPath) && (!$this->option('reset') || !$this->option('hardreset') || !$this->option('uninstall'))) {
+        if (File::exists($alreadyInstalledFlagPath) && (!$this->option('hardreset') || !$this->option('reset') || !$this->option('uninstall'))) {
             $this->info("Il CRUD Mifra è già stato installato. Usa il comando 'php artisan mifra:installcrud --help' per visualizzare i comandi a disposizione.");
             return;
         }
@@ -175,7 +175,7 @@ class MifraInstallCrud extends Command
 
         } catch (\Exception $e) {
             $this->info("Errore installCrud: " . $e->getMessage());
-            return 1;
+            return;
         }
     }
 
@@ -253,7 +253,7 @@ class MifraInstallCrud extends Command
         // Verifica dell'esistenza e lettura dei contenuti degli stub
         if (!file_exists($stubPathDefault)) {
             $this->error("Il file stub {$stubPathDefault} non esiste.");
-            return 1;
+            return;
         }
 
         // Lettura del contenuto dei file stub
@@ -265,7 +265,7 @@ class MifraInstallCrud extends Command
         // Verifica dell'esistenza dello stub
         if (!file_exists($stubPathController)) {
             $this->error("Il file stub {$stubPathController} non esiste.");
-            return 1;
+            return;
         }
 
         // Lettura del contenuto dei file controller
@@ -290,7 +290,7 @@ class MifraInstallCrud extends Command
 
         if (!file_exists($stubPath)) {
             $this->error("Il file stub {$stubPath} non esiste.");
-            return 1;
+            return;
         }
 
         $commandsTemplate = File::get($stubPath);
@@ -306,7 +306,7 @@ class MifraInstallCrud extends Command
 
         if (!file_exists($stubPath)) {
             $this->error("Il file stub {$stubPath} non esiste.");
-            return 1;
+            return;
         }
 
         $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
@@ -327,7 +327,7 @@ class MifraInstallCrud extends Command
 
         if (!file_exists($stubPath)) {
             $this->error("Il file stub {$stubPath} non esiste.");
-            return 1;
+            return;
         }
 
         $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
@@ -348,7 +348,7 @@ class MifraInstallCrud extends Command
 
         if (!file_exists($stubPath)) {
             $this->error("Il file stub {$stubPath} non esiste.");
-            return 1;
+            return;
         }
 
         // Assicurati che questa directory esista o sia creata
@@ -379,7 +379,7 @@ class MifraInstallCrud extends Command
         $stubPath = __DIR__ . '/../resources/stubs/route.stub';
         if (!File::exists($stubPath)) {
             $this->error("Il file stub {$stubPath} non esiste.");
-            return 1;
+            return;
         }
 
         $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
