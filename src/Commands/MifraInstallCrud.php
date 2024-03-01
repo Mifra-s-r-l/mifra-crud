@@ -224,7 +224,7 @@ class MifraInstallCrud extends Command
 
     protected function createCommandsDefault($routeFilePath)
     {
-        CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds');
+        CrudHelpers::createControllerFile($this, 'mifracruds', 'app/Http/Controllers/MifraCruds');
 
         // Segnaposto da cercare
         $placeholderHead = 'use Illuminate\Routing\Controller;';
