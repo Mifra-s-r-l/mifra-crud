@@ -62,6 +62,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Inserire qui i dati per creare il menù di defaul in fase di installazione
+    | Puoi aggiungere altre voci l'importate non cambiare l'orinamento delle prime 4 e il loro route_name
     |
      */
     

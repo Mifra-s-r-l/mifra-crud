@@ -23,7 +23,7 @@ class CrudHelpers
         }
     }
 
-    public static function createControllerFile($commands, $route_name, $directoryPathController)
+    public static function createControllerFile($commands, $route_name, $directoryPathController, $fileStub = "CrudController")
     {
         // Assicurati che questa directory esista o sia creata
         if (!File::exists($directoryPathController)) {
@@ -31,7 +31,7 @@ class CrudHelpers
         }
 
         // Costruisci il percorso del file .stub
-        $stubPath = __DIR__ . '/../resources/stubs/CrudController.stub';
+        $stubPath = __DIR__ . '/../resources/stubs/'.$fileStub.'.stub';
 
         if (!file_exists($stubPath)) {
             $commands->error("Il file stub {$stubPath} non esiste.");

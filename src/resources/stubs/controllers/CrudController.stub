@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Http\Controllers\MifraCruds;
+
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+
+class {{crud_name}}Controller extends Controller
+{
+    public function index()
+    {
+        $database = config('mifracrud.database');
+
+        $items = DB::connection('mongodb')->collection($database['collection'])->get();
+        
+        return view('{{route_name}}.index')
+            ->with('items', $items);
+    }
+}

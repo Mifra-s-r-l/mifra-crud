@@ -9,6 +9,8 @@ class {{crud_name}}Controller extends Controller
 {
     public function index()
     {
+        // PLACEHOLDER_FOR_INDEX_FUNCION
+
         return view('{{route_name}}.index');
     }
 
