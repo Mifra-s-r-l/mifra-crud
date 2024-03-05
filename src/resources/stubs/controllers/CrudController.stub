@@ -42,6 +42,6 @@ class {{crud_name}}Controller extends Controller
         }
 
         return view('{{route_name}}.index')
-            ->with('items', $itemsWithGroupNames);
+            ->with('items', collect($itemsWithGroupNames));
     }
 }
