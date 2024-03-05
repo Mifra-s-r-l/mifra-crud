@@ -65,13 +65,18 @@ class {{crud_name}}Controller extends Controller
 
     public function create(Request $request, $id)
     {
+        $database = config('mifracrud.database');
+        $items = DB::connection('mongodb')->collection($database['collection'])->count();
         $elements =[
-            'id' => intval($id),
+            'id' => intval($items+1),
             'title' => $request->title,
+            'icon' => $request->icon,
             'desc' => $request->desc,
             'route_name' => 'mifracruds.'.$request->route_name,
             'group' => $request->group,
         ];
+
+        //TODO sistemare la forzatura della route_name tutta minuscola
 
         Artisan::call('mifra:createcrud', [
             'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
