@@ -63,7 +63,7 @@ Dopo l'installazione del pacchetto: Potrebbe essere necessario personalizzare i 
 `php artisan vendor:publish --provider="Mifra\Crud\MifraCrudServiceProvider"`
 
 Importante:
-- se viene modificata la lista delle voci di menù principali, per un corretto funzionamento il parametro "route_name" deve mantenere il formato nome.nome
+- se viene modificata la lista delle voci di menù principali, per un corretto funzionamento il parametro "route_name" deve rimanere invariato perchè server la creazione dei file e delle directory
 
 
 ##### Creazione delle viste principali :

@@ -199,6 +199,8 @@ class MifraInstallCrud extends Command
             // Creo il controller
             if($menuItem['route_name'] == 'mifracruds.cruds'){
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/CrudController');
+            } else if($menuItem['route_name'] == 'mifracruds.users'){
+                CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/UsersController');
             } else {
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds');
             }

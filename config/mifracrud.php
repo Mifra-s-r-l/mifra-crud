@@ -44,16 +44,10 @@ return [
     'groups_menus' => [
         [
             "id" => 1,
-            "title" => "Ronda",
-            "icon" => "home",
-            "group" => "ronda"
-        ],
-        [
-            "id" => 2,
             "title" => "Gestione",
             "icon" => "settings",
-            "group" => "managements"
-        ],
+            "group" => "managements" // deve corrispondere a quello delle voci di menu
+        ]
     ],
 
     /*
@@ -62,7 +56,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Inserire qui i dati per creare il menù di defaul in fase di installazione
-    | Puoi aggiungere altre voci l'importate non cambiare l'orinamento delle prime 4 e il loro route_name
+    | Importate non cambiare l'orinamento il loro route_name
     |
      */
     
@@ -70,30 +64,34 @@ return [
         [
             "id" => 1,
             "title" => "Crud",
+            "icon" => "settings",
             "desc" => "Pagina per la gestione dei CRUD",
-            "route_name" => "mifracruds.cruds",
-            "group" => "managements"
+            "route_name" => "mifracruds.cruds", // da non modificare
+            "group" => "managements" // deve corrispondere a quello del gruppo
         ],
         [
             "id" => 2,
             "title" => "Utenti",
+            "icon" => "settings",
             "desc" => "Pagina per la gestione degli Utenti",
-            "route_name" => "mifracruds.users",
-            "group" => "managements"
+            "route_name" => "mifracruds.users", // da non modificare
+            "group" => "managements" // deve corrispondere a quello del gruppo
         ],
         [
             "id" => 3,
             "title" => "Ruoli",
+            "icon" => "settings",
             "desc" => "Pagina per la gestione dei Ruoli",
-            "route_name" => "mifracruds.roles",
-            "group" => "managements"
+            "route_name" => "mifracruds.roles", // da non modificare
+            "group" => "managements" // deve corrispondere a quello del gruppo
         ],
         [
             "id" => 4,
             "title" => "Permessi",
+            "icon" => "settings",
             "desc" => "Pagina per la gestione dei Permessi",
-            "route_name" => "mifracruds.permissions",
-            "group" => "managements"
+            "route_name" => "mifracruds.permissions", // da non modificare
+            "group" => "managements" // deve corrispondere a quello del gruppo
         ]
     ]
     

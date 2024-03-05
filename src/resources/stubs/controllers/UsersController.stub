@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Http\Controllers\MifraCruds;
+
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+
+class {{crud_name}}Controller extends Controller
+{
+    public function index()
+    {
+        $database = config('mifracrud.database');
+
+        $itemsWithGroupNames = [];
+
+        $contents = [];
+
+        return view('{{route_name}}.index')
+            ->with('contents', $contents)
+            ->with('items', collect($itemsWithGroupNames));
+    }
+}

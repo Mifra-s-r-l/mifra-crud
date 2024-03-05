@@ -41,7 +41,16 @@ class {{crud_name}}Controller extends Controller
             $itemsWithGroupNames[] = $item;
         }
 
+        $contents = [
+            "title" => $items[0]['title'],
+            'filters' => [
+                "title" => "Nome",
+                "groupName" => "Gruppo"
+            ]
+        ];
+
         return view('{{route_name}}.index')
+            ->with('contents', $contents)
             ->with('items', collect($itemsWithGroupNames));
     }
 }
