@@ -99,7 +99,7 @@ class MifraCreateCrud extends Command
         }
         
         // Percorso del file che vuoi cancellare
-        $modelFile = base_path('app/Models/MifraCruds'.$className.'Model.php');
+        $modelFile = base_path('app/Models/MifraCruds/'.$className.'Model.php');
         // Controlla se il file model esiste e cancellalo
         if (File::exists($modelFile)) {
             File::delete($modelFile);
@@ -124,7 +124,7 @@ class MifraCreateCrud extends Command
         $contentRouteWeb = File::get($fileRouteWeb);
         // Rimuovi la riga
         $cleanedRoutePath = str_replace("mifracruds/", "", $path);
-        $updatedContentRouteWeb = str_replace("require __DIR__ . '/".$cleanedRoutePath.".php';\n", '', $contentRouteWeb);
+        $updatedContentRouteWeb = str_replace("require __DIR__ . '/".$cleanedRoutePath.".php';", '', $contentRouteWeb);
         // Salva il file aggiornato
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
