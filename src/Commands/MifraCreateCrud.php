@@ -88,6 +88,45 @@ class MifraCreateCrud extends Command
 
     protected function deleteMenuItem()
     {
+        $className = CrudHelpers::conversionRouteName($this->elements['route_name'], 'className');
+        $path = CrudHelpers::conversionRouteName($this->elements['route_name'], 'path');
+
+        // Percorso del file che vuoi cancellare
+        $controllerFile = base_path('app/Http/Controllers/MifraCruds/'.$className.'Controller.php');
+        // Controlla se il file controller esiste e cancellalo
+        if (File::exists($controllerFile)) {
+            File::delete($controllerFile);
+        }
+        
+        // Percorso del file che vuoi cancellare
+        $modelFile = base_path('app/Models/MifraCruds'.$className.'Model.php');
+        // Controlla se il file model esiste e cancellalo
+        if (File::exists($modelFile)) {
+            File::delete($modelFile);
+        }
+
+        // Rimuovere i file delle view
+        $viewFile = base_path('resources/views/'.$path);
+        if (File::exists($viewFile)) {
+            File::deleteDirectory($viewFile);
+        }
+
+        // Percorso del file che vuoi cancellare
+        $routeFile = base_path('routes/mifracruds/'.$path.'.php');
+        // Controlla se il file controller esiste e cancellalo
+        if (File::exists($routeFile)) {
+            File::delete($routeFile);
+        }
+
+        // Percorso al file web.php
+        $fileRouteWeb = base_path('routes/cruds.php');
+        // Leggi il contenuto del file
+        $contentRouteWeb = File::get($fileRouteWeb);
+        // Rimuovi la riga
+        $updatedContentRouteWeb = str_replace("require __DIR__ . '/".$path.".php';\n", '', $contentRouteWeb);
+        // Salva il file aggiornato
+        File::put($fileRouteWeb, $updatedContentRouteWeb);
+
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
         $deletedCount = $collection->where('id', intval($this->elements['id']))->delete();
 
