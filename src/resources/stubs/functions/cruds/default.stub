@@ -27,7 +27,8 @@
     public function delete(Request $request, $id)
     {
         $elements =[
-            'id' => intval($id)
+            'id' => intval($id),
+            'route_name' => $request->data['route_name'],
         ];
 
         Artisan::call('mifra:createcrud', [
