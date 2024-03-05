@@ -56,6 +56,8 @@ class {{crud_name}}Controller extends Controller
             ]
         ];
 
+        //TODO possiamo inserire i parametri sopra direttamente nel database mongo
+
         return view('{{route_name}}.index')
             ->with('contents', $contents)
             ->with('items', collect($itemsWithGroupNames));
