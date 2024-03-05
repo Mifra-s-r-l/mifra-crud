@@ -119,7 +119,7 @@ class MifraCreateCrud extends Command
         }
 
         // Percorso al file web.php
-        $fileRouteWeb = base_path('routes/cruds.php');
+        $fileRouteWeb = base_path('routes/mifracruds/cruds.php');
         // Leggi il contenuto del file
         $contentRouteWeb = File::get($fileRouteWeb);
         // Rimuovi la riga
