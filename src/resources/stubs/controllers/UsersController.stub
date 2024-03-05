@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MifraCruds;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Mifra\Crud\Helpers\CrudHelpers;
 
 class {{crud_name}}Controller extends Controller
 {
@@ -12,9 +13,22 @@ class {{crud_name}}Controller extends Controller
     {
         $database = config('mifracrud.database');
 
-        $itemsWithGroupNames = [];
+        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','mifracruds.users')->first();
 
-        $contents = [];
+        $itemsWithGroupNames = User::get();
+        
+        $path = CrudHelpers::conversionRouteName($menu['route_name'], 'path');
+        $name = str_replace("mifracruds/", "", $path);
+
+        $contents = [
+            "title" => $menu['title'],
+            "element" => 'pages.mifracruds.'.$name.'.modal.element',
+            "collection_mongo" => $name, // fare riferimento a ThemeController::tabulator_delete
+            'filters' => [
+                "title" => "Nome",
+                "email" => "Email"
+            ]
+        ];
 
         return view('{{route_name}}.index')
             ->with('contents', $contents)

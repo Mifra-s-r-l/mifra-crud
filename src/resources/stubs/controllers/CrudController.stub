@@ -5,6 +5,8 @@ namespace App\Http\Controllers\MifraCruds;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Mifra\Crud\Helpers\CrudHelpers;
+use Illuminate\Support\Facades\Artisan;
 
 class {{crud_name}}Controller extends Controller
 {
@@ -41,8 +43,13 @@ class {{crud_name}}Controller extends Controller
             $itemsWithGroupNames[] = $item;
         }
 
+        $path = CrudHelpers::conversionRouteName($items[0]['route_name'], 'path');
+        $name = str_replace("mifracruds/", "", $path);
+
         $contents = [
             "title" => $items[0]['title'],
+            "element" => 'pages.mifracruds.'.$name.'.modal.element',
+            "collection_mongo" => $name, // fare riferimento a ThemeController::tabulator_delete
             'filters' => [
                 "title" => "Nome",
                 "groupName" => "Gruppo"
@@ -52,5 +59,101 @@ class {{crud_name}}Controller extends Controller
         return view('{{route_name}}.index')
             ->with('contents', $contents)
             ->with('items', collect($itemsWithGroupNames));
+    }
+
+    public function create(Request $request, $id)
+    {
+        $elements =[
+            'id' => intval($id),
+            'title' => $request->title,
+            'desc' => $request->desc,
+            'route_name' => 'mifracruds.'.$request->route_name,
+            'group' => $request->group,
+        ];
+
+        Artisan::call('mifra:createcrud', [
+            'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
+            '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'title' => 'Successo',
+                'message' => 'Elemento creato con successo'
+            ]);
+        } else {
+            return redirect('/')->with('message', 'Elemento creato con successo');
+        }
+    }
+    
+    public function delete(Request $request, $id)
+    {
+        $elements =[
+            'id' => intval($id),
+            'route_name' => $request->data['route_name'],
+        ];
+
+        Artisan::call('mifra:createcrud', [
+            'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
+            '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'title' => 'Successo',
+                'message' => 'Elemento eliminato con successo'
+            ]);
+        } else {
+            return redirect('/')->with('message', 'Elemento eliminato con successo');
+        }
+    }
+
+    public function createGroup(Request $request, $id)
+    {
+        $elements =[
+            'id' => intval($id),
+            'title' => $request->title,
+            'icon' => $request->icon,
+            'group' => $request->group,
+        ];
+
+        Artisan::call('mifra:creategroupcrud', [
+            'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
+            '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'title' => 'Successo',
+                'message' => 'Elemento creato con successo'
+            ]);
+        } else {
+            return redirect('/')->with('message', 'Elemento creato con successo');
+        }
+    }
+    
+    public function deleteGroup(Request $request, $id)
+    {
+        $elements =[
+            'id' => intval($id)
+        ];
+
+        Artisan::call('mifra:creategroupcrud', [
+            'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
+            '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'title' => 'Successo',
+                'message' => 'Elemento eliminato con successo'
+            ]);
+        } else {
+            return redirect('/')->with('message', 'Elemento eliminato con successo');
+        }
     }
 }

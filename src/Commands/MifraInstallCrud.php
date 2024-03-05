@@ -223,7 +223,8 @@ class MifraInstallCrud extends Command
 
         // Creo il file delle rotte
         $routeFilePath = $directoryPathRoute . '/cruds.php';
-        File::put($routeFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n\nuse App\Http\Controllers\MifraCruds\MifracrudsController;\n");
+        //File::put($routeFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n\nuse App\Http\Controllers\MifraCruds\MifracrudsController;\n");
+        File::put($routeFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n");
         // Scrivi l'header e il contenuto delle rotte nel file
         File::append($routeFilePath, $routeContentHead . $routeContent);
 
@@ -233,7 +234,7 @@ class MifraInstallCrud extends Command
 
     protected function createCommandsDefault($routeFilePath)
     {
-        CrudHelpers::createControllerFile($this, 'mifracruds', 'app/Http/Controllers/MifraCruds');
+        /* CrudHelpers::createControllerFile($this, 'mifracruds', 'app/Http/Controllers/MifraCruds');
 
         // Segnaposto da cercare
         $placeholderHead = 'use Illuminate\Routing\Controller;';
@@ -242,7 +243,9 @@ class MifraInstallCrud extends Command
         $placeholder = '// PLACEHOLDER_FOR_NEW_METHODS';
 
         // Definizione del pattern per identificare esattamente il metodo index()
-        $pattern = '/\s*public\s+function\s+index\(\)\s*\{[^\}]*\}\s*/s';
+        $pattern = '/\s*public\s+function\s+index\(\)\s*\{[^\}]*\}\s/s';
+
+        INSERIRE ASTERISCO QUI APPOSTO DELLA CHIOCCIOLA @/s';
 
         // Percorsi e lettura dei file stub per le funzioni create e delete
         $stubPathDefault = __DIR__ . '/../resources/stubs/functions/cruds/default.stub';
@@ -280,7 +283,7 @@ class MifraInstallCrud extends Command
         // Sostituisci il segnaposto con il contenuto delle nuove funzioni
         $newControllerContent = str_replace($placeholder, $defaultContent . "\n    " . $placeholder, $newControllerContent);
 
-        File::put($stubPathController, $newControllerContent);
+        File::put($stubPathController, $newControllerContent); */
 
         // Costruisci il percorso del file .stub
         $stubPath = __DIR__ . '/../resources/stubs/routes/cruds/default.stub';
