@@ -12,8 +12,35 @@ class {{crud_name}}Controller extends Controller
     {
         $database = config('mifracrud.database');
 
+        // Recupera tutti gli elementi dalla collezione di partenza
         $items = DB::connection('mongodb')->collection($database['collection'])->get();
-        
+
+        // Preparare un array per contenere gli elementi arricchiti con i nomi dei gruppi
+        $itemsWithGroupNames = [];
+
+        // Cicla sugli elementi per recuperare i nomi dei gruppi dalla seconda collezione
+        foreach ($items as $item) {
+            // Assicurati che l'elemento abbia un campo 'group'
+            if (isset($item['group'])) {
+                // Recupera il gruppo corrispondente dall'altra collezione
+                $group = DB::connection('mongodb')->collection($database['group'])->where('group', $item['group'])->first();
+
+                // Aggiungi il nome del gruppo all'elemento, se il gruppo esiste
+                if ($group) {
+                    $item['groupName'] = $group['title']; // Assumendo che il gruppo abbia un campo 'name'
+                } else {
+                    // Gestisci il caso in cui il gruppo non viene trovato
+                    $item['groupName'] = 'Gruppo non trovato';
+                }
+            } else {
+                // Gestisci il caso in cui l'elemento non abbia un campo 'group'
+                $item['groupName'] = 'Nessun gruppo';
+            }
+
+            // Aggiungi l'elemento arricchito all'array di risultati
+            $itemsWithGroupNames[] = $item;
+        }
+
         return view('{{route_name}}.index')
             ->with('items', $items);
     }
