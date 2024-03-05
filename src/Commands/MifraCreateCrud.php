@@ -123,7 +123,8 @@ class MifraCreateCrud extends Command
         // Leggi il contenuto del file
         $contentRouteWeb = File::get($fileRouteWeb);
         // Rimuovi la riga
-        $updatedContentRouteWeb = str_replace("require __DIR__ . '/".$path.".php';\n", '', $contentRouteWeb);
+        $cleanedRoutePath = str_replace("mifracruds/", "", $routePath);
+        $updatedContentRouteWeb = str_replace("require __DIR__ . '/".$cleanedRoutePath.".php';\n", '', $contentRouteWeb);
         // Salva il file aggiornato
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
