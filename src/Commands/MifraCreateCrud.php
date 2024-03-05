@@ -112,7 +112,7 @@ class MifraCreateCrud extends Command
         }
 
         // Percorso del file che vuoi cancellare
-        $routeFile = base_path('routes/mifracruds/'.$path.'.php');
+        $routeFile = base_path('routes/'.$path.'.php');
         // Controlla se il file controller esiste e cancellalo
         if (File::exists($routeFile)) {
             File::delete($routeFile);
