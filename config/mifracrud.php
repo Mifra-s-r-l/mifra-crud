@@ -64,7 +64,7 @@ return [
         [
             "id" => 1,
             "title" => "Crud",
-            "icon" => "settings",
+            "icon" => "list",
             "desc" => "Pagina per la gestione dei CRUD",
             "route_name" => "mifracruds.cruds", // da non modificare
             "group" => "managements" // deve corrispondere a quello del gruppo
@@ -72,7 +72,7 @@ return [
         [
             "id" => 2,
             "title" => "Utenti",
-            "icon" => "settings",
+            "icon" => "users",
             "desc" => "Pagina per la gestione degli Utenti",
             "route_name" => "mifracruds.users", // da non modificare
             "group" => "managements" // deve corrispondere a quello del gruppo
@@ -80,7 +80,7 @@ return [
         [
             "id" => 3,
             "title" => "Ruoli",
-            "icon" => "settings",
+            "icon" => "lock",
             "desc" => "Pagina per la gestione dei Ruoli",
             "route_name" => "mifracruds.roles", // da non modificare
             "group" => "managements" // deve corrispondere a quello del gruppo
@@ -88,7 +88,7 @@ return [
         [
             "id" => 4,
             "title" => "Permessi",
-            "icon" => "settings",
+            "icon" => "lock",
             "desc" => "Pagina per la gestione dei Permessi",
             "route_name" => "mifracruds.permissions", // da non modificare
             "group" => "managements" // deve corrispondere a quello del gruppo
