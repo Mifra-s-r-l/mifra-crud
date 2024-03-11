@@ -3,10 +3,11 @@
 namespace Mifra\Crud\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Mifra\Crud\Helpers\CrudHelpers;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Config;
+use Spatie\Permission\Models\Permission;
 
 class MifraInstallCrud extends Command
 {
