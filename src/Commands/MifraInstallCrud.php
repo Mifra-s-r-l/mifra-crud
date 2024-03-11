@@ -139,12 +139,6 @@ class MifraInstallCrud extends Command
                     $permissionToDelete->delete();
                 }
             }
-            $role = Role::findByName('super-admin');
-
-            if ($role) {
-                $role->delete();
-                // Il ruolo è stato eliminato
-            }
         }
     }
 
