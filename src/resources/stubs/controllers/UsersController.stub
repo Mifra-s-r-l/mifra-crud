@@ -24,9 +24,11 @@ class {{crud_name}}Controller extends Controller
         $contents = [
             "title" => $menu['title'],
             "element" => 'pages.mifracruds.'.$name.'.modal.element',
-            "collection_mongo" => $name, // fare riferimento a ThemeController::tabulator_delete
-            'filters' => [
-                "title" => "Nome",
+            "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsUsersController',
+            'export_print' => false,
+            'init_sort' => [ 0 => ['column' => 'name', 'dir' => 'asc' ] ],
+            'filters_top_bar_tabulator' => [
+                "name" => "Nome",
                 "email" => "Email"
             ]
         ];
@@ -34,5 +36,12 @@ class {{crud_name}}Controller extends Controller
         return view('{{route_name}}.index')
             ->with('contents', $contents)
             ->with('items', collect($itemsWithGroupNames));
+    }
+
+    public function delete(Request $request, $id)
+    {
+        $user = User::where('id', $id)->first();
+        $user->forceDelete();
+        dd($user);
     }
 }

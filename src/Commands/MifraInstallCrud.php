@@ -3,15 +3,15 @@
 namespace Mifra\Crud\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Mifra\Crud\Helpers\CrudHelpers;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Mifra\Crud\Helpers\CrudHelpers;
 
 class MifraInstallCrud extends Command
 {
     // Il nome e la firma del comando Artisan
-    protected $signature = 'mifra:installcrud 
+    protected $signature = 'mifra:installcrud
                         {--uninstall : Disinstallazione di CRUD}
                         {--reset : Reinstalla il CRUD sovrascrivendo i file di default}
                         {--hardreset : Reinstalla il CRUD sovrascrivendo tutti i file esistenti}';
@@ -123,7 +123,7 @@ class MifraInstallCrud extends Command
     public function installCrud()
     {
         $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
-        
+
         // Crea un file di flag per indicare che l'installazione è stata completata
         File::put($alreadyInstalledFlagPath, 'Installed');
 
@@ -197,9 +197,9 @@ class MifraInstallCrud extends Command
             }
 
             // Creo il controller
-            if($menuItem['route_name'] == 'mifracruds.cruds'){
+            if ($menuItem['route_name'] == 'mifracruds.cruds') {
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/CrudController');
-            } else if($menuItem['route_name'] == 'mifracruds.users'){
+            } else if ($menuItem['route_name'] == 'mifracruds.users') {
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/UsersController');
             } else {
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds');
@@ -216,6 +216,13 @@ class MifraInstallCrud extends Command
             // Crea contenuto per il file delle rotte per la nuova voce di menu
             $routeContent .= $this->createContenRouteFile($menuItem);
             $routeContentHead .= "use App\Http\Controllers\MifraCruds\\{$className}Controller;\n";
+
+            // Creo i permessio per il nuovo CRUD
+            $permissions = $menuItem['permissions'];
+            $permissionName = CrudHelpers::conversionRouteName($menuItem['route_name'], 'permission');
+            foreach ($permissions as $permission) {
+                Permission::create(['name' => $permission.'_'.$permissionName]);
+            }
 
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
@@ -252,8 +259,8 @@ class MifraInstallCrud extends Command
 
         // Verifica dell'esistenza e lettura dei contenuti degli stub
         if (!File::exists($stubPathDefault)) {
-            $this->error("Il file stub {$stubPathDefault} non esiste.");
-            return;
+        $this->error("Il file stub {$stubPathDefault} non esiste.");
+        return;
         }
 
         // Lettura del contenuto dei file stub
@@ -264,8 +271,8 @@ class MifraInstallCrud extends Command
 
         // Verifica dell'esistenza dello stub
         if (!File::exists($stubPathController)) {
-            $this->error("Il file stub {$stubPathController} non esiste.");
-            return;
+        $this->error("Il file stub {$stubPathController} non esiste.");
+        return;
         }
 
         // Lettura del contenuto dei file controller
@@ -276,7 +283,7 @@ class MifraInstallCrud extends Command
 
         // Prepara la linea da aggiungere
         $useArtisanLine = "use Illuminate\Support\Facades\Artisan;";
-        
+
         // Trova la posizione del segnaposto per l'header e aggiungi la nuova linea dopo
         $newControllerContent = preg_replace("/(" . preg_quote($placeholderHead, '/') . ")/", "$1\n" . $useArtisanLine, $controllerContent);
 

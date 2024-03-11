@@ -46,7 +46,8 @@ return [
             "id" => 1,
             "title" => "Gestione",
             "icon" => "Settings",
-            "group" => "managements" // deve corrispondere a quello delle voci di menu
+            "group" => "managements", // deve corrispondere a quello delle voci di menu
+            "order" => 1
         ]
     ],
 
@@ -67,7 +68,15 @@ return [
             "icon" => "List",
             "desc" => "Pagina per la gestione dei CRUD",
             "route_name" => "mifracruds.cruds", // da non modificare
-            "group" => "managements" // deve corrispondere a quello del gruppo
+            "group" => "managements", // deve corrispondere a quello del gruppo
+            "order" => 1,
+            "permissions" => [
+                "view", 
+                "create",
+                "modify",
+                "trash",
+                "delete"
+            ]
         ],
         [
             "id" => 2,
@@ -75,7 +84,15 @@ return [
             "icon" => "Users",
             "desc" => "Pagina per la gestione degli Utenti",
             "route_name" => "mifracruds.users", // da non modificare
-            "group" => "managements" // deve corrispondere a quello del gruppo
+            "group" => "managements", // deve corrispondere a quello del gruppo
+            "order" => 2,
+            "permissions" => [
+                "view", 
+                "create",
+                "modify",
+                "trash",
+                "delete"
+            ]
         ],
         [
             "id" => 3,
@@ -83,7 +100,15 @@ return [
             "icon" => "UserCog",
             "desc" => "Pagina per la gestione dei Ruoli",
             "route_name" => "mifracruds.roles", // da non modificare
-            "group" => "managements" // deve corrispondere a quello del gruppo
+            "group" => "managements", // deve corrispondere a quello del gruppo
+            "order" => 3,
+            "permissions" => [
+                "view", 
+                "create",
+                "modify",
+                "trash",
+                "delete"
+            ]
         ],
         [
             "id" => 4,
@@ -91,7 +116,15 @@ return [
             "icon" => "UserCog",
             "desc" => "Pagina per la gestione dei Permessi",
             "route_name" => "mifracruds.permissions", // da non modificare
-            "group" => "managements" // deve corrispondere a quello del gruppo
+            "group" => "managements", // deve corrispondere a quello del gruppo
+            "order" => 4,
+            "permissions" => [
+                "view", 
+                "create",
+                "modify",
+                "trash",
+                "delete"
+            ]
         ]
     ]
     

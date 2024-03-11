@@ -9,6 +9,8 @@ class CrudHelpers
     public static function conversionRouteName($routeName, $returnType)
     {
         switch ($returnType) {
+            case "permission":
+                return str_replace(".", "_", $routeName);
             case "path":
                 return str_replace(".", "/", $routeName);
             case "className":

@@ -47,23 +47,23 @@ class {{crud_name}}Controller extends Controller
         $name = str_replace("mifracruds/", "", $path);
 
         $contents = [
-            "title" => $items[0]['title'],
-            "element" => 'pages.mifracruds.'.$name.'.modal.element',
-            "collection_mongo" => $name, // fare riferimento a ThemeController::tabulator_delete
-            'filters' => [
-                "title" => "Nome",
-                "groupName" => "Gruppo"
-            ]
+            "title" => $items[0]['title'], // titolo della pagina
+            "element" => 'pages.mifracruds.'.$name.'.modal.element', // path del modal per la modifica
+            "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsCrudsController', // fare riferimento a ThemeController::tabulator_delete
+            'export_print' => true, // per visualizzare stampa e export
+            'init_sort' => [ 0 => ['column' => 'title', 'dir' => 'asc' ] ], // ordinamento iniziale di tabulator
+            'filters_top_bar_tabulator' => [] // filtri della pagina top-bar di tabulator se pieno compare
         ];
 
         //TODO possiamo inserire i parametri sopra direttamente nel database mongo
+        //TODO sistemare la dicitura dei valori dell'array sopra
 
         return view('{{route_name}}.index')
             ->with('contents', $contents)
             ->with('items', collect($itemsWithGroupNames));
     }
 
-    public function create(Request $request, $id)
+    public function create(Request $request)
     {
         $database = config('mifracrud.database');
         $items = DB::connection('mongodb')->collection($database['collection'])->count();
