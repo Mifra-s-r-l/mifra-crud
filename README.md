@@ -33,6 +33,19 @@ MIFRACRUD_MONGODB_USERNAME=myUsername
 MIFRACRUD_MONGODB_PASSWORD=myPassword
 ```
 
+Per la gestione dei permessi e la visualizzazione dei CRUD di default dopo aver installato in pacchetto "spatie/laravel-permission" bisogna creare un utente e assegnare il ruolo "super-admin" cosi:
+
+```
+$utente = User::factory()->create([
+    'name' => 'Utente Admin',
+    'email' => 'indirizzo@email.it',
+    'email_verified_at' => now(),
+    'password' => Hash::make('******'),
+    'remember_token' => Str::random(30),
+]);
+$utente->assignRole(array("super-admin"));
+```
+
 Concludi la preparazione eseguendo il comando Artisan per installare e configurare i CRUD principali:
 
 `php artisan mifra:installcrud`

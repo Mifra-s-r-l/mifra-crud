@@ -4,6 +4,7 @@ namespace Mifra\Crud\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 use Mifra\Crud\Helpers\CrudHelpers;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
@@ -82,6 +83,8 @@ class MifraInstallCrud extends Command
 
     public function deleteData()
     {
+        $menuItems = $this->jsonConfig; // Voci di menu del file di config
+
         // Rimuovere i file di controller generati
         $directoryPath = base_path('app/Http/Controllers/MifraCruds');
         File::deleteDirectory($directoryPath);
@@ -119,6 +122,28 @@ class MifraInstallCrud extends Command
         }
 
         DB::connection('mongodb')->getMongoDB()->drop();
+
+        // Creo i permessio per il nuovo CRUD
+        $permissions = $menuItem['permissions'];
+        $permissionName = CrudHelpers::conversionRouteName($menuItem['route_name'], 'permission');
+        foreach ($permissions as $permission) {
+            // Costruisce il nome del permesso
+            $fullPermissionName = $permission . '_' . $permissionName;
+
+            // Trova il permesso per nome
+            $permissionToDelete = Permission::where('name', $fullPermissionName)->first();
+
+            // Se il permesso esiste, lo elimina
+            if ($permissionToDelete) {
+                $permissionToDelete->delete();
+            }
+        }
+        $role = Role::findByName('super-admin');
+
+        if ($role) {
+            $role->delete();
+            // Il ruolo è stato eliminato
+        }
     }
 
     public function installCrud()
@@ -177,6 +202,11 @@ class MifraInstallCrud extends Command
 
     public function insertMenuItems($directoryPathRoute)
     {
+        // Creo il ruolo super-admin se non esiste
+        $superAdmin = Role::firstOrCreate([
+            'name' => 'super-admin',
+        ]);
+
         $menuItems = $this->jsonConfig; // Voci di menu del file di config
 
         $routeContentHead = "";
@@ -222,7 +252,8 @@ class MifraInstallCrud extends Command
             $permissions = $menuItem['permissions'];
             $permissionName = CrudHelpers::conversionRouteName($menuItem['route_name'], 'permission');
             foreach ($permissions as $permission) {
-                Permission::create(['name' => $permission.'_'.$permissionName]);
+                Permission::firstOrCreate(['name' => $permission . '_' . $permissionName]);
+                $superAdmin->givePermissionTo($permission . '_' . $permissionName);
             }
 
             // Messaggio di separazione per migliorare la leggibilità dell'output
