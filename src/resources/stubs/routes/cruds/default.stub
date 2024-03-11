@@ -1,6 +1,14 @@
+// Rotte cruds
+Route::middleware('role:super-admin')->post('mifracruds/cruds/update/{id}',[MifracrudsCrudsController::class, 'update'])->name('mifracruds.cruds.update');
+Route::middleware('role:super-admin')->post('mifracruds/cruds/create',[MifracrudsCrudsController::class, 'create'])->name('mifracruds.cruds.create');
+Route::middleware('role:super-admin')->post('mifracruds/cruds/edit',[MifracrudsCrudsController::class, 'edit'])->name('mifracruds.cruds.edit');
+Route::middleware('role:super-admin')->post('mifracruds/cruds/delete/{id}',[MifracrudsCrudsController::class, 'delete'])->name('mifracruds.cruds.delete');
 
-Route::middleware('role:super-admin')->post('mifracruds/create',[MifracrudsCrudsController::class, 'create'])->name('mifracruds.create');
-Route::middleware('role:super-admin')->post('mifracruds/delete/{id}',[MifracrudsCrudsController::class, 'delete'])->name('mifracruds.delete');
+Route::middleware('role:super-admin')->post('mifracruds/cruds/group/create/{id}',[MifracrudsCrudsController::class, 'createGroup'])->name('mifracruds.cruds.group.create');
+Route::middleware('role:super-admin')->post('mifracruds/cruds/group/delete/{id}',[MifracrudsCrudsController::class, 'deleteGroup'])->name('mifracruds.cruds.group.delete');
 
-Route::middleware('role:super-admin')->post('mifracruds/group/create/{id}',[MifracrudsCrudsController::class, 'createGroup'])->name('mifracruds.group.create');
-Route::middleware('role:super-admin')->post('mifracruds/group/delete/{id}',[MifracrudsCrudsController::class, 'deleteGroup'])->name('mifracruds.group.delete');
+// Rotte users
+Route::middleware('role:super-admin')->post('mifracruds/users/update/{id}',[MifracrudsUsersController::class, 'update'])->name('mifracruds.users.update');
+Route::middleware('role:super-admin')->post('mifracruds/users/create',[MifracrudsUsersController::class, 'create'])->name('mifracruds.users.create');
+Route::middleware('role:super-admin')->post('mifracruds/users/edit',[MifracrudsUsersController::class, 'edit'])->name('mifracruds.users.edit');
+Route::middleware('role:super-admin')->post('mifracruds/users/delete/{id}',[MifracrudsUsersController::class, 'delete'])->name('mifracruds.users.delete');

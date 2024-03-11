@@ -16,13 +16,14 @@ class {{crud_name}}Controller extends Controller
 
         $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','mifracruds.users')->first();
 
-        $itemsWithGroupNames = User::get();
+        $items = User::with('roles')->get();
         
         $path = CrudHelpers::conversionRouteName($menu['route_name'], 'path');
         $name = str_replace("mifracruds/", "", $path);
 
         $contents = [
             "title" => $menu['title'],
+            "route_name" => $path, // rotta per da utilizzare su tabulator per edit, create, update e delete 
             "element" => 'pages.mifracruds.'.$name.'.modal.element',
             "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsUsersController',
             'export_print' => false,
@@ -35,7 +36,28 @@ class {{crud_name}}Controller extends Controller
 
         return view('{{route_name}}.index')
             ->with('contents', $contents)
-            ->with('items', collect($itemsWithGroupNames));
+            ->with('items', collect($items));
+    }
+
+    public function edit(Request $request)
+    {
+        $id = $request->id;
+        $modalID = $request->modal_id;
+        $view = $request->view;
+        $routeName = $request->route_name;
+
+        // Restituisce la vista con le variabili passate dinamicamente
+        return view($view, compact('id', 'modalID', 'routeName'));
+    }
+
+    public function update(Request $request)
+    {
+        dd($request);
+    }
+
+    public function create(Request $request)
+    {
+        
     }
 
     public function delete(Request $request, $id)

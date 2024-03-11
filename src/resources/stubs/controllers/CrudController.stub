@@ -48,6 +48,7 @@ class {{crud_name}}Controller extends Controller
 
         $contents = [
             "title" => $items[0]['title'], // titolo della pagina
+            "route_name" => $path, // rotta per da utilizzare su tabulator per edit, create, update e delete 
             "element" => 'pages.mifracruds.'.$name.'.modal.element', // path del modal per la modifica
             "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsCrudsController', // fare riferimento a ThemeController::tabulator_delete
             'export_print' => true, // per visualizzare stampa e export
@@ -61,6 +62,22 @@ class {{crud_name}}Controller extends Controller
         return view('{{route_name}}.index')
             ->with('contents', $contents)
             ->with('items', collect($itemsWithGroupNames));
+    }
+
+    public function edit(Request $request)
+    {
+        $id = $request->id;
+        $modalID = $request->modal_id;
+        $view = $request->view;
+        $routeName = $request->route_name;
+
+        // Restituisce la vista con le variabili passate dinamicamente
+        return view($view, compact('id', 'modalID', 'routeName'));
+    }
+
+    public function update(Request $request)
+    {
+        dd($request);
     }
 
     public function create(Request $request)
