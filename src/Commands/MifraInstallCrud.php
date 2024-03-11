@@ -124,7 +124,6 @@ class MifraInstallCrud extends Command
         DB::connection('mongodb')->getMongoDB()->drop();
 
         foreach ($menuItems as $menuItem) {
-            // Creo i permessio per il nuovo CRUD
             $permissions = $menuItem['permissions'];
             $permissionName = CrudHelpers::conversionRouteName($menuItem['route_name'], 'permission');
             foreach ($permissions as $permission) {
@@ -244,7 +243,7 @@ class MifraInstallCrud extends Command
             $routeContent .= $this->createContenRouteFile($menuItem);
             $routeContentHead .= "use App\Http\Controllers\MifraCruds\\{$className}Controller;\n";
 
-            // Creo i permessio per il nuovo CRUD
+            // Creo il permesso per il nuovo CRUD
             $permissions = $menuItem['permissions'];
             $permissionName = CrudHelpers::conversionRouteName($menuItem['route_name'], 'permission');
             foreach ($permissions as $permission) {

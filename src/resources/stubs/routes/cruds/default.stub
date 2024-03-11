@@ -1,6 +1,6 @@
 
-Route::middleware('auth')->post('mifracruds/create',[MifracrudsCrudsController::class, 'create'])->name('mifracruds.create');
-Route::middleware('auth')->post('mifracruds/delete/{id}',[MifracrudsCrudsController::class, 'delete'])->name('mifracruds.delete');
+Route::middleware('role:super-admin')->post('mifracruds/create',[MifracrudsCrudsController::class, 'create'])->name('mifracruds.create');
+Route::middleware('role:super-admin')->post('mifracruds/delete/{id}',[MifracrudsCrudsController::class, 'delete'])->name('mifracruds.delete');
 
-Route::middleware('auth')->post('mifracruds/group/create/{id}',[MifracrudsCrudsController::class, 'createGroup'])->name('mifracruds.group.create');
-Route::middleware('auth')->post('mifracruds/group/delete/{id}',[MifracrudsCrudsController::class, 'deleteGroup'])->name('mifracruds.group.delete');
+Route::middleware('role:super-admin')->post('mifracruds/group/create/{id}',[MifracrudsCrudsController::class, 'createGroup'])->name('mifracruds.group.create');
+Route::middleware('role:super-admin')->post('mifracruds/group/delete/{id}',[MifracrudsCrudsController::class, 'deleteGroup'])->name('mifracruds.group.delete');

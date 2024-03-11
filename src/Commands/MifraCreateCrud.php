@@ -3,10 +3,12 @@
 namespace Mifra\Crud\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
+use Spatie\Permission\Models\Role;
 use Mifra\Crud\Helpers\CrudHelpers;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Config;
+use Spatie\Permission\Models\Permission;
 
 class MifraCreateCrud extends Command
 {
@@ -20,6 +22,7 @@ class MifraCreateCrud extends Command
 
     protected $databaseConfig;
     protected $elements;
+    protected $permissions;
 
     // Crea una nuova istanza del comando
     public function __construct()
@@ -40,6 +43,9 @@ class MifraCreateCrud extends Command
 
         // Carica la configurazione del database da un file di configurazione
         $this->databaseConfig = $database;
+
+        // Lista dei permessi di default
+        $this->permissions = config('mifracrud.permissions');
     }
 
     // Esegue il comando Artisan
@@ -131,6 +137,20 @@ class MifraCreateCrud extends Command
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
         $deletedCount = $collection->where('id', intval($this->elements['id']))->delete();
 
+        $permissionName = CrudHelpers::conversionRouteName($this->elements['route_name'], 'permission');
+        foreach ($this->permissions as $permission) {
+            // Costruisce il nome del permesso
+            $fullPermissionName = $permission . '_' . $permissionName;
+
+            // Trova il permesso per nome
+            $permissionToDelete = Permission::where('name', $fullPermissionName)->first();
+
+            // Se il permesso esiste, lo elimina
+            if ($permissionToDelete) {
+                $permissionToDelete->delete();
+            }
+        }
+
         if ($deletedCount > 0) {
             $this->info("Elemento con ID {$this->elements['id']} eliminato con successo.");
         } else {
@@ -142,6 +162,17 @@ class MifraCreateCrud extends Command
     {
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
         $exists = $collection->where('id', intval($this->elements['id']))->first(); // Verifica l'esistenza dell'elemento
+
+        // Creo il ruolo super-admin se non esiste
+        $superAdmin = Role::firstOrCreate([
+            'name' => 'super-admin',
+        ]);
+        // Creo il permesso per il nuovo CRUD
+        $permissionName = CrudHelpers::conversionRouteName($this->elements['route_name'], 'permission');
+        foreach ($this->permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission . '_' . $permissionName]);
+            $superAdmin->givePermissionTo($permission . '_' . $permissionName);
+        }
 
         if (!$exists) {
             $collection->insert($this->elements);

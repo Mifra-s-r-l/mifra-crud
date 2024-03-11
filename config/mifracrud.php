@@ -21,15 +21,15 @@ return [
     | Inserire qui i dati per creare il tuo database CRUD mongo
     |
      */
-    
+
     'database' => [
-        'host'          => env('MIFRACRUD_MONGODB_HOST', 'localhost'),
-        'port'          => env('MIFRACRUD_MONGODB_PORT', 27017),
-        'database'      => env('MIFRACRUD_MONGODB_DATABASE', 'database'),
-        'collection'    => env('MIFRACRUD_MONGODB_COLLECTION', 'collection'),
-        'group'         => env('MIFRACRUD_MONGODB_GROUP', 'group'),
-        'username'      => env('MIFRACRUD_MONGODB_USERNAME', 'username'),
-        'password'      => env('MIFRACRUD_MONGODB_PASSWORD', 'password')
+        'host' => env('MIFRACRUD_MONGODB_HOST', 'localhost'),
+        'port' => env('MIFRACRUD_MONGODB_PORT', 27017),
+        'database' => env('MIFRACRUD_MONGODB_DATABASE', 'database'),
+        'collection' => env('MIFRACRUD_MONGODB_COLLECTION', 'collection'),
+        'group' => env('MIFRACRUD_MONGODB_GROUP', 'group'),
+        'username' => env('MIFRACRUD_MONGODB_USERNAME', 'username'),
+        'password' => env('MIFRACRUD_MONGODB_PASSWORD', 'password'),
     ],
 
     /*
@@ -40,15 +40,32 @@ return [
     | Inserire qui i dati per creare il menù di defaul in fase di installazione
     |
      */
-    
+
     'groups_menus' => [
         [
             "id" => 1,
             "title" => "Gestione",
             "icon" => "Settings",
             "group" => "managements", // deve corrispondere a quello delle voci di menu
-            "order" => 1
-        ]
+            "order" => 1,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Permessi di default
+    |--------------------------------------------------------------------------
+    |
+    | Inserire qui che verranno creati per i nuovi CRUD
+    |
+     */
+
+    "permissions" => [
+        "view",
+        "create",
+        "modify",
+        "trash",
+        "delete",
     ],
 
     /*
@@ -60,7 +77,7 @@ return [
     | Importate non cambiare l'orinamento il loro route_name
     |
      */
-    
+
     'menus' => [
         [
             "id" => 1,
@@ -71,12 +88,12 @@ return [
             "group" => "managements", // deve corrispondere a quello del gruppo
             "order" => 1,
             "permissions" => [
-                "view", 
+                "view",
                 "create",
                 "modify",
                 "trash",
-                "delete"
-            ]
+                "delete",
+            ],
         ],
         [
             "id" => 2,
@@ -87,12 +104,12 @@ return [
             "group" => "managements", // deve corrispondere a quello del gruppo
             "order" => 2,
             "permissions" => [
-                "view", 
+                "view",
                 "create",
                 "modify",
                 "trash",
-                "delete"
-            ]
+                "delete",
+            ],
         ],
         [
             "id" => 3,
@@ -103,12 +120,12 @@ return [
             "group" => "managements", // deve corrispondere a quello del gruppo
             "order" => 3,
             "permissions" => [
-                "view", 
+                "view",
                 "create",
                 "modify",
                 "trash",
-                "delete"
-            ]
+                "delete",
+            ],
         ],
         [
             "id" => 4,
@@ -119,13 +136,13 @@ return [
             "group" => "managements", // deve corrispondere a quello del gruppo
             "order" => 4,
             "permissions" => [
-                "view", 
+                "view",
                 "create",
                 "modify",
                 "trash",
-                "delete"
-            ]
-        ]
-    ]
-    
+                "delete",
+            ],
+        ],
+    ],
+
 ];
