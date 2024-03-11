@@ -3,12 +3,12 @@
 namespace Mifra\Crud\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
-use Mifra\Crud\Helpers\CrudHelpers;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Mifra\Crud\Helpers\CrudHelpers;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class MifraInstallCrud extends Command
 {
@@ -123,26 +123,28 @@ class MifraInstallCrud extends Command
 
         DB::connection('mongodb')->getMongoDB()->drop();
 
-        // Creo i permessio per il nuovo CRUD
-        $permissions = $menuItem['permissions'];
-        $permissionName = CrudHelpers::conversionRouteName($menuItem['route_name'], 'permission');
-        foreach ($permissions as $permission) {
-            // Costruisce il nome del permesso
-            $fullPermissionName = $permission . '_' . $permissionName;
+        foreach ($menuItems as $menuItem) {
+            // Creo i permessio per il nuovo CRUD
+            $permissions = $menuItem['permissions'];
+            $permissionName = CrudHelpers::conversionRouteName($menuItem['route_name'], 'permission');
+            foreach ($permissions as $permission) {
+                // Costruisce il nome del permesso
+                $fullPermissionName = $permission . '_' . $permissionName;
 
-            // Trova il permesso per nome
-            $permissionToDelete = Permission::where('name', $fullPermissionName)->first();
+                // Trova il permesso per nome
+                $permissionToDelete = Permission::where('name', $fullPermissionName)->first();
 
-            // Se il permesso esiste, lo elimina
-            if ($permissionToDelete) {
-                $permissionToDelete->delete();
+                // Se il permesso esiste, lo elimina
+                if ($permissionToDelete) {
+                    $permissionToDelete->delete();
+                }
             }
-        }
-        $role = Role::findByName('super-admin');
+            $role = Role::findByName('super-admin');
 
-        if ($role) {
-            $role->delete();
-            // Il ruolo è stato eliminato
+            if ($role) {
+                $role->delete();
+                // Il ruolo è stato eliminato
+            }
         }
     }
 
