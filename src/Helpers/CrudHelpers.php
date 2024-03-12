@@ -51,6 +51,32 @@ class CrudHelpers
         $commands->info("Creato/Aggiornato il controller: ".$controllerFilePath.", qui puoi inserire il tuo codice per gestire la logica della vista");
     }
 
+    public static function createRequestFile($commands, $route_name, $directoryPathRequest, $fileStub = "CrudRequest")
+    {
+        // Assicurati che questa directory esista o sia creata
+        if (!File::exists($directoryPathRequest)) {
+            File::makeDirectory($directoryPathRequest, 0755, true);
+        }
+
+        // Costruisci il percorso del file .stub
+        $stubPath = __DIR__ . '/../resources/stubs/'.$fileStub.'.stub';
+
+        if (!file_exists($stubPath)) {
+            $commands->error("Il file stub {$stubPath} non esiste.");
+            return 1;
+        }
+
+        $className = CrudHelpers::conversionRouteName($route_name, 'className');
+
+        $requestTemplate = File::get($stubPath);
+        $requestContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, $route_name], $requestTemplate);
+
+        $requestFilePath = base_path($directoryPathRequest . "/{$className}Request.php");
+        File::put($requestFilePath, $requestContent);
+
+        $commands->info("Creato/Aggiornato il request: ".$requestFilePath.", qui puoi inserire il tuo codice per gestire la logica della vista");
+    }
+
     public static function createModelFile($commands, $route_name, $directoryPathModel, $fileStub = "CrudModel")
     {
         // Assicurati che questa directory esista o sia creata

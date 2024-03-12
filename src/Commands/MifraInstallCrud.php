@@ -222,25 +222,26 @@ class MifraInstallCrud extends Command
                 $this->info("Aggiorno la voce di menu: {$menuItem['title']}");
             }
 
-            // Creo il controller
+            // Creo la struttura dei file
             if ($menuItem['route_name'] == 'mifracruds.cruds') {
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/CrudController');
+                CrudHelpers::createRequestFile($this, $menuItem['route_name'], 'app/Http/Requests/MifraCruds');
+                CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds');
             } else if ($menuItem['route_name'] == 'mifracruds.users') {
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/UsersController');
+                CrudHelpers::createRequestFile($this, $menuItem['route_name'], 'app/Http/Requests/MifraCruds', 'requests/UsersRequest');
+                CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds');
             } else if ($menuItem['route_name'] == 'mifracruds.roles') {
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/RolesController');
-            } else if ($menuItem['route_name'] == 'mifracruds.permissions') {
-                CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/PermissionsController');
-            } else {
-                CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds');
-            }
-
-            // Creo il model
-            if ($menuItem['route_name'] == 'mifracruds.roles') {
+                CrudHelpers::createRequestFile($this, $menuItem['route_name'], 'app/Http/Requests/MifraCruds');
                 CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds', 'models/RolesModel');
             } else if ($menuItem['route_name'] == 'mifracruds.permissions') {
+                CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/PermissionsController');
+                CrudHelpers::createRequestFile($this, $menuItem['route_name'], 'app/Http/Requests/MifraCruds');
                 CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds', 'models/PermissionsModel');
             } else {
+                CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds');
+                CrudHelpers::createRequestFile($this, $menuItem['route_name'], 'app/Http/Requests/MifraCruds');
                 CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds');
             }
 
