@@ -236,7 +236,11 @@ class MifraInstallCrud extends Command
             }
 
             // Creo il model
-            CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds');
+            if ($menuItem['route_name'] == 'mifracruds.permissions') {
+                CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds', 'models/PermissionsModel');
+            } else {
+                CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds');
+            }
 
             // Creo la view
             CrudHelpers::createViewFile($this, $menuItem['route_name']);

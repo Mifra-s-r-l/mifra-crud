@@ -16,31 +16,15 @@ class {{crud_name}}Controller extends Controller
 
         $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','{{route_name}}')->first();
 
-        $permissions = Permission::get();
+        $items = MifracrudsPermissionsModel::get();
         
         $path = CrudHelpers::conversionRouteName($menu['route_name'], 'path');
         $name = str_replace("mifracruds/", "", $path);
 
-        $items = collect([]);
-
-        foreach ($permissions as $permission) {
-            $parts = explode('_', $permission->name);
-            $searchPattern = str_replace('_', '.', implode('_', array_slice($parts, 1)));
-
-            $crud = DB::connection('mongodb')->collection($database['collection'])->where('route_name', $searchPattern)->first();
-        
-            $permission->crud_name = $crud['title'];
-            $permission->crud_desc = $crud['desc'];
-            $permission->title = ucfirst($parts[0]);
-            $items->push($permission);
-        }
-
         $contents = [
             "title" => $menu['title'],
             "route_name" => $path, // rotta per da utilizzare su tabulator per edit, create, update e delete
-            "element" => 'pages.mifracruds.' . $name . '.modal.element',
             "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\{{crud_name}}Controller',
-            'export_print' => true,
             'init_sort' => [0 => ['column' => 'crud_name', 'dir' => 'asc']],
             'filters_top_bar_tabulator' => [
                 "list" => [

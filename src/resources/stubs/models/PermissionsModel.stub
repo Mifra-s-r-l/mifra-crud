@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Models\MifraCruds;
+
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Permission as SpatiePermission;
+
+class {{crud_name}}Model extends SpatiePermission
+{
+
+    protected $fillable = [
+        'name', 
+        'guard_name',
+        'crud_name',
+        'crud_desc',
+    ];
+
+    protected $appends = [
+        'title',
+        'crud_name',
+        'crud_desc',
+    ];
+
+    // Aggiungi qui eventuali relazioni, accessori, mutatori o metodi personalizzati
+
+    public function getTitleAttribute()
+    {
+        $database = config('mifracrud.database');
+        $parts = explode('_', $this->name);
+        return ucfirst($parts[0]);
+    }
+
+    public function getCrudNameAttribute()
+    {
+        $database = config('mifracrud.database');
+        $parts = explode('_', $this->name);
+        $searchPattern = str_replace('_', '.', implode('_', array_slice($parts, 1)));
+        $crud = DB::connection('mongodb')->collection($database['collection'])->where('route_name', $searchPattern)->first();
+        return $crud['title'];
+    }
+
+    public function getCrudDescAttribute()
+    {
+        $database = config('mifracrud.database');
+        $parts = explode('_', $this->name);
+        $searchPattern = str_replace('_', '.', implode('_', array_slice($parts, 1)));
+        $crud = DB::connection('mongodb')->collection($database['collection'])->where('route_name', $searchPattern)->first();
+        return $crud['desc'];
+    }
+}

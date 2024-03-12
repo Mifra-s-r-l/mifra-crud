@@ -51,14 +51,14 @@ class CrudHelpers
         $commands->info("Creato/Aggiornato il controller: ".$controllerFilePath.", qui puoi inserire il tuo codice per gestire la logica della vista");
     }
 
-    public static function createModelFile($commands, $route_name, $directoryPathModel)
+    public static function createModelFile($commands, $route_name, $directoryPathModel, $fileStub = "CrudModel")
     {
         // Assicurati che questa directory esista o sia creata
         if (!File::exists($directoryPathModel)) {
             File::makeDirectory($directoryPathModel, 0755, true);
         }
 
-        $stubPath = __DIR__ . '/../resources/stubs/CrudModel.stub';
+        $stubPath = __DIR__ . '/../resources/stubs/'.$fileStub.'.stub';
 
         if (!file_exists($stubPath)) {
             $commands->error("Il file stub {$stubPath} non esiste.");

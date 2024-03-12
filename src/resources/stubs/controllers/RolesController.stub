@@ -24,9 +24,7 @@ class {{crud_name}}Controller extends Controller
         $contents = [
             "title" => $menu['title'],
             "route_name" => $path, // rotta per da utilizzare su tabulator per edit, create, update e delete
-            "element" => 'pages.mifracruds.' . $name . '.modal.element',
             "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\{{crud_name}}Controller',
-            'export_print' => true,
             'init_sort' => [0 => ['column' => 'name', 'dir' => 'asc']],
             'filters_top_bar_tabulator' => [
                 "list" => [
