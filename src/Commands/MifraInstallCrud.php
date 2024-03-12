@@ -227,6 +227,10 @@ class MifraInstallCrud extends Command
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/CrudController');
             } else if ($menuItem['route_name'] == 'mifracruds.users') {
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/UsersController');
+            } else if ($menuItem['route_name'] == 'mifracruds.roles') {
+                CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/RolesController');
+            } else if ($menuItem['route_name'] == 'mifracruds.permissions') {
+                CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/PermissionsController');
             } else {
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds');
             }

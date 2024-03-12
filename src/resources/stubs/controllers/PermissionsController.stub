@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\MifraCruds;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Mifra\Crud\Helpers\CrudHelpers;
-use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class {{crud_name}}Controller extends Controller
 {
@@ -17,10 +16,24 @@ class {{crud_name}}Controller extends Controller
 
         $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','{{route_name}}')->first();
 
-        $items = User::with('roles')->get();
+        $permissions = Permission::get();
         
         $path = CrudHelpers::conversionRouteName($menu['route_name'], 'path');
         $name = str_replace("mifracruds/", "", $path);
+
+        $items = collect([]);
+
+        foreach ($permissions as $permission) {
+            $parts = explode('_', $permission->name);
+            $searchPattern = str_replace('_', '.', implode('_', array_slice($parts, 1)));
+
+            $crud = DB::connection('mongodb')->collection($database['collection'])->where('route_name', $searchPattern)->first();
+        
+            $permission->crud_name = $crud['title'];
+            $permission->crud_desc = $crud['desc'];
+            $permission->title = ucfirst($parts[0]);
+            $items->push($permission);
+        }
 
         $contents = [
             "title" => $menu['title'],
@@ -28,11 +41,10 @@ class {{crud_name}}Controller extends Controller
             "element" => 'pages.mifracruds.' . $name . '.modal.element',
             "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\{{crud_name}}Controller',
             'export_print' => true,
-            'init_sort' => [0 => ['column' => 'name', 'dir' => 'asc']],
+            'init_sort' => [0 => ['column' => 'crud_name', 'dir' => 'asc']],
             'filters_top_bar_tabulator' => [
                 "list" => [
                     "name" => "Nome",
-                    "email" => "Email",
                     ]
                 ,
                 "reset" => "name"
@@ -57,35 +69,16 @@ class {{crud_name}}Controller extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->save();
-
-        $rolesIds = $request->input('roles', []);
-        $roles = Role::find($rolesIds); // Trova i ruoli basandoti sugli ID
-        if ($roles) {
-            $user->syncRoles($roles); // Assegna i ruoli all'utente
-        }
+        
     }
 
     public function create(Request $request)
     {
-        $user = new User;
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->save();
-
-        $rolesIds = $request->input('roles', []);
-        $roles = Role::find($rolesIds); // Trova i ruoli basandoti sugli ID
-        if ($roles) {
-            $user->syncRoles($roles); // Assegna i ruoli all'utente
-        }
+        
     }
 
     public function delete(Request $request, $id)
     {
-        $user = User::where('id', $id)->first();
-        $user->forceDelete();
+        
     }
 }

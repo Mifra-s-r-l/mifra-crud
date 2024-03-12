@@ -12,3 +12,15 @@ Route::middleware('role:super-admin')->post('mifracruds/users/update/{id}',[Mifr
 Route::middleware('role:super-admin')->post('mifracruds/users/create',[MifracrudsUsersController::class, 'create'])->name('mifracruds.users.create');
 Route::middleware('role:super-admin')->post('mifracruds/users/edit',[MifracrudsUsersController::class, 'edit'])->name('mifracruds.users.edit');
 Route::middleware('role:super-admin')->post('mifracruds/users/delete/{id}',[MifracrudsUsersController::class, 'delete'])->name('mifracruds.users.delete');
+
+// Rotte roles
+Route::middleware('role:super-admin')->post('mifracruds/roles/update/{id}',[MifracrudsRolesController::class, 'update'])->name('mifracruds.roles.update');
+Route::middleware('role:super-admin')->post('mifracruds/roles/create',[MifracrudsRolesController::class, 'create'])->name('mifracruds.roles.create');
+Route::middleware('role:super-admin')->post('mifracruds/roles/edit',[MifracrudsRolesController::class, 'edit'])->name('mifracruds.roles.edit');
+Route::middleware('role:super-admin')->post('mifracruds/roles/delete/{id}',[MifracrudsRolesController::class, 'delete'])->name('mifracruds.roles.delete');
+
+// Rotte permissions
+Route::middleware('role:super-admin')->post('mifracruds/permissions/update/{id}',[MifracrudsRolesController::class, 'update'])->name('mifracruds.permissions.update');
+Route::middleware('role:super-admin')->post('mifracruds/permissions/create',[MifracrudsRolesController::class, 'create'])->name('mifracruds.permissions.create');
+Route::middleware('role:super-admin')->post('mifracruds/permissions/edit',[MifracrudsRolesController::class, 'edit'])->name('mifracruds.permissions.edit');
+Route::middleware('role:super-admin')->post('mifracruds/permissions/delete/{id}',[MifracrudsRolesController::class, 'delete'])->name('mifracruds.permissions.delete');
