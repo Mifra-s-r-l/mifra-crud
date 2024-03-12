@@ -5,7 +5,7 @@ namespace App\Http\Controllers\MifraCruds;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
+use App\Models\MifraCruds\MifracrudsRolesModel;
 use Mifra\Crud\Helpers\CrudHelpers;
 
 class {{crud_name}}Controller extends Controller
@@ -16,7 +16,7 @@ class {{crud_name}}Controller extends Controller
 
         $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','{{route_name}}')->first();
 
-        $items = Role::get();
+        $items = MifracrudsRolesModel::with('permissions_crud')->get();
         
         $path = CrudHelpers::conversionRouteName($menu['route_name'], 'path');
         $name = str_replace("mifracruds/", "", $path);

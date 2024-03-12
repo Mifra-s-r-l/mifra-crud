@@ -3,9 +3,10 @@
 namespace App\Models\MifraCruds;
 
 use Illuminate\Support\Facades\DB;
+use App\Models\MifraCruds\MifracrudsRolesModel;
 use Spatie\Permission\Models\Permission as SpatiePermission;
 
-class {{crud_name}}Model extends SpatiePermission
+class MifracrudsPermissionsModel extends SpatiePermission
 {
 
     protected $fillable = [
@@ -46,5 +47,10 @@ class {{crud_name}}Model extends SpatiePermission
         $searchPattern = str_replace('_', '.', implode('_', array_slice($parts, 1)));
         $crud = DB::connection('mongodb')->collection($database['collection'])->where('route_name', $searchPattern)->first();
         return $crud['desc'];
+    }
+
+    public function roles_crud()
+    {
+        return $this->belongsToMany(MifracrudsRolesModel::class, 'role_has_permissions', 'permission_id', 'role_id');
     }
 }

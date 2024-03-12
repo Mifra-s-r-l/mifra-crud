@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Mifra\Crud\Helpers\CrudHelpers;
-use Spatie\Permission\Models\Permission;
+use App\Models\MifraCruds\MifracrudsPermissionsModel;
 
 class {{crud_name}}Controller extends Controller
 {
