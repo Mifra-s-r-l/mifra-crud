@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\DB;
 use App\Models\MifraCruds\MifracrudsRolesModel;
 use Mifra\Crud\Helpers\CrudHelpers;
 
-class {{crud_name}}Controller extends Controller
+class MifracrudsRolesController extends Controller
 {
     public function index()
     {
         $database = config('mifracrud.database');
 
-        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','{{route_name}}')->first();
+        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','mifracruds.roles')->first();
 
         $items = MifracrudsRolesModel::with('permissions_crud')->get();
         
@@ -24,7 +24,7 @@ class {{crud_name}}Controller extends Controller
         $contents = [
             "title" => $menu['title'],
             "route_name" => $path, // rotta per da utilizzare su tabulator per edit, create, update e delete
-            "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\{{crud_name}}Controller',
+            "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsRolesController',
             'init_sort' => [0 => ['column' => 'name', 'dir' => 'asc']],
             'filters_top_bar_tabulator' => [
                 "list" => [
@@ -35,7 +35,7 @@ class {{crud_name}}Controller extends Controller
             ],
         ];
 
-        return view('{{route_name}}.index')
+        return view('mifracruds.roles.index')
             ->with('contents', $contents)
             ->with('items', collect($items));
     }

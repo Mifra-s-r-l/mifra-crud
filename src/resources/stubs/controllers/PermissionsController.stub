@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\DB;
 use Mifra\Crud\Helpers\CrudHelpers;
 use App\Models\MifraCruds\MifracrudsPermissionsModel;
 
-class {{crud_name}}Controller extends Controller
+class MifracrudsPermissionsController extends Controller
 {
     public function index()
     {
         $database = config('mifracrud.database');
 
-        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','{{route_name}}')->first();
+        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','mifracruds.permissions')->first();
 
         $items = MifracrudsPermissionsModel::get();
         
@@ -24,7 +24,7 @@ class {{crud_name}}Controller extends Controller
         $contents = [
             "title" => $menu['title'],
             "route_name" => $path, // rotta per da utilizzare su tabulator per edit, create, update e delete
-            "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\{{crud_name}}Controller',
+            "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsPermissionsController',
             'init_sort' => [0 => ['column' => 'crud_name', 'dir' => 'asc']],
             'filters_top_bar_tabulator' => [
                 "list" => [
@@ -35,7 +35,7 @@ class {{crud_name}}Controller extends Controller
             ],
         ];
 
-        return view('{{route_name}}.index')
+        return view('mifracruds.permissions.index')
             ->with('contents', $contents)
             ->with('items', collect($items));
     }

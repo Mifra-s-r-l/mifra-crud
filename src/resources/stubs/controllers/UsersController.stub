@@ -6,16 +6,18 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Mifra\Crud\Helpers\CrudHelpers;
 use Spatie\Permission\Models\Role;
+use Mifra\Crud\Helpers\CrudHelpers;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\MifraCruds\MifracrudsUsersRequest;
 
-class {{crud_name}}Controller extends Controller
+class MifracrudsUsersController extends Controller
 {
     public function index()
     {
         $database = config('mifracrud.database');
 
-        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','{{route_name}}')->first();
+        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','mifracruds.users')->first();
 
         $items = User::with('roles')->get();
         
@@ -26,7 +28,7 @@ class {{crud_name}}Controller extends Controller
             "title" => $menu['title'],
             "route_name" => $path, // rotta per da utilizzare su tabulator per edit, create, update e delete
             "element" => 'pages.mifracruds.' . $name . '.modal.element',
-            "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\{{crud_name}}Controller',
+            "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsUsersController',
             'export_print' => true,
             'init_sort' => [0 => ['column' => 'name', 'dir' => 'asc']],
             'filters_top_bar_tabulator' => [
@@ -39,7 +41,7 @@ class {{crud_name}}Controller extends Controller
             ],
         ];
 
-        return view('{{route_name}}.index')
+        return view('mifracruds.users.index')
             ->with('contents', $contents)
             ->with('items', collect($items));
     }
@@ -69,11 +71,12 @@ class {{crud_name}}Controller extends Controller
         }
     }
 
-    public function create(Request $request)
+    public function create(MifracrudsUsersRequest $request)
     {
         $user = new User;
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->password = Hash::make($request->password);
         $user->save();
 
         $rolesIds = $request->input('roles', []);

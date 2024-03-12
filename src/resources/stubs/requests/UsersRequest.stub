@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Http\Requests\MifraCruds;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class MifracrudsUsersRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        //TODO inserire validazione sui ruoli
+        $ret = [
+            'name' => 'required|string|max:255',
+            'email' => ['required', 'string', 'regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/'],
+            'password' => [],
+
+        ];
+        $ret['email'][] = Rule::unique('users');
+        $ret['password'][] = 'required';
+        $ret['password'][] = 'min:8';
+        $ret['password'][] = 'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/';
+        $ret['password_confirmation'][] = 'required';
+        $ret['password_confirmation'][] = 'same:password';
+
+        return $ret;
+    }
+
+    public function messages()
+    {
+        $messages = [
+            'name.required' => "Il nome è richiesto",
+            'email.required' => "La mail è richiesta",
+            'email.unique' => 'Questa email è già stata registrata',
+            'email.regex' => "Il formato della mail non è valido",
+            'password.required' => 'La password è richiesta',
+            'password.min' => 'La password deve essere lunga almeno 8 caratteri',
+            'password.regex' => 'La password deve contenere almeno una lettera maiuscola, minuscola, numeri e caratteri speciali',
+            'password_confirmation.required' => 'La conferma della password è richiesta',
+            'password_confirmation.same' => 'Le password non coincidono',
+        ];
+        return $messages;
+    }
+}

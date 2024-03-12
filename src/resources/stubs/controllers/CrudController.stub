@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Mifra\Crud\Helpers\CrudHelpers;
 use Illuminate\Support\Facades\Artisan;
 
-class {{crud_name}}Controller extends Controller
+class MifracrudsCrudsController extends Controller
 {
     public function index()
     {
@@ -59,7 +59,7 @@ class {{crud_name}}Controller extends Controller
         //TODO possiamo inserire i parametri sopra direttamente nel database mongo
         //TODO sistemare la dicitura dei valori dell'array sopra
 
-        return view('{{route_name}}.index')
+        return view('mifracruds.cruds.index')
             ->with('contents', $contents)
             ->with('items', collect($itemsWithGroupNames));
     }
