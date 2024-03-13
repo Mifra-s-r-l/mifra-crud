@@ -5,8 +5,9 @@ namespace App\Http\Controllers\MifraCruds;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use App\Models\MifraCruds\MifracrudsRolesModel;
 use Mifra\Crud\Helpers\CrudHelpers;
+use App\Models\MifraCruds\MifracrudsRolesModel;
+use App\Models\MifraCruds\MifracrudsPermissionsModel;
 
 class MifracrudsRolesController extends Controller
 {
@@ -18,12 +19,14 @@ class MifracrudsRolesController extends Controller
 
         $items = MifracrudsRolesModel::with('permissions_crud')->get();
         
-        $path = CrudHelpers::conversionRouteName($menu['route_name'], 'path');
-        $name = str_replace("mifracruds/", "", $path);
+        $pathPermission = CrudHelpers::conversionRouteName($items[0]['route_name'], 'permission');
+        $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%'.$pathPermission)->get();
+        $permissionNames = $permissions->pluck('name')->toArray();
 
         $contents = [
             "title" => $menu['title'],
-            "route_name" => $path, // rotta per da utilizzare su tabulator per edit, create, update e delete
+            "route_name" => $menu['route_name'],
+            "permissions" => $permissionNames,
             "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsRolesController',
             'init_sort' => [0 => ['column' => 'name', 'dir' => 'asc']],
             'filters_top_bar_tabulator' => [
@@ -44,11 +47,10 @@ class MifracrudsRolesController extends Controller
     {
         $id = $request->id;
         $modalID = $request->modal_id;
-        $view = $request->view;
         $routeName = $request->route_name;
 
         // Restituisce la vista con le variabili passate dinamicamente
-        return view($view, compact('id', 'modalID', 'routeName'));
+        return view('pages.mifracruds.roles.modal.element', compact('id', 'modalID', 'routeName'));
     }
 
     public function update(Request $request, $id)

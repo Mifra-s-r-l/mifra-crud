@@ -7,15 +7,23 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Mifra\Crud\Helpers\CrudHelpers;
 use Illuminate\Support\Facades\Artisan;
+use App\Models\MifraCruds\MifracrudsPermissionsModel;
 
 class MifracrudsCrudsController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
+
         $database = config('mifracrud.database');
 
-        // Recupera tutti gli elementi dalla collezione di partenza
-        $items = DB::connection('mongodb')->collection($database['collection'])->get();
+        if ($user->hasAnyPermission('trash_mifracruds_cruds') && request()->trashed) {
+            // Recupera tutti gli elementi dalla collezione di partenza
+            $items = DB::connection('mongodb')->collection($database['collection'])->get();
+        } else {
+            // Recupera tutti gli elementi dalla collezione di partenza
+            $items = DB::connection('mongodb')->collection($database['collection'])->get();
+        }
 
         // Preparare un array per contenere gli elementi arricchiti con i nomi dei gruppi
         $itemsWithGroupNames = [];
@@ -43,13 +51,14 @@ class MifracrudsCrudsController extends Controller
             $itemsWithGroupNames[] = $item;
         }
 
-        $path = CrudHelpers::conversionRouteName($items[0]['route_name'], 'path');
-        $name = str_replace("mifracruds/", "", $path);
-
+        $pathPermission = CrudHelpers::conversionRouteName($items[0]['route_name'], 'permission');
+        $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%'.$pathPermission)->get();
+        $permissionNames = $permissions->pluck('name')->toArray();
+        
         $contents = [
             "title" => $items[0]['title'], // titolo della pagina
-            "route_name" => $path, // rotta per da utilizzare su tabulator per edit, create, update e delete 
-            "element" => 'pages.mifracruds.'.$name.'.modal.element', // path del modal per la modifica
+            "route_name" => $items[0]['route_name'], // rotta per da utilizzare su tabulator per edit, create, update e delete 
+            "permissions" => $permissionNames, // lista di tutti i permessi del CRUD
             "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsCrudsController', // fare riferimento a ThemeController::tabulator_delete
             'export_print' => true, // per visualizzare stampa e export
             'init_sort' => [ 0 => ['column' => 'title', 'dir' => 'asc' ] ], // ordinamento iniziale di tabulator
@@ -68,11 +77,10 @@ class MifracrudsCrudsController extends Controller
     {
         $id = $request->id;
         $modalID = $request->modal_id;
-        $view = $request->view;
         $routeName = $request->route_name;
 
         // Restituisce la vista con le variabili passate dinamicamente
-        return view($view, compact('id', 'modalID', 'routeName'));
+        return view('pages.mifracruds.cruds.modal.element', compact('id', 'modalID', 'routeName'));
     }
 
     public function update(Request $request)

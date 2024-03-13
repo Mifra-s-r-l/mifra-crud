@@ -60,6 +60,23 @@ protected $middlewareAliases = [
 ];
 ```
 
+Inserire in un modello User che si trova in app/Models/User.php, il trait così (che serve per il funzionamento dei dettagli di created_by, updated_by, deleted_by):
+```
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use App\Traits\Actionable; // Include il trait
+
+class User extends Model
+{
+    use Actionable; // Usa il trait nel modello
+
+    // Resto della definizione del modello...
+}
+```
+
 Concludi la preparazione eseguendo il comando Artisan per installare e configurare i CRUD principali:
 
 `php artisan mifra:installcrud`

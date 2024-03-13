@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Traits;
+
+trait MifracrudsActionable
+{
+    /**
+     * Appendi un'azione al campo actions.
+     *
+     * @param string $event 'created', 'updated', 'deleted'
+     */
+    public function updateActions(string $event)
+    {
+        $authUser = auth()->user();
+        
+        // Recupera l'array di azioni esistente o inizializza un nuovo array se non presente
+        $actions = $this->actions ? json_decode($this->actions, true) : [];
+
+        // Aggiungi una nuova azione all'array
+        $actions[$event] = [
+            'by' => [
+                'id' => $authUser->id,
+                'name' => $authUser->name,
+            ]
+        ];
+
+        // Salva l'array di azioni aggiornato nel modello
+        $this->actions = json_encode($actions);
+        $this->save();
+    }
+}

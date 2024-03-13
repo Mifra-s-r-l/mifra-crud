@@ -262,6 +262,9 @@ class MifraInstallCrud extends Command
                 $superAdmin->givePermissionTo($permission . '_' . $permissionName);
             }
 
+            // Carico i file per le dipendenze
+            CrudHelpers::createFile($this, 'MifracrudsActionable', 'app/Traits', 'traits/Actionable', 'per il corretto funzionamento fare riferimento alla documentazione');
+
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
         }
