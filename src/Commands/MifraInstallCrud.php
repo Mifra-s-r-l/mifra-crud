@@ -59,6 +59,15 @@ class MifraInstallCrud extends Command
     // Esegue il comando Artisan
     public function handle()
     {
+        // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
+        $this->filePathUser = $this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Modals/User.php"');
+
+        // Qui puoi verificare se il file esiste, se necessario
+        if (!File::exists($this->filePathUser)) {
+            $this->error("Il file specificato non esiste.");
+            return;
+        }
+
         $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
 
         if (File::exists($alreadyInstalledFlagPath) && (!$this->option('hardreset') && !$this->option('reset') && !$this->option('uninstall'))) {
@@ -85,15 +94,6 @@ class MifraInstallCrud extends Command
 
     public function deleteData()
     {
-        // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
-        $this->filePathUser = $this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Modals/User.php"');
-
-        // Qui puoi verificare se il file esiste, se necessario
-        if (!File::exists($this->filePathUser)) {
-            $this->error("Il file specificato non esiste.");
-            return;
-        }
-
         $menuItems = $this->jsonConfig; // Voci di menu del file di config
 
         // Rimuovere i file di controller generati
@@ -117,11 +117,11 @@ class MifraInstallCrud extends Command
         File::deleteDirectory($directoryPath);
 
         // Leggi il contenuto del file
-        $contentModelUser = File::get($this->filePathUser);
+        $contentModelUser = File::get('app/Models/MifraCruds/Users.php');
         // Rimuovi la riga
         $updatedContentModelUser = str_replace(["use MifracrudsActionable;", "use App\Traits\MifraCruds\MifracrudsActionable;"], ["\r","\r"], $contentModelUser);
         // Salva il file aggiornato
-        File::put($this->filePathUser, $updatedContentModelUser);
+        File::put('app/Models/MifraCruds/Users.php', $updatedContentModelUser);
 
         // Percorso al file web.php
         $fileRouteWeb = base_path('routes/web.php');
