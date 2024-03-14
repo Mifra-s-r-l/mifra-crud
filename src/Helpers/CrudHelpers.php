@@ -161,10 +161,10 @@ class CrudHelpers
             }
 
             // Dopo aver aggiunto tutte le linee necessarie a $middlewareArrayContent
-            if (strpos($middlewareArrayContent, "\n") === 0 && $action === 'add') {
+            /* if (strpos($middlewareArrayContent, "\n") === 0 && $action === 'add') {
                 // Rimuove il primo carattere (\n) se $middlewareArrayContent inizia con \n
                 $middlewareArrayContent = substr($middlewareArrayContent, 1);
-            }
+            } */
 
             // Ricostruisci il contenuto del file con l'array di middleware modificato
             $newFileContent = preg_replace($pattern, 'protected $' . $variableMiddleware . ' = [' . $middlewareArrayContent . "\n    ];", $fileContent);
