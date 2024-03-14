@@ -75,7 +75,8 @@ class MifraInstallCrud extends Command
             $this->info("Reinstallazione del CRUD Mifra totale...");
 
             // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
-            $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Models/User.php"'));
+            $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Models/User.php"', 'app/Models/User.php'));
+            $this->info("Hai inserito: {$this->filePathUser}");
 
             // Qui puoi verificare se il file esiste, se necessario
             if (!File::exists($this->filePathUser)) {
@@ -89,7 +90,8 @@ class MifraInstallCrud extends Command
             $this->info("Disinstallazione del CRUD Mifra...");
 
             // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
-            $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Models/User.php"'));
+            $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Models/User.php"', 'app/Models/User.php'));
+            $this->info("Hai inserito: {$this->filePathUser}");
 
             // Qui puoi verificare se il file esiste, se necessario
             if (!File::exists($this->filePathUser)) {
