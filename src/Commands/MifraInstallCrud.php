@@ -59,12 +59,12 @@ class MifraInstallCrud extends Command
     public function handle()
     {
         // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
-        $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Models/User.php"', 'app/Models/User.php'));
-        $this->info("Hai inserito: {$this->filePathUser}");
+        $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User. Premi invio per usare il valore predefinito, altrimenti specifica il tuo percorso:', 'app/Models/User.php'));
+        $this->info("Hai inserito questo path: {$this->filePathUser}");
 
         // Qui puoi verificare se il file esiste, se necessario
         if (!File::exists($this->filePathUser)) {
-            $this->error("Il file specificato non esiste.");
+            $this->error("Il file specificato non esiste, operazione interrotta.");
             return;
         }
 
@@ -119,7 +119,7 @@ class MifraInstallCrud extends Command
         // Leggi il contenuto del file
         $contentModelUser = File::get($this->filePathUser);
         // Rimuovi la riga
-        $updatedContentModelUser = str_replace(["use MifracrudsActionable;", "use App\Traits\MifraCruds\MifracrudsActionable;"], ["\r", "\r"], $contentModelUser);
+        $updatedContentModelUser = str_replace(["\n    use MifracrudsActionable;", "\nuse App\Traits\MifraCruds\MifracrudsActionable;"], ["", ""], $contentModelUser);
         // Salva il file aggiornato
         File::put($this->filePathUser, $updatedContentModelUser);
 
@@ -312,7 +312,7 @@ class MifraInstallCrud extends Command
         if (!str_contains($fileContent, trim($traitToAddOutside))) {
             $namespacePosition = strpos($fileContent, ';');
             if ($namespacePosition !== false) {
-                $fileContent = substr_replace($fileContent, "\n" . $traitToAddOutside, $namespacePosition + 1, 0);
+                $fileContent = substr_replace($fileContent, $traitToAddOutside, $namespacePosition + 1, 0);
             } else {
                 $fileContent = "<?php\n\n" . $traitToAddOutside . substr($fileContent, 5);
             }
