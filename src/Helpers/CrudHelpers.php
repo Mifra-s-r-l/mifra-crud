@@ -126,7 +126,7 @@ class CrudHelpers
 
     public static function modifyMiddlewareSpatie($action)
     {
-        $filePath = 'app/Http/Kernel.php'; // Percorso del file da modificare
+        $filePath = base_path('app/Http/Kernel.php'); // Percorso del file da modificare
         $middlewaresToAdd = [
             "'role' => \\Spatie\\Permission\\Middleware\\RoleMiddleware::class,",
             "'permission' => \\Spatie\\Permission\\Middleware\\PermissionMiddleware::class,",
