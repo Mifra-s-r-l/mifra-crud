@@ -124,7 +124,7 @@ class CrudHelpers
         $commands->info("Creato/Aggiornato il model: " . $modelFilePath . ", qui puoi inserire il tuo codice per gestire il database della vista");
     }
 
-    public static function modifyMiddlewareSpatie($action)
+    public static function modifyMiddlewareSpatie($variableMiddleware, $action)
     {
         $filePath = base_path('app/Http/Kernel.php'); // Percorso del file da modificare
         $middlewaresToAdd = [
@@ -137,7 +137,7 @@ class CrudHelpers
         $fileContent = file_get_contents($filePath);
 
         // Cerca il punto di inserimento, che è l'array $routeMiddleware
-        $pattern = '/protected\s+\$routeMiddleware\s*=\s*\[/';
+        $pattern = '/protected\s+\$'.$variableMiddleware.'\s*=\s*\[/';
 
         // Trova la posizione del pattern nel file
         preg_match($pattern, $fileContent, $matches, PREG_OFFSET_CAPTURE);

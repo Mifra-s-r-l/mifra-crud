@@ -25,6 +25,7 @@ class MifraInstallCrud extends Command
     protected $groupsMenus;
     protected $jsonConfig;
     protected $filePathUser;
+    protected $variableMiddleware;
 
     // Crea una nuova istanza del comando
     public function __construct()
@@ -58,9 +59,12 @@ class MifraInstallCrud extends Command
     // Esegue il comando Artisan
     public function handle()
     {
-        // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
+        // Chiedi all'utente dei comandi
         $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User. Premi invio per usare il valore predefinito, altrimenti specifica il tuo percorso:', 'app/Models/User.php'));
         $this->info("Hai inserito questo path: {$this->filePathUser}");
+
+        $this->variableMiddleware = base_path($this->ask('Inserisci il nome della varibile senza $ dei middleware del file "app/Http/Kernel.php", oppure premi invio per usare quella predefinita:', 'middlewareAliases'));
+        $this->info("Hai inserito questa variabile: {$this->variableMiddleware}");
 
         // Qui puoi verificare se il file esiste, se necessario
         if (!File::exists($this->filePathUser)) {
@@ -96,7 +100,7 @@ class MifraInstallCrud extends Command
     {
         //Rimuovo le dipendenze
         CrudHelpers::insertActionableToModelUser($this->filePathUser, 'remove');
-        CrudHelpers::modifyMiddlewareSpatie('remove');
+        CrudHelpers::modifyMiddlewareSpatie($this->variableMiddleware, 'remove');
 
         $menuItems = $this->jsonConfig; // Voci di menu del file di config
 
@@ -207,7 +211,7 @@ class MifraInstallCrud extends Command
             // Carico le dipendenze
             CrudHelpers::createFile($this, 'MifracrudsActionable', 'app/Traits/MifraCruds', 'traits/Actionable', 'file creato correttamente');
             CrudHelpers::insertActionableToModelUser($this->filePathUser, 'add');
-            CrudHelpers::modifyMiddlewareSpatie('add');
+            CrudHelpers::modifyMiddlewareSpatie($this->variableMiddleware, 'add');
 
             // Aggiungi il require a routes/web.php
             $this->addRequireToWebRoutes();
