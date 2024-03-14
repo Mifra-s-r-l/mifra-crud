@@ -124,50 +124,49 @@ class CrudHelpers
         $commands->info("Creato/Aggiornato il model: " . $modelFilePath . ", qui puoi inserire il tuo codice per gestire il database della vista");
     }
 
-    public static function modifyMiddlewareSpatie($variableMiddleware, $action)
-    {
+    public static function modifyMiddlewareSpatie($variableMiddleware, $action) {
         $filePath = base_path('app/Http/Kernel.php'); // Percorso del file da modificare
+        
+        // Middleware da gestire
         $middlewaresToAdd = [
-            "'role' => \\Spatie\\Permission\\Middleware\\RoleMiddleware::class,",
-            "'permission' => \\Spatie\\Permission\\Middleware\\PermissionMiddleware::class,",
-            "'role_or_permission' => \\Spatie\\Permission\\Middleware\\RoleOrPermissionMiddleware::class,",
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ];
-
+    
         // Leggi il contenuto del file
         $fileContent = file_get_contents($filePath);
-
-        // Cerca il punto di inserimento, che è l'array $routeMiddleware
-        $pattern = '/protected\s+\$' . $variableMiddleware . '\s*=\s*\[/';
-
-        // Trova la posizione del pattern nel file
-        preg_match($pattern, $fileContent, $matches, PREG_OFFSET_CAPTURE);
-        $middlewarePosition = !empty($matches) ? $matches[0][1] : -1;
-
-        if ($middlewarePosition !== -1) {
-            // Calcola la posizione della parentesi graffa di chiusura dell'array $routeMiddleware
-            $closingBracketPos = strpos($fileContent, '];', $middlewarePosition);
-
-            foreach ($middlewaresToAdd as $middleware) {
+    
+        // Espressione regolare per trovare l'array di middleware
+        $pattern = '/protected\s+\$'.$variableMiddleware.'\s*=\s*\[(.*?)\];/s';
+    
+        if (preg_match($pattern, $fileContent, $matches)) {
+            // Estrai il contenuto dell'array di middleware
+            $middlewareArrayContent = $matches[1];
+    
+            foreach ($middlewaresToAdd as $key => $class) {
+                $middlewareLine = "'$key' => $class::class,";
+    
                 if ($action === 'add') {
-                    // Verifica se il middleware è già presente
-                    if (!str_contains($fileContent, $middleware)) {
-                        // Inserisci il middleware prima della parentesi di chiusura dell'array
-                        $fileContent = substr_replace($fileContent, "        " . $middleware . "\n", $closingBracketPos, 0);
-                        $closingBracketPos += strlen($middleware) + 5; // Aggiorna la posizione per inserimenti successivi
+                    // Controlla se il middleware specifico è già presente per evitare duplicati
+                    if (!str_contains($middlewareArrayContent, $middlewareLine)) {
+                        // Aggiungi il middleware all'array
+                        $middlewareArrayContent .= "\n        " . $middlewareLine;
                     }
                 } elseif ($action === 'remove') {
-                    // Rimuovi il middleware se presente
-                    $middlewareToRemove = "        " . $middleware . "\n"; // Usa lo stesso numero di spazi dell'aggiunta
-                    if (str_contains($fileContent, $middlewareToRemove)) {
-                        $fileContent = str_replace($middlewareToRemove, '', $fileContent);
-                    }
+                    // Rimuovi il middleware dall'array se presente
+                    $middlewareArrayContent = str_replace("\n        " . $middlewareLine, '', $middlewareArrayContent);
                 }
             }
+    
+            // Ricostruisci il contenuto del file con l'array di middleware modificato
+            $newFileContent = preg_replace($pattern, 'protected $'.$variableMiddleware.' = ['.$middlewareArrayContent."\n    ];", $fileContent);
+    
+            // Salva le modifiche nel file
+            file_put_contents($filePath, $newFileContent);
         }
-
-        // Salva le modifiche nel file
-        file_put_contents($filePath, $fileContent);
     }
+    
 
     public static function createViewFile($commands, $route_name)
     {
