@@ -89,6 +89,10 @@ Per installare il sistema CRUD nella tua applicazione Laravel, esegui il comando
 
 Questo comando configura automaticamente la connessione MongoDB, crea le directory necessarie per i Controllers, Models e Views del tuo CRUD, genera i file necessari basati sui template predefiniti e configura le rotte necessarie per il funzionamento del CRUD.
 
+###### NOTE:
+1. Se dovessi riscontrare problemi nella visualizzazione dei contenuti per via dei permessi, puoi provare a dare il comando:
+`sudo php artisan permission:cache-reset`
+
 #### Reinstallazione con Sovrascrittura
 
 Se necessario reinstallare il CRUD sovrascrivendo le configurazioni esistenti, utilizza l'opzione --reset:

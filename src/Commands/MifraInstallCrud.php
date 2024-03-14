@@ -201,9 +201,7 @@ class MifraInstallCrud extends Command
     }
 
     public function insertMenuItems($directoryPathRoute)
-    {
-        Artisan::call('permission:cache-reset');
-        
+    {        
         // Creo il ruolo super-admin se non esiste
         $superAdmin = Role::firstOrCreate([
             'name' => 'super-admin',

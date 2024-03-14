@@ -91,7 +91,6 @@ return [
                 "view",
                 "create",
                 "modify",
-                "trash",
                 "delete",
             ],
         ],
