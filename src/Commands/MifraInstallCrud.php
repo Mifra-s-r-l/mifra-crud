@@ -25,6 +25,7 @@ class MifraInstallCrud extends Command
     protected $databaseConfig;
     protected $groupsMenus;
     protected $jsonConfig;
+    protected $filePathUser;
 
     // Crea una nuova istanza del comando
     public function __construct()
@@ -84,6 +85,15 @@ class MifraInstallCrud extends Command
 
     public function deleteData()
     {
+        // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
+        $this->filePathUser = $this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Modals/User.php"');
+
+        // Qui puoi verificare se il file esiste, se necessario
+        if (!File::exists($this->filePathUser)) {
+            $this->error("Il file specificato non esiste.");
+            return;
+        }
+
         $menuItems = $this->jsonConfig; // Voci di menu del file di config
 
         // Rimuovere i file di controller generati
@@ -106,15 +116,19 @@ class MifraInstallCrud extends Command
         $directoryPath = base_path('routes/mifracruds');
         File::deleteDirectory($directoryPath);
 
+        // Leggi il contenuto del file
+        $contentModelUser = File::get($this->filePathUser);
+        // Rimuovi la riga
+        $updatedContentModelUser = str_replace(["use MifracrudsActionable;", "use App\Traits\MifraCruds\MifracrudsActionable;"], ["\r","\r"], $contentModelUser);
+        // Salva il file aggiornato
+        File::put($this->filePathUser, $updatedContentModelUser);
+
         // Percorso al file web.php
         $fileRouteWeb = base_path('routes/web.php');
-
         // Leggi il contenuto del file
         $contentRouteWeb = File::get($fileRouteWeb);
-
         // Rimuovi la riga
         $updatedContentRouteWeb = str_replace("require __DIR__ . '/mifracruds/cruds.php';", '', $contentRouteWeb);
-
         // Salva il file aggiornato
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
@@ -281,12 +295,12 @@ class MifraInstallCrud extends Command
                 
             }
 
-            // Carico i file per le dipendenze
-            CrudHelpers::createFile($this, 'MifracrudsActionable', 'app/Traits/MifraCruds', 'traits/Actionable', 'per il corretto funzionamento fare riferimento alla documentazione');
-
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
         }
+
+        // Carico i file per le dipendenze
+        CrudHelpers::createFile($this, 'MifracrudsActionable', 'app/Traits/MifraCruds', 'traits/Actionable', 'per il corretto funzionamento fare riferimento alla documentazione');
 
         // Creo il file delle rotte
         $routeFilePath = $directoryPathRoute . '/cruds.php';

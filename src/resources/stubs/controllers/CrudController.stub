@@ -59,6 +59,7 @@ class MifracrudsCrudsController extends Controller
             "title" => $items[0]['title'], // titolo della pagina
             "route_name" => $items[0]['route_name'], // rotta per da utilizzare su tabulator per edit, create, update e delete 
             "permissions" => $permissionNames, // lista di tutti i permessi del CRUD
+            "super-admin" => $user->hasAnyRole('super-admin'), // controllo se l'utente loggato è super-admin
             "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsCrudsController', // fare riferimento a ThemeController::tabulator_delete
             'export_print' => true, // per visualizzare stampa e export
             'init_sort' => [ 0 => ['column' => 'title', 'dir' => 'asc' ] ], // ordinamento iniziale di tabulator

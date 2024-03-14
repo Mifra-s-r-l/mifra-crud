@@ -2,44 +2,37 @@
 
 namespace App\Http\Controllers\MifraCruds;
 
+use App\Http\Requests\MifraCruds\MifracrudsUsersRequest;
+use App\Models\MifraCruds\MifracrudsPermissionsModel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
-use Mifra\Crud\Helpers\CrudHelpers;
 use Illuminate\Support\Facades\Hash;
-use App\Models\MifraCruds\MifracrudsPermissionsModel;
-use App\Http\Requests\MifraCruds\MifracrudsUsersRequest;
-//use App\Services\MifracrudsService;
+use Mifra\Crud\Helpers\CrudHelpers;
+use Spatie\Permission\Models\Role;
 
 class MifracrudsUsersController extends Controller
 {
-    /* protected $mifracrudsService;
-
-    public function __construct(MyService $myService)
-    {
-        $this->mifracrudsService = $mifracrudsService;
-    } */
-
     public function index()
     {
         $user = auth()->user();
-        
+
         $database = config('mifracrud.database');
 
-        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','mifracruds.users')->first();
+        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name', 'mifracruds.users')->first();
 
-        $items = User::with('roles')->where('id','!=',$user->id)->get();
+        $items = User::with('roles')->where('id', '!=', $user->id)->get();
 
         $pathPermission = CrudHelpers::conversionRouteName($items[0]['route_name'], 'permission');
-        $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%'.$pathPermission)->get();
+        $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%' . $pathPermission)->get();
         $permissionNames = $permissions->pluck('name')->toArray();
-        
+
         $contents = [
             "title" => $menu['title'],
             "route_name" => $menu['route_name'],
             "permissions" => $permissionNames,
+            "super-admin" => $user->hasAnyRole('super-admin'),
             "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsUsersController',
             'export_print' => true,
             'init_sort' => [0 => ['column' => 'name', 'dir' => 'asc']],
@@ -47,9 +40,9 @@ class MifracrudsUsersController extends Controller
                 "list" => [
                     "name" => "Nome",
                     "email" => "Email",
-                    ]
+                ]
                 ,
-                "reset" => "name"
+                "reset" => "name",
             ],
         ];
 
@@ -75,7 +68,7 @@ class MifracrudsUsersController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->updateActions('updated');
-        if($request->password){
+        if ($request->password) {
             $user->password = Hash::make($request->password);
         }
         $user->save();
@@ -106,20 +99,58 @@ class MifracrudsUsersController extends Controller
 
     public function delete(Request $request, $id)
     {
-        $user = User::where('id', $id)->withTrashed()->first();
-        if($request->hard_delete == "1"){
-            $user->forceDelete();
+        if ($id == "all") {
+            foreach ($request->lists as $elem) {
+                $item = User::where('id', $elem['id'])->withTrashed()->first();
+                if ($request->hard_delete == "1") {
+                    $item->forceDelete();
+                } else {
+                    $item->updateActions('deleted');
+                    $item->delete();
+                }
+            }
         } else {
-            $user->updateActions('deleted');
-            $user->delete();
+            $item = User::where('id', $id)->withTrashed()->first();
+            if ($request->hard_delete == "1") {
+                $item->forceDelete();
+            } else {
+                $item->updateActions('deleted');
+                $item->delete();
+            }
         }
+
+        if ($request->hard_delete == "1") {
+            $items = User::onlyTrashed()->with('roles')->get();
+        } else {
+            $user = auth()->user();
+            $items = User::with('roles')->where('id', '!=', $user->id)->get();
+        }
+        return response()->json($items);
     }
 
     public function restore(Request $request, $id)
     {
-        $user = User::where('id', $id)->withTrashed()->first();
-        $user->deleted_at = null;
-        $user->save();
+        if ($id == "all") {
+            foreach ($request->lists as $elem) {
+                $item = User::where('id', $elem['id'])->withTrashed()->first();
+                $item->deleted_at = null;
+                $item->save();
+            }
+        } else {
+            $item = User::where('id', $id)->withTrashed()->first();
+            $item->deleted_at = null;
+            $item->save();
+        }
+        
+        $items = User::onlyTrashed()->with('roles')->get();
+        return response()->json($items);
+    }
+
+    public function getData()
+    {
+        $user = auth()->user();
+        $items = User::with('roles')->where('id', '!=', $user->id)->get();
+        return response()->json($items);
     }
 
     public function getTrashed()
@@ -143,11 +174,4 @@ class MifracrudsUsersController extends Controller
         return response()->json($user);
     }
 
-    /* public function handleRequest(Request $request)
-    {
-        $data = $request->input('data');
-        $result = $this->mifracrudsService->processData($data);
-
-        return response()->json($result);
-    } */
 }
