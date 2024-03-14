@@ -90,7 +90,7 @@ class MifraInstallCrud extends Command
         File::deleteDirectory($directoryPath);
 
         // Rimuovere i file di request generati
-        $directoryPath = base_path('app/Requests/MifraCruds');
+        $directoryPath = base_path('app/Http/Requests/MifraCruds');
         File::deleteDirectory($directoryPath);
 
         // Rimuovere i file di models generati
