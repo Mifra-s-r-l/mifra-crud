@@ -268,20 +268,19 @@ class MifraInstallCrud extends Command
                 $permissionValue = $permission . '_' . $permissionName;
                 Permission::firstOrCreate(['name' => $permissionValue]);
                 try {
-                    if (!$superAdmin->hasPermissionTo($permissionValue)) {
-                        $superAdmin->givePermissionTo($permissionValue);
-                    }
-                } catch (\Illuminate\Database\QueryException $e) {
-                    // Assumendo che stai usando MySQL, il codice di errore per un duplicato è 1062
-                    // Per PostgreSQL, il codice è 23505
-                    if ($e->getCode() == 23505) { // o 1062 per MySQL
-                        // Gestisci l'errore come preferisci, ad esempio registrando un messaggio o ignorandolo.
-                        $this->info("Il permesso {$permissionValue} è già stato assegnato a super-admin.");
+                    // Tentativo di assegnazione permesso
+                    $superAdmin->givePermissionTo($permissionValue);
+                } catch (\Illuminate\Database\QueryException $exception) {
+                    // Verifica se l'eccezione è una violazione dell'integrità per chiave duplicata
+                    if ($exception->errorInfo[1] == 1062) {
+                        // Gestisci il caso di duplicazione (ad es., ignorandolo o registrando)
+                        Log::info("Il permesso {$permissionValue} è già assegnato al ruolo.");
                     } else {
-                        // Rilancia l'eccezione se non si tratta di un errore di duplicazione
-                        throw $e;
+                        // Rilancia l'eccezione se si tratta di un altro tipo di errore SQL
+                        throw $exception;
                     }
                 }
+                
             }
 
             // Carico i file per le dipendenze
