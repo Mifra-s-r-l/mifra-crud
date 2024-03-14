@@ -116,12 +116,6 @@ class MifraInstallCrud extends Command
         $directoryPath = base_path('routes/mifracruds');
         File::deleteDirectory($directoryPath);
 
-        // Leggi il contenuto del file
-        $contentModelUser = File::get($this->filePathUser);
-        // Rimuovi la riga
-        $updatedContentModelUser = str_replace(["\n    use MifracrudsActionable;", "\nuse App\Traits\MifraCruds\MifracrudsActionable;"], ["", ""], $contentModelUser);
-        // Salva il file aggiornato
-        File::put($this->filePathUser, $updatedContentModelUser);
 
         // Percorso al file web.php
         $fileRouteWeb = base_path('routes/web.php');
@@ -158,6 +152,10 @@ class MifraInstallCrud extends Command
                 }
             }
         }
+
+        //Rimuovo le dipendenze
+        CrudHelpers::insertActionableToModelUser($this->filePathUser, 'remove');
+        CrudHelpers::modifyMiddlewareSpatie('remove');
     }
 
     public function installCrud()
@@ -204,6 +202,11 @@ class MifraInstallCrud extends Command
             $this->info('');
 
             $this->insertMenuItems($directoryPathRoute);
+
+            // Carico le dipendenze
+            CrudHelpers::createFile($this, 'MifracrudsActionable', 'app/Traits/MifraCruds', 'traits/Actionable', 'file creato correttamente');
+            CrudHelpers::insertActionableToModelUser($this->filePathUser, 'add');
+            CrudHelpers::modifyMiddlewareSpatie('add');
 
             // Aggiungi il require a routes/web.php
             $this->addRequireToWebRoutes();
@@ -298,41 +301,6 @@ class MifraInstallCrud extends Command
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
         }
-
-        // Carico i file per le dipendenze
-        CrudHelpers::createFile($this, 'MifracrudsActionable', 'app/Traits/MifraCruds', 'traits/Actionable', 'per il corretto funzionamento fare riferimento alla documentazione');
-
-        $traitToAddOutside = "use App\Traits\MifraCruds\MifracrudsActionable;"; // Trait da aggiungere all'esterno
-        $traitToAddInside = "use MifracrudsActionable;"; // Trait da aggiungere all'interno della classe
-
-        // Leggi il contenuto del file
-        $fileContent = file_get_contents($this->filePathUser);
-
-        // Aggiungi il trait all'esterno della classe se non è già presente
-        if (!str_contains($fileContent, trim($traitToAddOutside))) {
-            // Utilizza un'espressione regolare per trovare la posizione dopo la dichiarazione del namespace
-            $patternNamespace = '/namespace\s+[^;]+;/';
-            preg_match($patternNamespace, $fileContent, $matches, PREG_OFFSET_CAPTURE);
-
-            if (!empty($matches)) {
-                // Calcola la posizione di inserimento subito dopo il namespace
-                $insertPosition = $matches[0][1] + strlen($matches[0][0]) + 1; // Aggiungi 1 per andare a capo dopo il namespace
-                $fileContent = substr_replace($fileContent, "\n" . $traitToAddOutside, $insertPosition, 0);
-            } else {
-                // Se non c'è un namespace, aggiungi il `use` all'inizio del file.
-                $fileContent = "<?php\n\n" . $traitToAddOutside . substr($fileContent, 5);
-            }
-        }
-
-        // Utilizza le espressioni regolari per trovare la dichiarazione della classe e aggiungere il trait all'interno
-        if (!str_contains($fileContent, $traitToAddInside)) {
-            $pattern = '/class\s+\w+\s+extends\s+\w+\s*\{/'; // Pattern per identificare la dichiarazione della classe
-            $replacement = "\$0\n    $traitToAddInside"; // Aggiungi il trait all'interno della classe
-            $fileContent = preg_replace($pattern, $replacement, $fileContent, 1);
-        }
-
-        // Salva le modifiche nel file
-        file_put_contents($this->filePathUser, $fileContent);
 
         // Creo il file delle rotte
         $routeFilePath = $directoryPathRoute . '/cruds.php';
