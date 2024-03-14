@@ -3,12 +3,13 @@
 namespace Mifra\Crud\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Mifra\Crud\Helpers\CrudHelpers;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Mifra\Crud\Helpers\CrudHelpers;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Artisan;
+use Spatie\Permission\Models\Permission;
 
 class MifraInstallCrud extends Command
 {
@@ -201,6 +202,8 @@ class MifraInstallCrud extends Command
 
     public function insertMenuItems($directoryPathRoute)
     {
+        Artisan::call('permission:cache-reset');
+        
         // Creo il ruolo super-admin se non esiste
         $superAdmin = Role::firstOrCreate([
             'name' => 'super-admin',
@@ -264,10 +267,20 @@ class MifraInstallCrud extends Command
             foreach ($permissions as $permission) {
                 $permissionValue = $permission . '_' . $permissionName;
                 Permission::firstOrCreate(['name' => $permissionValue]);
-                // Verifica se $superAdmin ha già il permesso
-                if (!$superAdmin->hasPermissionTo($permissionValue)) {
-                    // Assegna il permesso se non è già stato assegnato
-                    $superAdmin->givePermissionTo($permissionValue);
+                try {
+                    if (!$superAdmin->hasPermissionTo($permissionValue)) {
+                        $superAdmin->givePermissionTo($permissionValue);
+                    }
+                } catch (\Illuminate\Database\QueryException $e) {
+                    // Assumendo che stai usando MySQL, il codice di errore per un duplicato è 1062
+                    // Per PostgreSQL, il codice è 23505
+                    if ($e->getCode() == 23505) { // o 1062 per MySQL
+                        // Gestisci l'errore come preferisci, ad esempio registrando un messaggio o ignorandolo.
+                        $this->info("Il permesso {$permissionValue} è già stato assegnato a super-admin.");
+                    } else {
+                        // Rilancia l'eccezione se non si tratta di un errore di duplicazione
+                        throw $e;
+                    }
                 }
             }
 
