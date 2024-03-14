@@ -266,10 +266,10 @@ class MifraInstallCrud extends Command
             $permissionName = CrudHelpers::conversionRouteName($menuItem['route_name'], 'permission');
             foreach ($permissions as $permission) {
                 $permissionValue = $permission . '_' . $permissionName;
-                Permission::firstOrCreate(['name' => $permissionValue]);
+                $permissionCreate = Permission::firstOrCreate(['name' => $permissionValue]);
                 try {
                     // Tentativo di assegnazione permesso
-                    $superAdmin->givePermissionTo($permissionValue);
+                    $superAdmin->givePermissionTo($permissionCreate);
                 } catch (\Illuminate\Database\QueryException $exception) {
                     // Verifica se l'eccezione è una violazione dell'integrità per chiave duplicata
                     if ($exception->errorInfo[1] == 1062) {
