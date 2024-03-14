@@ -302,7 +302,7 @@ class MifraInstallCrud extends Command
         // Carico i file per le dipendenze
         CrudHelpers::createFile($this, 'MifracrudsActionable', 'app/Traits/MifraCruds', 'traits/Actionable', 'per il corretto funzionamento fare riferimento alla documentazione');
 
-        $traitToAddOutside = "use App\Traits\MifraCruds\MifracrudsActionable;\n"; // Trait da aggiungere all'esterno
+        $traitToAddOutside = "\nuse App\Traits\MifraCruds\MifracrudsActionable;"; // Trait da aggiungere all'esterno
         $traitToAddInside = "use MifracrudsActionable;"; // Trait da aggiungere all'interno della classe
 
         // Leggi il contenuto del file
