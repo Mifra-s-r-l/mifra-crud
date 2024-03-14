@@ -137,7 +137,7 @@ class CrudHelpers
         $fileContent = file_get_contents($filePath);
 
         // Cerca il punto di inserimento, che è l'array $routeMiddleware
-        $pattern = '/protected\s+\$'.$variableMiddleware.'\s*=\s*\[/';
+        $pattern = '/protected\s+\$' . $variableMiddleware . '\s*=\s*\[/';
 
         // Trova la posizione del pattern nel file
         preg_match($pattern, $fileContent, $matches, PREG_OFFSET_CAPTURE);
@@ -152,13 +152,15 @@ class CrudHelpers
                     // Verifica se il middleware è già presente
                     if (!str_contains($fileContent, $middleware)) {
                         // Inserisci il middleware prima della parentesi di chiusura dell'array
-                        $fileContent = substr_replace($fileContent, "    " . $middleware . "\n", $closingBracketPos, 0);
-                        $closingBracketPos += strlen($middleware) + 1; // Aggiorna la posizione per inserimenti successivi
+                        $fileContent = substr_replace($fileContent, "        " . $middleware . "\n", $closingBracketPos, 0);
+                        $closingBracketPos += strlen($middleware) + 5; // Aggiorna la posizione per inserimenti successivi
                     }
                 } elseif ($action === 'remove') {
                     // Rimuovi il middleware se presente
-                    $middlewareToRemove = "    " . $middleware . "\n";
-                    $fileContent = str_replace($middlewareToRemove, '', $fileContent);
+                    $middlewareToRemove = "        " . $middleware . "\n"; // Usa lo stesso numero di spazi dell'aggiunta
+                    if (str_contains($fileContent, $middlewareToRemove)) {
+                        $fileContent = str_replace($middlewareToRemove, '', $fileContent);
+                    }
                 }
             }
         }
