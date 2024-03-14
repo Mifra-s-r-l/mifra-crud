@@ -92,6 +92,7 @@ Questo comando configura automaticamente la connessione MongoDB, crea le directo
 ###### NOTE:
 1. Se dovessi riscontrare problemi nella visualizzazione dei contenuti per via dei permessi, puoi provare a dare il comando:
 `sudo php artisan permission:cache-reset`
+2. Si raccomanda di aggiungere con migrate alla tabella users di laravel il softdeletes e il campo personalizzato di tipo json "actions" per usare il cestina e le info di chi effettua le azioni su vari elementi di una tabella
 
 #### Reinstallazione con Sovrascrittura
 

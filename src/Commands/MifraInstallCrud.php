@@ -3,13 +3,12 @@
 namespace Mifra\Crud\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
-use Mifra\Crud\Helpers\CrudHelpers;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Mifra\Crud\Helpers\CrudHelpers;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class MifraInstallCrud extends Command
 {
@@ -59,6 +58,15 @@ class MifraInstallCrud extends Command
     // Esegue il comando Artisan
     public function handle()
     {
+        // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
+        $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Models/User.php"', 'app/Models/User.php'));
+        $this->info("Hai inserito: {$this->filePathUser}");
+
+        // Qui puoi verificare se il file esiste, se necessario
+        if (!File::exists($this->filePathUser)) {
+            $this->error("Il file specificato non esiste.");
+            return;
+        }
 
         $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
 
@@ -73,32 +81,10 @@ class MifraInstallCrud extends Command
             $this->installCrud();
         } else if ($this->option('hardreset')) {
             $this->info("Reinstallazione del CRUD Mifra totale...");
-
-            // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
-            $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Models/User.php"', 'app/Models/User.php'));
-            $this->info("Hai inserito: {$this->filePathUser}");
-
-            // Qui puoi verificare se il file esiste, se necessario
-            if (!File::exists($this->filePathUser)) {
-                $this->error("Il file specificato non esiste.");
-                return;
-            }
-
             $this->deleteData();
             $this->installCrud();
         } else if ($this->option('uninstall')) {
             $this->info("Disinstallazione del CRUD Mifra...");
-
-            // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
-            $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Models/User.php"', 'app/Models/User.php'));
-            $this->info("Hai inserito: {$this->filePathUser}");
-
-            // Qui puoi verificare se il file esiste, se necessario
-            if (!File::exists($this->filePathUser)) {
-                $this->error("Il file specificato non esiste.");
-                return;
-            }
-
             $this->deleteData();
         } else {
             $this->info("Installazione del CRUD Mifra...");
@@ -133,7 +119,7 @@ class MifraInstallCrud extends Command
         // Leggi il contenuto del file
         $contentModelUser = File::get($this->filePathUser);
         // Rimuovi la riga
-        $updatedContentModelUser = str_replace(["use MifracrudsActionable;", "use App\Traits\MifraCruds\MifracrudsActionable;"], ["\r","\r"], $contentModelUser);
+        $updatedContentModelUser = str_replace(["use MifracrudsActionable;", "use App\Traits\MifraCruds\MifracrudsActionable;"], ["\r", "\r"], $contentModelUser);
         // Salva il file aggiornato
         File::put($this->filePathUser, $updatedContentModelUser);
 
@@ -229,7 +215,7 @@ class MifraInstallCrud extends Command
     }
 
     public function insertMenuItems($directoryPathRoute)
-    {        
+    {
         // Creo il ruolo super-admin se non esiste
         $superAdmin = Role::firstOrCreate([
             'name' => 'super-admin',
@@ -306,7 +292,7 @@ class MifraInstallCrud extends Command
                         throw $exception;
                     }
                 }
-                
+
             }
 
             // Messaggio di separazione per migliorare la leggibilità dell'output
@@ -315,6 +301,32 @@ class MifraInstallCrud extends Command
 
         // Carico i file per le dipendenze
         CrudHelpers::createFile($this, 'MifracrudsActionable', 'app/Traits/MifraCruds', 'traits/Actionable', 'per il corretto funzionamento fare riferimento alla documentazione');
+
+        $traitToAddOutside = "use App\Traits\MifraCruds\MifracrudsActionable;\n"; // Trait da aggiungere all'esterno
+        $traitToAddInside = "use MifracrudsActionable;"; // Trait da aggiungere all'interno della classe
+
+        // Leggi il contenuto del file
+        $fileContent = file_get_contents($this->filePathUser);
+
+        // Aggiungi il trait all'esterno della classe se non è già presente
+        if (!str_contains($fileContent, trim($traitToAddOutside))) {
+            $namespacePosition = strpos($fileContent, ';');
+            if ($namespacePosition !== false) {
+                $fileContent = substr_replace($fileContent, "\n" . $traitToAddOutside, $namespacePosition + 1, 0);
+            } else {
+                $fileContent = "<?php\n\n" . $traitToAddOutside . substr($fileContent, 5);
+            }
+        }
+
+        // Utilizza le espressioni regolari per trovare la dichiarazione della classe e aggiungere il trait all'interno
+        if (!str_contains($fileContent, $traitToAddInside)) {
+            $pattern = '/class\s+\w+\s+extends\s+\w+\s*\{/'; // Pattern per identificare la dichiarazione della classe
+            $replacement = "\$0\n    $traitToAddInside"; // Aggiungi il trait all'interno della classe
+            $fileContent = preg_replace($pattern, $replacement, $fileContent, 1);
+        }
+
+        // Salva le modifiche nel file
+        file_put_contents($this->filePathUser, $fileContent);
 
         // Creo il file delle rotte
         $routeFilePath = $directoryPathRoute . '/cruds.php';
