@@ -89,12 +89,16 @@ class MifraInstallCrud extends Command
         $directoryPath = base_path('app/Http/Controllers/MifraCruds');
         File::deleteDirectory($directoryPath);
 
+        // Rimuovere i file di request generati
+        $directoryPath = base_path('app/Requests/MifraCruds');
+        File::deleteDirectory($directoryPath);
+
         // Rimuovere i file di models generati
         $directoryPath = base_path('app/Models/MifraCruds');
         File::deleteDirectory($directoryPath);
 
-        // Rimuovere i file di view generati
-        $directoryPath = base_path('resources/views/mifracruds');
+        // Rimuovere i file di models generati
+        $directoryPath = base_path('app/Traits/MifraCruds');
         File::deleteDirectory($directoryPath);
 
         // Rimuovere i file di rotta generati
@@ -108,7 +112,7 @@ class MifraInstallCrud extends Command
         $contentRouteWeb = File::get($fileRouteWeb);
 
         // Rimuovi la riga
-        $updatedContentRouteWeb = str_replace("require __DIR__ . '/mifracruds/cruds.php';\n", '', $contentRouteWeb);
+        $updatedContentRouteWeb = str_replace("require __DIR__ . '/mifracruds/cruds.php';", '', $contentRouteWeb);
 
         // Salva il file aggiornato
         File::put($fileRouteWeb, $updatedContentRouteWeb);
@@ -263,7 +267,7 @@ class MifraInstallCrud extends Command
             }
 
             // Carico i file per le dipendenze
-            CrudHelpers::createFile($this, 'MifracrudsActionable', 'app/Traits', 'traits/Actionable', 'per il corretto funzionamento fare riferimento alla documentazione');
+            CrudHelpers::createFile($this, 'MifracrudsActionable', 'app/Traits/MifraCruds', 'traits/Actionable', 'per il corretto funzionamento fare riferimento alla documentazione');
 
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
