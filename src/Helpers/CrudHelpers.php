@@ -124,29 +124,34 @@ class CrudHelpers
         $commands->info("Creato/Aggiornato il model: " . $modelFilePath . ", qui puoi inserire il tuo codice per gestire il database della vista");
     }
 
-    public static function modifyMiddlewareSpatie($variableMiddleware, $action) {
+    public static function modifyMiddlewareSpatie($variableMiddleware, $action)
+    {
         $filePath = base_path('app/Http/Kernel.php'); // Percorso del file da modificare
-        
+
         // Middleware da gestire
         $middlewaresToAdd = [
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ];
-    
+
         // Leggi il contenuto del file
         $fileContent = file_get_contents($filePath);
-    
+
         // Espressione regolare per trovare l'array di middleware
-        $pattern = '/protected\s+\$'.$variableMiddleware.'\s*=\s*\[(.*?)\];/s';
-    
+        $pattern = '/protected\s+\$' . $variableMiddleware . '\s*=\s*\[(.*?)\];/s';
+
+        $comment = "        // Spatie Permission Middlewares MifraCruds\n";
+
         if (preg_match($pattern, $fileContent, $matches)) {
             // Estrai il contenuto dell'array di middleware
             $middlewareArrayContent = $matches[1];
-    
+
+            $middlewareArrayContent .= "\n". $comment;
+
             foreach ($middlewaresToAdd as $key => $class) {
                 $middlewareLine = "'$key' => $class::class,";
-    
+
                 if ($action === 'add') {
                     // Controlla se il middleware specifico è già presente per evitare duplicati
                     if (!str_contains($middlewareArrayContent, $middlewareLine)) {
@@ -158,15 +163,14 @@ class CrudHelpers
                     $middlewareArrayContent = str_replace("\n        " . $middlewareLine, '', $middlewareArrayContent);
                 }
             }
-    
+
             // Ricostruisci il contenuto del file con l'array di middleware modificato
-            $newFileContent = preg_replace($pattern, 'protected $'.$variableMiddleware.' = ['.$middlewareArrayContent."\n    ];", $fileContent);
-    
+            $newFileContent = preg_replace($pattern, 'protected $' . $variableMiddleware . ' = [' . $middlewareArrayContent . "\n    ];", $fileContent);
+
             // Salva le modifiche nel file
             file_put_contents($filePath, $newFileContent);
         }
     }
-    
 
     public static function createViewFile($commands, $route_name)
     {
