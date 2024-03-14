@@ -302,7 +302,7 @@ class MifraInstallCrud extends Command
         // Carico i file per le dipendenze
         CrudHelpers::createFile($this, 'MifracrudsActionable', 'app/Traits/MifraCruds', 'traits/Actionable', 'per il corretto funzionamento fare riferimento alla documentazione');
 
-        $traitToAddOutside = "\nuse App\Traits\MifraCruds\MifracrudsActionable;"; // Trait da aggiungere all'esterno
+        $traitToAddOutside = "use App\Traits\MifraCruds\MifracrudsActionable;"; // Trait da aggiungere all'esterno
         $traitToAddInside = "use MifracrudsActionable;"; // Trait da aggiungere all'interno della classe
 
         // Leggi il contenuto del file
@@ -310,10 +310,16 @@ class MifraInstallCrud extends Command
 
         // Aggiungi il trait all'esterno della classe se non è già presente
         if (!str_contains($fileContent, trim($traitToAddOutside))) {
-            $namespacePosition = strpos($fileContent, ';');
-            if ($namespacePosition !== false) {
-                $fileContent = substr_replace($fileContent, $traitToAddOutside, $namespacePosition + 1, 0);
+            // Utilizza un'espressione regolare per trovare la posizione dopo la dichiarazione del namespace
+            $patternNamespace = '/namespace\s+[^;]+;/';
+            preg_match($patternNamespace, $fileContent, $matches, PREG_OFFSET_CAPTURE);
+
+            if (!empty($matches)) {
+                // Calcola la posizione di inserimento subito dopo il namespace
+                $insertPosition = $matches[0][1] + strlen($matches[0][0]) + 1; // Aggiungi 1 per andare a capo dopo il namespace
+                $fileContent = substr_replace($fileContent, "\n" . $traitToAddOutside, $insertPosition, 0);
             } else {
+                // Se non c'è un namespace, aggiungi il `use` all'inizio del file.
                 $fileContent = "<?php\n\n" . $traitToAddOutside . substr($fileContent, 5);
             }
         }
