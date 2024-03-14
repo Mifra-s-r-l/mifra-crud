@@ -262,8 +262,13 @@ class MifraInstallCrud extends Command
             $permissions = $menuItem['permissions'];
             $permissionName = CrudHelpers::conversionRouteName($menuItem['route_name'], 'permission');
             foreach ($permissions as $permission) {
-                Permission::firstOrCreate(['name' => $permission . '_' . $permissionName]);
-                $superAdmin->givePermissionTo($permission . '_' . $permissionName);
+                $permissionValue = $permission . '_' . $permissionName;
+                Permission::firstOrCreate(['name' => $permissionValue]);
+                // Verifica se $superAdmin ha già il permesso
+                if (!$superAdmin->hasPermissionTo($permissionValue)) {
+                    // Assegna il permesso se non è già stato assegnato
+                    $superAdmin->givePermissionTo($permissionValue);
+                }
             }
 
             // Carico i file per le dipendenze
