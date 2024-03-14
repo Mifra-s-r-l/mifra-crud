@@ -147,34 +147,40 @@ class CrudHelpers
             // Estrai il contenuto dell'array di middleware
             $middlewareArrayContent = $matches[1];
 
+            $shouldAddComment = false;
+            foreach ($middlewaresToAdd as $key => $class) {
+                $middlewareLine = "'$key' => $class::class,";
+                if ($action === 'add' && !str_contains($middlewareArrayContent, $middlewareLine)) {
+                    // Segnala che almeno un middleware sarà aggiunto
+                    $shouldAddComment = true;
+                    break;
+                }
+            }
+
+            if ($action === 'add' && $shouldAddComment) {
+                // Aggiungi il commento solo se almeno un middleware deve essere aggiunto
+                $middlewareArrayContent = "\n" . $comment . $middlewareArrayContent;
+            }
+
             foreach ($middlewaresToAdd as $key => $class) {
                 $middlewareLine = "'$key' => $class::class,";
 
-                if ($action === 'add') {
-                    // Aggiungi il commento solo se si sta aggiungendo il primo middleware
-                    if (!str_contains($middlewareArrayContent, "'role' =>") &&
-                        !str_contains($middlewareArrayContent, "'permission' =>") &&
-                        !str_contains($middlewareArrayContent, "'role_or_permission' =>")) {
-                        $middlewareArrayContent = "\n" . $comment . $middlewareArrayContent;
-                    }
-                    // Controlla se il middleware specifico è già presente per evitare duplicati
-                    if (!str_contains($middlewareArrayContent, $middlewareLine)) {
-                        // Aggiungi il middleware all'array
-                        $middlewareArrayContent .= "\n        " . $middlewareLine;
-                    }
+                if ($action === 'add' && !str_contains($middlewareArrayContent, $middlewareLine)) {
+                    // Aggiungi il middleware all'array
+                    $middlewareArrayContent .= "\n        " . $middlewareLine;
                 } elseif ($action === 'remove') {
                     // Rimuovi il middleware dall'array se presente
                     $middlewareArrayContent = str_replace("\n        " . $middlewareLine, '', $middlewareArrayContent);
                 }
             }
 
-            // Se si rimuove, controlla anche di rimuovere il commento se non ci sono più middleware
+            // Rimuovi il commento se nessuno dei middleware specificati è presente dopo la rimozione
             if ($action === 'remove' && !str_contains($middlewareArrayContent, "::class,")) {
                 $middlewareArrayContent = str_replace($comment, '', $middlewareArrayContent);
             }
 
             // Ricostruisci il contenuto del file con l'array di middleware modificato
-            $newFileContent = preg_replace($pattern, 'protected $' . $variableMiddleware . ' = [' . $middlewareArrayContent . "\n    ];", $fileContent);
+            $newFileContent = preg_replace($pattern, 'protected $' . $variableMiddleware . ' = [' . trim($middlewareArrayContent) . "\n    ];", $fileContent);
 
             // Salva le modifiche nel file
             file_put_contents($filePath, $newFileContent);
