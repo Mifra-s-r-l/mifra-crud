@@ -59,14 +59,6 @@ class MifraInstallCrud extends Command
     // Esegue il comando Artisan
     public function handle()
     {
-        // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
-        $this->filePathUser = $this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Modals/User.php"');
-
-        // Qui puoi verificare se il file esiste, se necessario
-        if (!File::exists($this->filePathUser)) {
-            $this->error("Il file specificato non esiste.");
-            return;
-        }
 
         $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
 
@@ -81,10 +73,30 @@ class MifraInstallCrud extends Command
             $this->installCrud();
         } else if ($this->option('hardreset')) {
             $this->info("Reinstallazione del CRUD Mifra totale...");
+
+            // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
+            $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Modals/User.php"'));
+
+            // Qui puoi verificare se il file esiste, se necessario
+            if (!File::exists($this->filePathUser)) {
+                $this->error("Il file specificato non esiste.");
+                return;
+            }
+
             $this->deleteData();
             $this->installCrud();
         } else if ($this->option('uninstall')) {
             $this->info("Disinstallazione del CRUD Mifra...");
+
+            // Chiedi all'utente di inserire il path del file e salvalo nella proprietà
+            $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User es. "app/Modals/User.php"'));
+
+            // Qui puoi verificare se il file esiste, se necessario
+            if (!File::exists($this->filePathUser)) {
+                $this->error("Il file specificato non esiste.");
+                return;
+            }
+
             $this->deleteData();
         } else {
             $this->info("Installazione del CRUD Mifra...");
@@ -117,11 +129,11 @@ class MifraInstallCrud extends Command
         File::deleteDirectory($directoryPath);
 
         // Leggi il contenuto del file
-        $contentModelUser = File::get('app/Models/MifraCruds/Users.php');
+        $contentModelUser = File::get($this->filePathUser);
         // Rimuovi la riga
         $updatedContentModelUser = str_replace(["use MifracrudsActionable;", "use App\Traits\MifraCruds\MifracrudsActionable;"], ["\r","\r"], $contentModelUser);
         // Salva il file aggiornato
-        File::put('app/Models/MifraCruds/Users.php', $updatedContentModelUser);
+        File::put($this->filePathUser, $updatedContentModelUser);
 
         // Percorso al file web.php
         $fileRouteWeb = base_path('routes/web.php');
