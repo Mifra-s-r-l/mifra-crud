@@ -94,6 +94,10 @@ class MifraInstallCrud extends Command
 
     public function deleteData()
     {
+        //Rimuovo le dipendenze
+        CrudHelpers::insertActionableToModelUser($this->filePathUser, 'remove');
+        CrudHelpers::modifyMiddlewareSpatie('remove');
+
         $menuItems = $this->jsonConfig; // Voci di menu del file di config
 
         // Rimuovere i file di controller generati
@@ -153,9 +157,6 @@ class MifraInstallCrud extends Command
             }
         }
 
-        //Rimuovo le dipendenze
-        CrudHelpers::insertActionableToModelUser($this->filePathUser, 'remove');
-        CrudHelpers::modifyMiddlewareSpatie('remove');
     }
 
     public function installCrud()
