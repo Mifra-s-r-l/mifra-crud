@@ -147,12 +147,16 @@ class CrudHelpers
             // Estrai il contenuto dell'array di middleware
             $middlewareArrayContent = $matches[1];
 
-            $middlewareArrayContent .= "\n". $comment;
-
             foreach ($middlewaresToAdd as $key => $class) {
                 $middlewareLine = "'$key' => $class::class,";
 
                 if ($action === 'add') {
+                    // Aggiungi il commento solo se si sta aggiungendo il primo middleware
+                    if (!str_contains($middlewareArrayContent, "'role' =>") &&
+                        !str_contains($middlewareArrayContent, "'permission' =>") &&
+                        !str_contains($middlewareArrayContent, "'role_or_permission' =>")) {
+                        $middlewareArrayContent = "\n" . $comment . $middlewareArrayContent;
+                    }
                     // Controlla se il middleware specifico è già presente per evitare duplicati
                     if (!str_contains($middlewareArrayContent, $middlewareLine)) {
                         // Aggiungi il middleware all'array
@@ -162,6 +166,11 @@ class CrudHelpers
                     // Rimuovi il middleware dall'array se presente
                     $middlewareArrayContent = str_replace("\n        " . $middlewareLine, '', $middlewareArrayContent);
                 }
+            }
+
+            // Se si rimuove, controlla anche di rimuovere il commento se non ci sono più middleware
+            if ($action === 'remove' && !str_contains($middlewareArrayContent, "::class,")) {
+                $middlewareArrayContent = str_replace($comment, '', $middlewareArrayContent);
             }
 
             // Ricostruisci il contenuto del file con l'array di middleware modificato
