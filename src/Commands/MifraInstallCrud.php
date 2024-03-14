@@ -274,7 +274,7 @@ class MifraInstallCrud extends Command
                     // Verifica se l'eccezione è una violazione dell'integrità per chiave duplicata
                     if ($exception->errorInfo[1] == 1062) {
                         // Gestisci il caso di duplicazione (ad es., ignorandolo o registrando)
-                        Log::info("Il permesso {$permissionValue} è già assegnato al ruolo.");
+                        $this->info("Il permesso {$permissionValue} è già assegnato al ruolo.");
                     } else {
                         // Rilancia l'eccezione se si tratta di un altro tipo di errore SQL
                         throw $exception;
