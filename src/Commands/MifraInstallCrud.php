@@ -71,14 +71,16 @@ class MifraInstallCrud extends Command
         $response = base_path($this->filePathUser);
         $this->info("Hai inserito questo path: {$response}");
 
-        $this->variableMiddleware = $this->ask('Inserisci il nome della variabile senza $ dei middleware del file "app/Http/Kernel.php", oppure premi invio per usare quella predefinita:', 'middlewareAliases');
-        $this->info("Hai inserito questa variabile: {$this->variableMiddleware}");
-
         // Qui puoi verificare se il file esiste, se necessario
         if (!File::exists($this->filePathUser)) {
             $this->error("Il file specificato non esiste, operazione interrotta.");
             return;
         }
+
+        $this->variableMiddleware = $this->ask('Inserisci il nome della variabile senza $ dei middleware del file "app/Http/Kernel.php", oppure premi invio per usare quella predefinita:', 'middlewareAliases');
+        $this->info("Hai inserito questa variabile: {$this->variableMiddleware}");
+
+        //TODO inserire un controllo se la variabile nel file Kernel.php che hai inserito esiste
 
         if ($this->option('update')) {
             $this->info("Reinstallazione del CRUD Mifra di default...");
@@ -151,7 +153,7 @@ class MifraInstallCrud extends Command
                 }
             }
         }
-
+        
         // Percorso del file che vuoi cancellare
         $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
         File::delete($alreadyInstalledFlagPath);
