@@ -15,7 +15,7 @@ class MifraInstallCrud extends Command
     // Il nome e la firma del comando Artisan
     protected $signature = 'mifra:installcrud
                         {--uninstall : Disinstallazione di CRUD}
-                        {--reset : Reinstalla il CRUD sovrascrivendo i file di default}
+                        {--update : Aggiona il CRUD sovrascrivendo i file di default}
                         {--hardreset : Reinstalla il CRUD sovrascrivendo tutti i file esistenti}';
 
     // Descrizione del comando Artisan
@@ -72,15 +72,14 @@ class MifraInstallCrud extends Command
             return;
         }
 
-        $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
+        $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
 
-        if (File::exists($alreadyInstalledFlagPath) && (!$this->option('hardreset') && !$this->option('reset') && !$this->option('uninstall'))) {
+        if (File::exists($alreadyInstalledFlagPath) && (!$this->option('hardreset') && !$this->option('update') && !$this->option('uninstall'))) {
             $this->info("Il CRUD Mifra è già stato installato. Usa il comando 'php artisan mifra:installcrud --help' per visualizzare i comandi a disposizione.");
             return;
         }
 
-        // Se --reset è specificato o se il CRUD non è stato ancora installato, procedi con l'installazione
-        if ($this->option('reset')) {
+        if ($this->option('update')) {
             $this->info("Reinstallazione del CRUD Mifra di default...");
             $this->installCrud();
         } else if ($this->option('hardreset')) {
@@ -135,7 +134,7 @@ class MifraInstallCrud extends Command
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
         // Percorso del file che vuoi cancellare
-        $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
+        $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
 
         // Controlla se il file esiste e cancellalo
         if (File::exists($alreadyInstalledFlagPath)) {
@@ -165,10 +164,10 @@ class MifraInstallCrud extends Command
 
     public function installCrud()
     {
-        $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
+        $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
 
         // Crea un file di flag per indicare che l'installazione è stata completata
-        File::put($alreadyInstalledFlagPath, 'Installed');
+        File::put($alreadyInstalledFlagPath, json_encode([]));
 
         // Assicurati che questa directory esista o sia creata
         $directoryPathRoute = base_path('routes/mifracruds');
@@ -215,6 +214,9 @@ class MifraInstallCrud extends Command
 
             // Aggiungi il require a routes/web.php
             $this->addRequireToWebRoutes();
+
+            // Cancello i file delle vecchie versioni
+            CrudHelpers::updateComposer();
 
         } catch (\Exception $e) {
             $this->info("Errore installCrud: " . $e->getMessage());

@@ -2,6 +2,7 @@
 
 namespace Mifra\Crud\Helpers;
 
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\File;
 
 class CrudHelpers
@@ -23,6 +24,20 @@ class CrudHelpers
             default:
                 return $routeName;
         }
+    }
+
+    public static function convertPathToNamespace($filePath) {
+        // Rimuovi l'estensione .php
+        $withoutExtension = preg_replace('/\.php$/', '', $filePath);
+        
+        // Sostituisci i separatori di directory con backslash e capitalizza ogni segmento
+        $segments = explode('/', $withoutExtension);
+        $capitalizedSegments = array_map(function($segment) {
+            return ucfirst($segment);
+        }, $segments);
+        $namespace = implode('\\', $capitalizedSegments);
+        
+        return $namespace;
     }
 
     public static function createControllerFile($commands, $route_name, $directoryPathController, $fileStub = "CrudController")
@@ -144,7 +159,7 @@ class CrudHelpers
             $middlewareArrayContent = $matches[1];
 
             if($action === 'add'){
-                $middlewareArrayContent .= "\n         // Spatie Permission di MifraCruds\n\n    ";
+                $middlewareArrayContent .= "\n        // Spatie Permission di MifraCruds\n\n    ";
             }
             
             foreach ($middlewaresToAdd as $key => $class) {
@@ -164,7 +179,7 @@ class CrudHelpers
             }
 
             if($action === 'remove'){
-                $middlewareArrayContent = str_replace("\n         // Spatie Permission di MifraCruds\n\n    ", '', $middlewareArrayContent);
+                $middlewareArrayContent = str_replace("\n        // Spatie Permission di MifraCruds\n\n    ", '', $middlewareArrayContent);
             }
     
             // Ricostruisci e sostituisci il contenuto dell'array modificato
@@ -205,6 +220,14 @@ class CrudHelpers
 
     public static function insertActionableToModelUser($filePathUser, $action)
     {
+        $namespace = convertPathToNamespace($filePathUser);
+
+        $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
+        // 1. Leggi il contenuto del file JSON
+        $jsonContent = File::get($alreadyInstalledFlagPath);
+        // 2. Decodifica la stringa JSON in un array PHP
+        $array = json_decode($jsonContent, true);
+
         if ($action == 'add') {
             $traitToAddOutside = "use App\Traits\MifraCruds\MifracrudsActionable;"; // Trait da aggiungere all'esterno
             $traitToAddInside = "use MifracrudsActionable;"; // Trait da aggiungere all'interno della classe
@@ -237,11 +260,39 @@ class CrudHelpers
 
             // Salva le modifiche nel file
             file_put_contents($filePathUser, $fileContent);
+
+            // Creo il ruolo super-admin se non è presente e l'utente admin di default
+            Role::firstOrCreate([
+                'name' => 'super-admin'
+            ]);
+            $admin = $namespace::factory()->create([
+                'name' => 'Super Admin',
+                'email' => 'admin@admin.it',
+                'email_verified_at' => now(),
+                'password' => Hash::make('admin'),
+                'remember_token' => Str::random(30),
+            ]);
+            $admin->assignRole(array("super-admin"));
+
+            // 3. Aggiungi `id_admin=1` all'array
+            $array['id_admin'] = $admin->id;
+            // 4. Codifica l'array modificato in JSON
+            $jsonData = json_encode($array);
+            // 5. Salva la nuova stringa JSON nel file
+            File::put($alreadyInstalledFlagPath, $jsonData);
         }
         if ($action == 'remove') {
             $contentModelUser = File::get($filePathUser);
             $updatedContentModelUser = str_replace(["\n    use MifracrudsActionable;", "\nuse App\Traits\MifraCruds\MifracrudsActionable;"], ["", ""], $contentModelUser);
             File::put($filePathUser, $updatedContentModelUser);
+
+            $namespace::where('id', $array['id_admin'])->forceDelete();
         }
+    }
+
+    public static function updateComposer($filePathUser, $action)
+    {
+        //TODO creare un array che si riempe ogni volta che viene creato un file e salvarlo  
+        // su mifra_crud_installed.json da confrontare nelle future installazioni/update in modo da cancellare i file orfani 
     }
 }

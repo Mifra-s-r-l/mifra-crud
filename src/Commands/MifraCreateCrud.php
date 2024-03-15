@@ -61,7 +61,7 @@ class MifraCreateCrud extends Command
                 return;
             }
 
-            $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
+            $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
 
             if (File::exists($alreadyInstalledFlagPath)) {
 

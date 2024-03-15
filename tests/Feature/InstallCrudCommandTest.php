@@ -92,7 +92,7 @@ class InstallCrudCommandTest extends TestCase
         DB::connection('mongodb')->getMongoDB()->drop();
 
         // Percorso del file che vuoi eliminare
-        $filePath = base_path('.mifra_crud_installed');
+        $filePath = base_path('mifra_crud_installed.json');
         File::delete($filePath);
     }
 

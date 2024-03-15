@@ -28,7 +28,7 @@ class CreateCrudCommandTest extends TestCase
         ]);
 
         // Crea il file di flag per simulare la condizione di "pacchetto già installato"
-        $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
+        $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
         File::put($alreadyInstalledFlagPath, 'installed'); // Il contenuto del file non è rilevante, basta che il file esista
     }
 
@@ -87,7 +87,7 @@ class CreateCrudCommandTest extends TestCase
     protected function tearDown(): void
     {
         // Rimuovere il file di flag
-        $alreadyInstalledFlagPath = base_path('.mifra_crud_installed');
+        $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
         File::delete($alreadyInstalledFlagPath);
         
         // Assicurati di chiamare il tearDown del genitore
