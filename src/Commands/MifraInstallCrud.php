@@ -124,7 +124,6 @@ class MifraInstallCrud extends Command
         $directoryPath = base_path('routes/mifracruds');
         File::deleteDirectory($directoryPath);
 
-
         // Percorso al file web.php
         $fileRouteWeb = base_path('routes/web.php');
         // Leggi il contenuto del file
@@ -136,11 +135,7 @@ class MifraInstallCrud extends Command
 
         // Percorso del file che vuoi cancellare
         $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
-
-        // Controlla se il file esiste e cancellalo
-        if (File::exists($alreadyInstalledFlagPath)) {
-            File::delete($alreadyInstalledFlagPath);
-        }
+        File::delete($alreadyInstalledFlagPath);
 
         DB::connection('mongodb')->getMongoDB()->drop();
 
