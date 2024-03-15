@@ -133,10 +133,6 @@ class MifraInstallCrud extends Command
         // Salva il file aggiornato
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
-        // Percorso del file che vuoi cancellare
-        $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
-        File::delete($alreadyInstalledFlagPath);
-
         DB::connection('mongodb')->getMongoDB()->drop();
 
         foreach ($menuItems as $menuItem) {
@@ -155,6 +151,10 @@ class MifraInstallCrud extends Command
                 }
             }
         }
+
+        // Percorso del file che vuoi cancellare
+        $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
+        File::delete($alreadyInstalledFlagPath);
 
     }
 
