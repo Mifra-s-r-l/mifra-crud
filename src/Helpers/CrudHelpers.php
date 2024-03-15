@@ -220,7 +220,7 @@ class CrudHelpers
 
     public static function insertActionableToModelUser($filePathUser, $action)
     {
-        $namespace = convertPathToNamespace($filePathUser);
+        $namespace = CrudHelpers::convertPathToNamespace($filePathUser);
 
         $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
         // 1. Leggi il contenuto del file JSON
