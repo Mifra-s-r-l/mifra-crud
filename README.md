@@ -10,10 +10,10 @@ In generale, un sistema CRUD in un'applicazione Laravel, serve per la creazione 
 
 Per il funzionamento del pacchetto sul tuo progetto laravel sono richieste queste dipendenze da installare:
 
-`composer require mongodb/laravel-mongodb`
-`composer require spatie/laravel-permission`
+```composer require mongodb/laravel-mongodb```
+```composer require spatie/laravel-permission```
 
-#### Installazione pacchetto
+## Installazione pacchetto
 
 Aggiungi le seguenti variabili al tuo file .env di Laravel per configurare l'accesso a MongoDB e il percorso del template CRUD:
 
@@ -29,17 +29,12 @@ MIFRACRUD_MONGODB_USERNAME=myUsername
 MIFRACRUD_MONGODB_PASSWORD=myPassword
 ```
 
-Prima di procedere con l'installazione del sistema CRUD, è necessario installare il pacchetto mifra/crud tramite Composer. Esegui il seguente comando:
+Prima di procedere con l'installazione del sistema CRUD, è necessario installare il pacchetto mifra/crud tramite Composer. 
+Esegui il seguente comando:
 
 `composer require mifra/crud`
 
-Concludi la preparazione eseguendo il comando Artisan per installare e configurare i CRUD principali:
-
-`php artisan mifra:installcrud`
-
-#### Installazione CRUD
-
-Per installare il sistema CRUD nella tua applicazione Laravel, esegui il comando Artisan dalla radice del tuo progetto:
+Procedi con l'installazione eseguendo il comando Artisan per installare e configurare i CRUD principali:
 
 `php artisan mifra:installcrud`
 
@@ -49,8 +44,10 @@ Questo comando configura automaticamente la connessione MongoDB, crea le directo
 1. Se dovessi riscontrare problemi nella visualizzazione dei contenuti per via dei permessi, puoi provare a dare il comando:
 `sudo php artisan permission:cache-reset`
 2. Si raccomanda di aggiungere con migrate alla tabella users di laravel il softdeletes e il campo personalizzato di tipo json "actions" per usare il cestina e le info di chi effettua le azioni su vari elementi di una tabella
+3. Prima dell'installazione del pacchetto: Assicurati di avere Composer installato e di essere connesso al tuo database MongoDB.
+Dopo l'installazione del pacchetto: Potrebbe essere necessario personalizzare i file di controller, model e view generati per adattarli alle esigenze specifiche del tuo progetto.
 
-#### Reinstallazione con Sovrascrittura
+### Reinstallazione con Sovrascrittura
 
 Se necessario aggiornare il CRUD sovrascrivendo le configurazioni, utilizza l'opzione --update:
 
@@ -58,19 +55,14 @@ Se necessario aggiornare il CRUD sovrascrivendo le configurazioni, utilizza l'op
 
 Utilizzando l'opzione --update, il comando forza la reinstallazione del CRUD, sovrascrivendo qualsiasi configurazione esistente.
 
-### Note Importanti
-Prima dell'installazione del pacchetto: Assicurati di avere Composer installato e di essere connesso al tuo database MongoDB.
-Dopo l'installazione del pacchetto: Potrebbe essere necessario personalizzare i file di controller, model e view generati per adattarli alle esigenze specifiche del tuo progetto.
-
-
-#### Comando per pubblicare il file di configurazione
+### Comando per pubblicare il file di configurazione
 
 `php artisan vendor:publish --provider="Mifra\Crud\MifraCrudServiceProvider"`
 
-Importante:
+###### Importante:
 - se viene modificata la lista delle voci di menù principali, per un corretto funzionamento il parametro "route_name" deve rimanere invariato perchè server la creazione dei file e delle directory
 
 
-##### Creazione delle viste principali :
+### Creazione delle viste principali :
 
 Inserire qui la guida che spiega il messaggio di avviso quando non trova le viste

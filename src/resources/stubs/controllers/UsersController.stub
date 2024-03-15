@@ -103,6 +103,7 @@ class MifracrudsUsersController extends Controller
             foreach ($request->lists as $elem) {
                 $item = User::where('id', $elem['id'])->withTrashed()->first();
                 if ($request->hard_delete == "1") {
+                    $item->roles()->detach();
                     $item->forceDelete();
                 } else {
                     $item->updateActions('deleted');
@@ -112,6 +113,7 @@ class MifracrudsUsersController extends Controller
         } else {
             $item = User::where('id', $id)->withTrashed()->first();
             if ($request->hard_delete == "1") {
+                $item->roles()->detach();
                 $item->forceDelete();
             } else {
                 $item->updateActions('deleted');
