@@ -225,9 +225,9 @@ class CrudHelpers
     {
         $filePath = base_path($filePathUser);
         $namespace = CrudHelpers::convertPathToNamespace($filePathUser);
+        $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
 
         if (File::exists($alreadyInstalledFlagPath)) {
-            $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
             // 1. Leggi il contenuto del file JSON
             $jsonContent = File::get($alreadyInstalledFlagPath);
             // 2. Decodifica la stringa JSON in un array PHP
