@@ -142,6 +142,10 @@ class CrudHelpers
         
         if (preg_match($pattern, $fileContent, $matches)) {
             $middlewareArrayContent = $matches[1];
+
+            if($action === 'add'){
+                $middlewareArrayContent .= "\n         // Spatie Permission di MifraCruds\n\n    ";
+            }
             
             foreach ($middlewaresToAdd as $key => $class) {
                 $middlewareLine = "'$key' => $class,";
@@ -150,11 +154,7 @@ class CrudHelpers
                     // Aggiungi solo se non già presente
                     if (!str_contains($middlewareArrayContent, $middlewareLine)) {
                         // Controlla l'ultimo carattere per evitare spazi extra
-                        $lastChar = substr(rtrim($middlewareArrayContent), -1);
-                        if ($lastChar !== ',' && $lastChar !== '[') {
-                            $middlewareArrayContent .= ",";
-                        }
-                        $middlewareArrayContent .= "\n        " . $middlewareLine;
+                        $middlewareArrayContent .= "    " . $middlewareLine . "\n    ";
                     }
                 } elseif ($action === 'remove') {
                     // Rimuovi il middleware se presente
@@ -162,9 +162,13 @@ class CrudHelpers
                     $middlewareArrayContent = str_replace($middlewareToRemove, '', $middlewareArrayContent);
                 }
             }
+
+            if($action === 'remove'){
+                $middlewareArrayContent = str_replace("\n         // Spatie Permission di MifraCruds\n\n    ", '', $middlewareArrayContent);
+            }
     
             // Ricostruisci e sostituisci il contenuto dell'array modificato
-            $newFileContent = preg_replace($pattern, 'protected $'.$variableMiddleware.' = ['.$middlewareArrayContent."\n    ];", $fileContent);
+            $newFileContent = preg_replace($pattern, 'protected $'.$variableMiddleware.' = ['.$middlewareArrayContent."];", $fileContent);
             
             // Salva le modifiche nel file
             file_put_contents($filePath, $newFileContent);
