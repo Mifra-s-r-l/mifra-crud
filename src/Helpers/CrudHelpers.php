@@ -264,6 +264,10 @@ class CrudHelpers
             // Salva le modifiche nel file
             file_put_contents($filePath, $fileContent);
 
+            if($array['id_admin']){
+                $namespace::where('id', $array['id_admin'])->forceDelete();
+            }
+
             // Creo il ruolo super-admin se non è presente e l'utente admin di default
             Role::firstOrCreate([
                 'name' => 'super-admin'
