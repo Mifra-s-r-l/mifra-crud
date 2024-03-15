@@ -130,9 +130,9 @@ class CrudHelpers
 
         // Middleware da gestire
         $middlewaresToAdd = [
-            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'role' => '\\Spatie\\Permission\\Middleware\\RoleMiddleware::class',
+            'permission' => '\\Spatie\\Permission\\Middleware\\PermissionMiddleware::class',
+            'role_or_permission' => '\\Spatie\\Permission\\Middleware\\RoleOrPermissionMiddleware::class',
         ];
 
         // Leggi il contenuto del file
@@ -162,8 +162,8 @@ class CrudHelpers
 
             // Dopo aver aggiunto tutte le linee necessarie a $middlewareArrayContent
             /* if (strpos($middlewareArrayContent, "\n") === 0 && $action === 'add') {
-                // Rimuove il primo carattere (\n) se $middlewareArrayContent inizia con \n
-                $middlewareArrayContent = substr($middlewareArrayContent, 1);
+            // Rimuove il primo carattere (\n) se $middlewareArrayContent inizia con \n
+            $middlewareArrayContent = substr($middlewareArrayContent, 1);
             } */
 
             // Ricostruisci il contenuto del file con l'array di middleware modificato
