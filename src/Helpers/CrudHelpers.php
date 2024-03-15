@@ -124,55 +124,53 @@ class CrudHelpers
         $commands->info("Creato/Aggiornato il model: " . $modelFilePath . ", qui puoi inserire il tuo codice per gestire il database della vista");
     }
 
-    public static function modifyMiddlewareSpatie($variableMiddleware, $action)
-    {
-        $filePath = base_path('app/Http/Kernel.php'); // Percorso del file da modificare
-
+    public static function modifyMiddlewareSpatie($variableMiddleware, $action) {
+        $filePath = base_path('app/Http/Kernel.php'); // Percorso del file
+        
         // Middleware da gestire
         $middlewaresToAdd = [
             'role' => '\\Spatie\\Permission\\Middleware\\RoleMiddleware::class',
             'permission' => '\\Spatie\\Permission\\Middleware\\PermissionMiddleware::class',
             'role_or_permission' => '\\Spatie\\Permission\\Middleware\\RoleOrPermissionMiddleware::class',
         ];
-
+    
         // Leggi il contenuto del file
         $fileContent = file_get_contents($filePath);
-
-        // Espressione regolare per trovare l'array di middleware
-        $pattern = '/protected\s+\$' . $variableMiddleware . '\s*=\s*\[(.*?)\];/s';
-
+    
+        // Trova l'array di middleware
+        $pattern = '/protected\s+\$'.$variableMiddleware.'\s*=\s*\[(.*?)\];/s';
+        
         if (preg_match($pattern, $fileContent, $matches)) {
-            // Estrai il contenuto dell'array di middleware
             $middlewareArrayContent = $matches[1];
-
+            
             foreach ($middlewaresToAdd as $key => $class) {
-                $middlewareLine = "'$key' => $class::class,";
-
+                $middlewareLine = "'$key' => $class,";
+                
                 if ($action === 'add') {
-                    // Controlla se il middleware specifico è già presente per evitare duplicati
+                    // Aggiungi solo se non già presente
                     if (!str_contains($middlewareArrayContent, $middlewareLine)) {
-                        // Aggiungi il middleware all'array
+                        // Controlla l'ultimo carattere per evitare spazi extra
+                        $lastChar = substr(rtrim($middlewareArrayContent), -1);
+                        if ($lastChar !== ',' && $lastChar !== '[') {
+                            $middlewareArrayContent .= ",";
+                        }
                         $middlewareArrayContent .= "\n        " . $middlewareLine;
                     }
                 } elseif ($action === 'remove') {
-                    // Rimuovi il middleware dall'array se presente
-                    $middlewareArrayContent = str_replace("\n        " . $middlewareLine, '', $middlewareArrayContent);
+                    // Rimuovi il middleware se presente
+                    $middlewareToRemove = "\n        " . $middlewareLine;
+                    $middlewareArrayContent = str_replace($middlewareToRemove, '', $middlewareArrayContent);
                 }
             }
-
-            // Dopo aver aggiunto tutte le linee necessarie a $middlewareArrayContent
-            /* if (strpos($middlewareArrayContent, "\n") === 0 && $action === 'add') {
-            // Rimuove il primo carattere (\n) se $middlewareArrayContent inizia con \n
-            $middlewareArrayContent = substr($middlewareArrayContent, 1);
-            } */
-
-            // Ricostruisci il contenuto del file con l'array di middleware modificato
-            $newFileContent = preg_replace($pattern, 'protected $' . $variableMiddleware . ' = [' . $middlewareArrayContent . "\n    ];", $fileContent);
-
+    
+            // Ricostruisci e sostituisci il contenuto dell'array modificato
+            $newFileContent = preg_replace($pattern, 'protected $'.$variableMiddleware.' = ['.$middlewareArrayContent."\n    ];", $fileContent);
+            
             // Salva le modifiche nel file
             file_put_contents($filePath, $newFileContent);
         }
     }
+    
 
     public static function createViewFile($commands, $route_name)
     {
