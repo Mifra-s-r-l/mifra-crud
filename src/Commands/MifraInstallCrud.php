@@ -131,7 +131,7 @@ class MifraInstallCrud extends Command
         // Leggi il contenuto del file
         $contentRouteWeb = File::get($fileRouteWeb);
         // Rimuovi la riga
-        $updatedContentRouteWeb = str_replace("\nrequire __DIR__ . '/mifracruds/cruds.php'\n;", '', $contentRouteWeb);
+        $updatedContentRouteWeb = str_replace("\nrequire __DIR__ . '/mifracruds/cruds.php';", '', $contentRouteWeb);
         // Salva il file aggiornato
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
@@ -415,7 +415,7 @@ class MifraInstallCrud extends Command
             // Verifica se il require è già presente per evitare duplicati
             if (strpos($webRoutesContent, $mifracrudsPath) === false) {
                 // Aggiungi il require se non è presente
-                File::append($webRoutesPath, "\nrequire {$mifracrudsPath}\n");
+                File::append($webRoutesPath, "\nrequire {$mifracrudsPath}");
                 $this->info("Aggiunto il require di mifracruds/cruds.php in routes/web.php");
             } else {
                 $this->info("Il require di mifracruds/cruds.php è già presente in routes/web.php");
