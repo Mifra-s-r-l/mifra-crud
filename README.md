@@ -15,11 +15,7 @@ Per il funzionamento del pacchetto sul tuo progetto laravel sono richieste quest
 
 #### Installazione pacchetto
 
-Prima di procedere con l'installazione del sistema CRUD, è necessario installare il pacchetto mifra/crud tramite Composer. Esegui il seguente comando:
-
-`composer require mifra/crud`
-
-Dopo aver installato il pacchetto, aggiungi le seguenti variabili al tuo file .env di Laravel per configurare l'accesso a MongoDB e il percorso del template CRUD:
+Aggiungi le seguenti variabili al tuo file .env di Laravel per configurare l'accesso a MongoDB e il percorso del template CRUD:
 
 ```
 MIFRACRUD_TEMPLATE_PATH=views/template
@@ -32,6 +28,10 @@ MIFRACRUD_MONGODB_GROUP=myGroup
 MIFRACRUD_MONGODB_USERNAME=myUsername
 MIFRACRUD_MONGODB_PASSWORD=myPassword
 ```
+
+Prima di procedere con l'installazione del sistema CRUD, è necessario installare il pacchetto mifra/crud tramite Composer. Esegui il seguente comando:
+
+`composer require mifra/crud`
 
 Per la gestione dei permessi e la visualizzazione dei CRUD di default dopo aver installato in pacchetto "spatie/laravel-permission" bisogna creare un utente e assegnare il ruolo "super-admin" cosi usare i seeder di laravel:
 
