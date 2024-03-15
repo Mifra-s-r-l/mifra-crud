@@ -13,6 +13,10 @@ Per il funzionamento del pacchetto sul tuo progetto laravel sono richieste quest
 ```composer require mongodb/laravel-mongodb```
 ```composer require spatie/laravel-permission```
 
+
+
+
+
 ## Installazione pacchetto
 
 Aggiungi le seguenti variabili al tuo file .env di Laravel per configurare l'accesso a MongoDB e il percorso del template CRUD:
@@ -46,6 +50,10 @@ Questo comando configura automaticamente la connessione MongoDB, crea le directo
 2. Si raccomanda di aggiungere con migrate alla tabella users di laravel il softdeletes e il campo personalizzato di tipo json "actions" per usare il cestina e le info di chi effettua le azioni su vari elementi di una tabella
 3. Prima dell'installazione del pacchetto: Assicurati di avere Composer installato e di essere connesso al tuo database MongoDB.
 Dopo l'installazione del pacchetto: Potrebbe essere necessario personalizzare i file di controller, model e view generati per adattarli alle esigenze specifiche del tuo progetto.
+
+
+
+
 
 ### Reinstallazione con Sovrascrittura
 
