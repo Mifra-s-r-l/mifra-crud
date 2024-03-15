@@ -220,6 +220,7 @@ class CrudHelpers
 
     public static function insertActionableToModelUser($filePathUser, $action)
     {
+        $filePath = base_path($filePathUser);
         $namespace = CrudHelpers::convertPathToNamespace($filePathUser);
 
         $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
@@ -233,7 +234,7 @@ class CrudHelpers
             $traitToAddInside = "use MifracrudsActionable;"; // Trait da aggiungere all'interno della classe
 
             // Leggi il contenuto del file
-            $fileContent = file_get_contents($filePathUser);
+            $fileContent = file_get_contents($filePath);
 
             // Aggiungi il trait all'esterno della classe se non è già presente
             if (!str_contains($fileContent, trim($traitToAddOutside))) {
@@ -259,7 +260,7 @@ class CrudHelpers
             }
 
             // Salva le modifiche nel file
-            file_put_contents($filePathUser, $fileContent);
+            file_put_contents($filePath, $fileContent);
 
             // Creo il ruolo super-admin se non è presente e l'utente admin di default
             Role::firstOrCreate([
@@ -282,15 +283,15 @@ class CrudHelpers
             File::put($alreadyInstalledFlagPath, $jsonData);
         }
         if ($action == 'remove') {
-            $contentModelUser = File::get($filePathUser);
+            $contentModelUser = File::get($filePath);
             $updatedContentModelUser = str_replace(["\n    use MifracrudsActionable;", "\nuse App\Traits\MifraCruds\MifracrudsActionable;"], ["", ""], $contentModelUser);
-            File::put($filePathUser, $updatedContentModelUser);
+            File::put($filePath, $updatedContentModelUser);
 
             $namespace::where('id', $array['id_admin'])->forceDelete();
         }
     }
 
-    public static function updateComposer($filePathUser, $action)
+    public static function updateComposer()
     {
         //TODO creare un array che si riempe ogni volta che viene creato un file e salvarlo  
         // su mifra_crud_installed.json da confrontare nelle future installazioni/update in modo da cancellare i file orfani 

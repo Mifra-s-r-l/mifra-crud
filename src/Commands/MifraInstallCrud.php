@@ -60,8 +60,9 @@ class MifraInstallCrud extends Command
     public function handle()
     {
         // Chiedi all'utente dei comandi
-        $this->filePathUser = base_path($this->ask('Inserisci il path del file Model che usi per la gestione degli User. Premi invio per usare il valore predefinito, altrimenti specifica il tuo percorso:', 'app/Models/User.php'));
-        $this->info("Hai inserito questo path: {$this->filePathUser}");
+        $this->filePathUser = $this->ask('Inserisci il path del file Model che usi per la gestione degli User. Premi invio per usare il valore predefinito, altrimenti specifica il tuo percorso:', 'app/Models/User.php');
+        $response = base_path($this->filePathUser);
+        $this->info("Hai inserito questo path: {$response}");
 
         $this->variableMiddleware = $this->ask('Inserisci il nome della variabile senza $ dei middleware del file "app/Http/Kernel.php", oppure premi invio per usare quella predefinita:', 'middlewareAliases');
         $this->info("Hai inserito questa variabile: {$this->variableMiddleware}");
