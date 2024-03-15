@@ -264,7 +264,7 @@ class CrudHelpers
             // Salva le modifiche nel file
             file_put_contents($filePath, $fileContent);
 
-            if($array['id_admin']){
+            if(isset($array['id_admin'])){
                 $namespace::where('id', $array['id_admin'])->forceDelete();
             }
 

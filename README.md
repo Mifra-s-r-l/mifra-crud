@@ -33,50 +33,6 @@ Prima di procedere con l'installazione del sistema CRUD, è necessario installar
 
 `composer require mifra/crud`
 
-Per la gestione dei permessi e la visualizzazione dei CRUD di default dopo aver installato in pacchetto "spatie/laravel-permission" bisogna creare un utente e assegnare il ruolo "super-admin" cosi usare i seeder di laravel:
-
-```
-Role::firstOrCreate([
-    'name' => 'super-admin'
-]);
-$utente = User::factory()->create([
-    'name' => 'Utente Admin',
-    'email' => 'indirizzo@email.it',
-    'email_verified_at' => now(),
-    'password' => Hash::make('******'),
-    'remember_token' => Str::random(30),
-]);
-$utente->assignRole(array("super-admin"));
-```
-
-Inserire nel file "app/Http/Kernel.php" i middleware per poterli usare sulle rotte:
-
-```
-protected $middlewareAliases = [
-    // altri middleware
-    'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-    'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-    'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-];
-```
-
-Inserire in un modello User che si trova in app/Models/User.php, il trait così (che serve per il funzionamento dei dettagli di created_by, updated_by, deleted_by):
-```
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use App\Traits\Actionable; // Include il trait
-
-class User extends Model
-{
-    use Actionable; // Usa il trait nel modello
-
-    // Resto della definizione del modello...
-}
-```
-
 Concludi la preparazione eseguendo il comando Artisan per installare e configurare i CRUD principali:
 
 `php artisan mifra:installcrud`

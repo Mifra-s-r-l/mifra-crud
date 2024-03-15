@@ -59,6 +59,13 @@ class MifraInstallCrud extends Command
     // Esegue il comando Artisan
     public function handle()
     {
+        $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
+
+        if (File::exists($alreadyInstalledFlagPath) && (!$this->option('hardreset') && !$this->option('update') && !$this->option('uninstall'))) {
+            $this->info("Il CRUD Mifra è già stato installato. Usa il comando 'php artisan mifra:installcrud --help' per visualizzare i comandi a disposizione.");
+            return;
+        }
+
         // Chiedi all'utente dei comandi
         $this->filePathUser = $this->ask('Inserisci il path del file Model che usi per la gestione degli User. Premi invio per usare il valore predefinito, altrimenti specifica il tuo percorso:', 'app/Models/User.php');
         $response = base_path($this->filePathUser);
@@ -70,13 +77,6 @@ class MifraInstallCrud extends Command
         // Qui puoi verificare se il file esiste, se necessario
         if (!File::exists($this->filePathUser)) {
             $this->error("Il file specificato non esiste, operazione interrotta.");
-            return;
-        }
-
-        $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
-
-        if (File::exists($alreadyInstalledFlagPath) && (!$this->option('hardreset') && !$this->option('update') && !$this->option('uninstall'))) {
-            $this->info("Il CRUD Mifra è già stato installato. Usa il comando 'php artisan mifra:installcrud --help' per visualizzare i comandi a disposizione.");
             return;
         }
 
