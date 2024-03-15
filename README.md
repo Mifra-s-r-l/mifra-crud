@@ -52,11 +52,11 @@ Questo comando configura automaticamente la connessione MongoDB, crea le directo
 
 #### Reinstallazione con Sovrascrittura
 
-Se necessario reinstallare il CRUD sovrascrivendo le configurazioni esistenti, utilizza l'opzione --reset:
+Se necessario aggiornare il CRUD sovrascrivendo le configurazioni, utilizza l'opzione --update:
 
-`php artisan mifra:installcrud --reset`
+`php artisan mifra:installcrud --update`
 
-Utilizzando l'opzione --reset, il comando forza la reinstallazione del CRUD, sovrascrivendo qualsiasi configurazione esistente.
+Utilizzando l'opzione --update, il comando forza la reinstallazione del CRUD, sovrascrivendo qualsiasi configurazione esistente.
 
 ### Note Importanti
 Prima dell'installazione del pacchetto: Assicurati di avere Composer installato e di essere connesso al tuo database MongoDB.
