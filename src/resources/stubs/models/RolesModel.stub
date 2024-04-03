@@ -2,8 +2,9 @@
 
 namespace App\Models\MifraCruds;
 
-use App\Models\MifraCruds\MifracrudsPermissionsModel;
+use App\Models\User;
 use Spatie\Permission\Models\Role as SpatieRole;
+use App\Models\MifraCruds\MifracrudsPermissionsModel;
 
 class MifracrudsRolesModel extends SpatieRole
 {
@@ -11,6 +12,15 @@ class MifracrudsRolesModel extends SpatieRole
         'name', 'guard_name', // attributi di default
         // aggiungi qui i tuoi attributi personalizzati
     ];
+
+    protected $appends = ['users'];
+
+    public function getUsersAttribute()
+    {
+        return User::whereHas('roles', function ($query) {
+            $query->where('role_id', $this->id);
+        })->get();
+    }
 
     public function permissions_crud()
     {

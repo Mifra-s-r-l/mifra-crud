@@ -123,14 +123,13 @@ return [
                 "view",
                 "create",
                 "modify",
-                "trash",
                 "delete",
             ],
         ],
         [
             "id" => 4,
             "title" => "Permessi",
-            "icon" => "Lock",
+            "icon" => "SlidersVertical",
             "desc" => "Pagina per la gestione dei Permessi",
             "route_name" => "mifracruds.permissions", // da non modificare
             "group" => "managements", // deve corrispondere a quello del gruppo
@@ -139,7 +138,6 @@ return [
                 "view",
                 "create",
                 "modify",
-                "trash",
                 "delete",
             ],
         ],

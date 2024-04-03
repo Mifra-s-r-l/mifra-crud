@@ -55,16 +55,43 @@ class MifracrudsRolesController extends Controller
 
     public function update(Request $request, $id)
     {
-        
+        $role = MifracrudsRolesModel::where("id", $id)->first();
+
+        // Estrai l'array di ID dei permessi dal tuo request
+        $permissionsIds = request()->input('permissions');
+
+        // Recupera le istanze dei permessi usando gli ID
+        $permissions = MifracrudsPermissionsModel::whereIn('id', $permissionsIds)->get();
+
+        // Sincronizza i permessi per il ruolo utilizzando le istanze dei permessi
+        $role->syncPermissions($permissions);
+
+        return response()->json(['message' => 'Ruolo aggiornato con successo', 'role' => $role]);
     }
 
     public function create(Request $request)
     {
-        
+        // Creare un nuovo ruolo con il nome fornito nella richiesta
+        $role = new MifracrudsRolesModel();
+        $role->name = $request->input('name');
+        $role->guard_name = 'web'; // Assicurati di impostare la guardia corretta se necessario
+        $role->save();
+
+        // Verifica se ci sono permessi da assegnare
+        $permissionsIds = $request->input('permissions', []);
+
+        if (!empty($permissionsIds)) {
+            // Recupera le istanze dei permessi usando gli ID
+            $permissions = MifracrudsPermissionsModel::whereIn('id', $permissionsIds)->get();
+
+            // Assegna i permessi al ruolo appena creato
+            $role->givePermissionTo($permissions);
+        }
+
+        return response()->json(['message' => 'Ruolo creato con successo', 'role' => $role]);
     }
 
     public function delete(Request $request, $id)
     {
-        
     }
 }
