@@ -130,7 +130,7 @@ return [
         [
             "id" => 4,
             "title" => "Permessi",
-            "icon" => "UserCog",
+            "icon" => "Lock",
             "desc" => "Pagina per la gestione dei Permessi",
             "route_name" => "mifracruds.permissions", // da non modificare
             "group" => "managements", // deve corrispondere a quello del gruppo
