@@ -297,7 +297,7 @@ class CrudHelpers
             File::put($filePath, $updatedContentModelUser);
 
             if (isset($array['id_admin'])) {
-                $superAdmin = $namespace::where('id', $array['id_admin']);
+                $superAdmin = $namespace::where('id', $array['id_admin'])->withTrashed()->first();
                 $superAdmin->roles()->detach();
                 $superAdmin>forceDelete();
             }
