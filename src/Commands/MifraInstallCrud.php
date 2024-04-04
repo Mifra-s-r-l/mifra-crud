@@ -147,13 +147,14 @@ class MifraInstallCrud extends Command
                 // Trova il permesso per nome
                 $permissionToDelete = Permission::where('name', $fullPermissionName)->first();
 
-                // Se il permesso esiste, lo elimina
-                if ($permissionToDelete) {
+                // Se il permesso esiste, verifica se è stato assegnato a qualche ruolo
+                if ($permissionToDelete && $permissionToDelete->roles()->count() === 0) {
+                    // Il permesso esiste ma non è stato assegnato a nessun ruolo, quindi lo elimina
                     $permissionToDelete->delete();
                 }
             }
         }
-        
+
         // Percorso del file che vuoi cancellare
         $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
         File::delete($alreadyInstalledFlagPath);
