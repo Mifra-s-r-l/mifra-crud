@@ -299,7 +299,7 @@ class CrudHelpers
             if (isset($array['id_admin'])) {
                 $superAdmin = $namespace::where('id', $array['id_admin'])->withTrashed()->first();
                 $superAdmin->roles()->detach();
-                $superAdmin>forceDelete();
+                $superAdmin->forceDelete();
             }
         }
     }
