@@ -2,25 +2,28 @@
 
 namespace App\Http\Controllers\MifraCruds;
 
+use App\Helpers\MifraCruds\MifracrudsHelper;
+use App\Models\MifraCruds\MifracrudsPermissionsModel;
+use App\Models\MifraCruds\MifracrudsRolesModel;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Mifra\Crud\Helpers\CrudHelpers;
-use App\Models\MifraCruds\MifracrudsRolesModel;
-use App\Models\MifraCruds\MifracrudsPermissionsModel;
 
 class MifracrudsRolesController extends Controller
 {
+    use MifracrudsHelper;
+
     public function index()
     {
         $database = config('mifracrud.database');
 
-        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','mifracruds.roles')->first();
+        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name', 'mifracruds.roles')->first();
 
         $items = MifracrudsRolesModel::with('permissions_crud')->get();
-        
+
         $pathPermission = CrudHelpers::conversionRouteName($items[0]['route_name'], 'permission');
-        $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%'.$pathPermission)->get();
+        $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%' . $pathPermission)->get();
         $permissionNames = $permissions->pluck('name')->toArray();
 
         $contents = [
@@ -32,9 +35,9 @@ class MifracrudsRolesController extends Controller
             'filters_top_bar_tabulator' => [
                 "list" => [
                     "name" => "Nome",
-                    ]
+                ]
                 ,
-                "reset" => "name"
+                "reset" => "name",
             ],
         ];
 
@@ -56,6 +59,8 @@ class MifracrudsRolesController extends Controller
     public function update(Request $request, $id)
     {
         $role = MifracrudsRolesModel::where("id", $id)->first();
+        $role->name = $this->manipulateStringRoleName($request->input('name'));
+        $role->update();
 
         // Estrai l'array di ID dei permessi dal tuo request
         $permissionsIds = request()->input('permissions');
@@ -66,14 +71,15 @@ class MifracrudsRolesController extends Controller
         // Sincronizza i permessi per il ruolo utilizzando le istanze dei permessi
         $role->syncPermissions($permissions);
 
-        return response()->json(['message' => 'Ruolo aggiornato con successo', 'role' => $role]);
+        $items = MifracrudsRolesModel::with('permissions_crud')->get();
+        return response()->json($items);
     }
 
     public function create(Request $request)
     {
         // Creare un nuovo ruolo con il nome fornito nella richiesta
         $role = new MifracrudsRolesModel();
-        $role->name = $request->input('name');
+        $role->name = $this->manipulateStringRoleName($request->input('name'));
         $role->guard_name = 'web'; // Assicurati di impostare la guardia corretta se necessario
         $role->save();
 
@@ -88,10 +94,48 @@ class MifracrudsRolesController extends Controller
             $role->givePermissionTo($permissions);
         }
 
-        return response()->json(['message' => 'Ruolo creato con successo', 'role' => $role]);
+        $items = MifracrudsRolesModel::with('permissions_crud')->get();
+        return response()->json($items);
     }
 
     public function delete(Request $request, $id)
     {
+        if ($id == "all") {
+            foreach ($request->lists as $elem) {
+                $role = MifracrudsRolesModel::findById($elem['id']);
+
+                // Controlla se il ruolo esiste
+                if ($role) {
+                    // Opzione 1: Rimuovi il ruolo da tutti gli utenti a cui è stato assegnato
+                    $role->users()->detach();
+
+                    // Opzione 2: Gestisci gli utenti assegnati in modo specifico
+                    // (es. assegnali a un ruolo differente prima di eliminare il ruolo corrente)
+
+                    // Dopo aver gestito gli utenti assegnati, elimina il ruolo
+                    $role->delete();
+                }
+            }
+
+        } else {
+            $role = MifracrudsRolesModel::findById($id);
+
+            // Controlla se il ruolo esiste
+            if ($role) {
+                // Opzione 1: Rimuovi il ruolo da tutti gli utenti a cui è stato assegnato
+                $role->users()->detach();
+
+                // Opzione 2: Gestisci gli utenti assegnati in modo specifico
+                // (es. assegnali a un ruolo differente prima di eliminare il ruolo corrente)
+
+                // Dopo aver gestito gli utenti assegnati, elimina il ruolo
+                $role->delete();
+            } else {
+                return response()->json(['message' => 'Ruolo non eliminato qualcosa è andato storto', 'id' => $id]);
+            }
+        }
+
+        $items = MifracrudsRolesModel::with('permissions_crud')->get();
+        return response()->json($items);
     }
 }

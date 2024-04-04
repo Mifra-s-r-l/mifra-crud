@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Helpers;
+
+trait MifracrudsHelper
+{
+    /**
+     * Appendi un'azione al campo actions.
+     *
+     * @param string $value il name del ruolo
+     * @param string $reverse inverso della conversione
+     */
+    public function manipulateStringRoleName($value, $reverse = false)
+    {
+        if (!$reverse) {
+            // Converti tutto in minuscolo e rimuovi caratteri speciali
+            return strtolower(str_replace(' ', '-', preg_replace('/[^A-Za-z0-9 ]/', '', $value)));
+        } else {
+            // Operazione inversa (se necessario)
+            return ucwords(strtolower(str_replace('-', ' ', $value)));
+        }
+    }
+}

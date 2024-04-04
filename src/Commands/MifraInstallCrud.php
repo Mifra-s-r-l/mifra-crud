@@ -207,6 +207,7 @@ class MifraInstallCrud extends Command
 
             // Carico le dipendenze
             CrudHelpers::createFile($this, 'MifracrudsActionable', 'app/Traits/MifraCruds', 'traits/Actionable', 'file creato correttamente');
+            CrudHelpers::createFile($this, 'MifracrudsHelper', 'app/Helpers/MifraCruds', 'helpers/Helper', 'file creato correttamente');
             CrudHelpers::insertActionableToModelUser($this->filePathUser, 'add');
             CrudHelpers::modifyMiddlewareSpatie($this->variableMiddleware, 'add');
 

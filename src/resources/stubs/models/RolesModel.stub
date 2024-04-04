@@ -5,15 +5,24 @@ namespace App\Models\MifraCruds;
 use App\Models\User;
 use Spatie\Permission\Models\Role as SpatieRole;
 use App\Models\MifraCruds\MifracrudsPermissionsModel;
+use App\Http\Controllers\MifraCruds\MifracrudsRolesController;
+use App\Helpers\MifraCruds\MifracrudsHelper;
 
 class MifracrudsRolesModel extends SpatieRole
 {
+    use MifracrudsHelper;
+
     protected $fillable = [
         'name', 'guard_name', // attributi di default
         // aggiungi qui i tuoi attributi personalizzati
     ];
 
-    protected $appends = ['users'];
+    protected $appends = ['users', 'title'];
+
+    public function getTitleAttribute()
+    {
+        return $this->manipulateStringRoleName($this->name, true);
+    }
 
     public function getUsersAttribute()
     {
