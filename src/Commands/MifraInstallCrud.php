@@ -219,7 +219,7 @@ class MifraInstallCrud extends Command
             CrudHelpers::updateComposer();
 
         } catch (\Exception $e) {
-            $this->info("Errore installCrud: " . $e->getMessage());
+            $this->error("Errore installCrud: " . $e->getMessage());
             return;
         }
     }
@@ -420,7 +420,7 @@ class MifraInstallCrud extends Command
                 File::append($webRoutesPath, "\nrequire {$mifracrudsPath}");
                 $this->info("Aggiunto il require di mifracruds/cruds.php in routes/web.php");
             } else {
-                $this->info("Il require di mifracruds/cruds.php è già presente in routes/web.php");
+                $this->comment("Il require di mifracruds/cruds.php è già presente in routes/web.php");
             }
         } else {
             $this->comment("Il file routes/web.php non esiste quindi per far funzionare le rotte bisogna attivarle manualmente.");
