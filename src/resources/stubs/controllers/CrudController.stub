@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\MifraCruds;
 
+use App\Models\MifraCruds\MifracrudsPermissionsModel;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Mifra\Crud\Helpers\CrudHelpers;
-use Illuminate\Support\Facades\Artisan;
-use App\Models\MifraCruds\MifracrudsPermissionsModel;
 
 class MifracrudsCrudsController extends Controller
 {
@@ -52,18 +52,18 @@ class MifracrudsCrudsController extends Controller
         }
 
         $pathPermission = CrudHelpers::conversionRouteName($items[0]['route_name'], 'permission');
-        $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%'.$pathPermission)->get();
+        $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%' . $pathPermission)->get();
         $permissionNames = $permissions->pluck('name')->toArray();
-        
+
         $contents = [
             "title" => $items[0]['title'], // titolo della pagina
-            "route_name" => $items[0]['route_name'], // rotta per da utilizzare su tabulator per edit, create, update e delete 
+            "route_name" => $items[0]['route_name'], // rotta per da utilizzare su tabulator per edit, create, update e delete
             "permissions" => $permissionNames, // lista di tutti i permessi del CRUD
             "super-admin" => $user->hasAnyRole('super-admin'), // controllo se l'utente loggato è super-admin
             "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsCrudsController', // fare riferimento a ThemeController::tabulator_delete
             'export_print' => true, // per visualizzare stampa e export
-            'init_sort' => [ 0 => ['column' => 'title', 'dir' => 'asc' ] ], // ordinamento iniziale di tabulator
-            'filters_top_bar_tabulator' => [] // filtri della pagina top-bar di tabulator se pieno compare
+            'init_sort' => [0 => ['column' => 'title', 'dir' => 'asc']], // ordinamento iniziale di tabulator
+            'filters_top_bar_tabulator' => [], // filtri della pagina top-bar di tabulator se pieno compare
         ];
 
         //TODO possiamo inserire i parametri sopra direttamente nel database mongo
@@ -93,12 +93,12 @@ class MifracrudsCrudsController extends Controller
     {
         $database = config('mifracrud.database');
         $items = DB::connection('mongodb')->collection($database['collection'])->count();
-        $elements =[
-            'id' => intval($items+1),
+        $elements = [
+            'id' => intval($items + 1),
             'title' => $request->title,
             'icon' => $request->icon,
             'desc' => $request->desc,
-            'route_name' => 'mifracruds.'.$request->route_name,
+            'route_name' => 'mifracruds.' . $request->route_name,
             'group' => $request->group,
         ];
 
@@ -113,30 +113,42 @@ class MifracrudsCrudsController extends Controller
             return response()->json([
                 'status' => 'success',
                 'title' => 'Successo',
-                'message' => 'Elemento creato con successo'
+                'message' => 'Elemento creato con successo',
             ]);
         } else {
             return redirect('/')->with('message', 'Elemento creato con successo');
         }
     }
-    
+
     public function delete(Request $request, $id)
     {
-        $elements =[
-            'id' => intval($id),
-            'route_name' => $request->data['route_name'],
-        ];
-
-        Artisan::call('mifra:createcrud', [
-            'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
-            '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
-        ]);
+        if ($id == "all") {
+            foreach ($request->lists as $elem) {
+                $elements = [
+                    'id' => intval($elem['id']),
+                    'route_name' => $elem['route_name'],
+                ];
+                Artisan::call('mifra:createcrud', [
+                    'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
+                    '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
+                ]);
+            }
+        } else {
+            $elements = [
+                'id' => intval($id),
+                'route_name' => $request->data['route_name'],
+            ];
+            Artisan::call('mifra:createcrud', [
+                'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
+                '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
+            ]);
+        }
 
         if ($request->ajax()) {
             return response()->json([
                 'status' => 'success',
                 'title' => 'Successo',
-                'message' => 'Elemento eliminato con successo'
+                'message' => 'Elemento eliminato con successo',
             ]);
         } else {
             return redirect('/')->with('message', 'Elemento eliminato con successo');
@@ -145,7 +157,7 @@ class MifracrudsCrudsController extends Controller
 
     public function createGroup(Request $request, $id)
     {
-        $elements =[
+        $elements = [
             'id' => intval($id),
             'title' => $request->title,
             'icon' => $request->icon,
@@ -161,17 +173,17 @@ class MifracrudsCrudsController extends Controller
             return response()->json([
                 'status' => 'success',
                 'title' => 'Successo',
-                'message' => 'Elemento creato con successo'
+                'message' => 'Elemento creato con successo',
             ]);
         } else {
             return redirect('/')->with('message', 'Elemento creato con successo');
         }
     }
-    
+
     public function deleteGroup(Request $request, $id)
     {
-        $elements =[
-            'id' => intval($id)
+        $elements = [
+            'id' => intval($id),
         ];
 
         Artisan::call('mifra:creategroupcrud', [
@@ -183,7 +195,7 @@ class MifracrudsCrudsController extends Controller
             return response()->json([
                 'status' => 'success',
                 'title' => 'Successo',
-                'message' => 'Elemento eliminato con successo'
+                'message' => 'Elemento eliminato con successo',
             ]);
         } else {
             return redirect('/')->with('message', 'Elemento eliminato con successo');
