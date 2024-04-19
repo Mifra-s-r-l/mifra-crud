@@ -109,15 +109,9 @@ class MifracrudsCrudsController extends Controller
             '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
         ]);
 
-        if ($request->ajax()) {
-            return response()->json([
-                'status' => 'success',
-                'title' => 'Successo',
-                'message' => 'Elemento creato con successo',
-            ]);
-        } else {
-            return redirect('/')->with('message', 'Elemento creato con successo');
-        }
+        $database = config('mifracrud.database');
+        $items = DB::connection('mongodb')->collection($database['collection'])->get();
+        return response()->json($items);
     }
 
     public function delete(Request $request, $id)
@@ -144,15 +138,13 @@ class MifracrudsCrudsController extends Controller
             ]);
         }
 
-        if ($request->ajax()) {
-            return response()->json([
-                'status' => 'success',
-                'title' => 'Successo',
-                'message' => 'Elemento eliminato con successo',
-            ]);
+        if ($request->hard_delete == "1") {
+            $items = User::onlyTrashed()->with('roles')->get();
         } else {
-            return redirect('/')->with('message', 'Elemento eliminato con successo');
+            $user = auth()->user();
+            $items = User::with('roles')->where('id', '!=', $user->id)->get();
         }
+        return response()->json($items);
     }
 
     public function createGroup(Request $request, $id)

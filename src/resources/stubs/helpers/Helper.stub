@@ -2,6 +2,9 @@
 
 namespace App\Helpers\MifraCruds;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 trait MifracrudsHelper
 {
     /**
@@ -19,5 +22,25 @@ trait MifracrudsHelper
             // Operazione inversa (se necessario)
             return ucwords(strtolower(str_replace('-', ' ', $value)));
         }
+    }
+
+    /**
+     * Caricamento del file sul Bucket private.
+     *
+     * @param string $value il name del ruolo
+     * @param string $reverse inverso della conversione
+     */
+    public function processFile(Request $request, $inputName, $id, $folder)
+    {
+        
+        if ($request->hasFile($inputName)) {
+            $file = $request->file($inputName);
+            if($file->isValid()){
+                $path = $folder . $id . '.' . $file->extension();
+                Storage::disk('s3')->put($path, file_get_contents($file));
+                return $path;
+            }
+        }
+        return null;
     }
 }

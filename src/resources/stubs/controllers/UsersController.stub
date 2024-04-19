@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers\MifraCruds;
 
-use App\Http\Requests\MifraCruds\MifracrudsUsersRequest;
-use App\Models\MifraCruds\MifracrudsPermissionsModel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Mifra\Crud\Helpers\CrudHelpers;
 use Spatie\Permission\Models\Role;
+use Mifra\Crud\Helpers\CrudHelpers;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use App\Helpers\MifraCruds\MifracrudsHelper;
+use App\Models\MifraCruds\MifracrudsPermissionsModel;
+use App\Http\Requests\MifraCruds\MifracrudsUsersRequest;
 
 class MifracrudsUsersController extends Controller
 {
+    use MifracrudsHelper;
+    
     public function index()
-    {
+    { 
         $user = auth()->user();
 
         $database = config('mifracrud.database');
@@ -67,11 +71,23 @@ class MifracrudsUsersController extends Controller
         $user = User::findOrFail($id);
         $user->name = $request->name;
         $user->email = $request->email;
+
         $user->updateActions('updated');
         if ($request->password) {
             $user->password = Hash::make($request->password);
         }
         $user->save();
+
+        $valueMongo = ['type' => 'employee'];
+
+        $path = $this->processFile($request, 'avatar', $id, 'avatars/');
+        if($path != null){
+            $valueMongo['avatar'] = $path;
+        } else {
+            $valueMongo['avatar'] = 'avatars/blank-user.jpeg';
+        }
+
+        $this->mongoSync($id, $valueMongo, 'add');
 
         $rolesIds = $request->input('roles', []);
         $roles = Role::find($rolesIds); // Trova i ruoli basandoti sugli ID
@@ -90,10 +106,37 @@ class MifracrudsUsersController extends Controller
         $user->updateActions('created');
         $user->save();
 
+        $valueMongo = ['type' => 'employee'];
+
+        $path = $this->processFile($request, 'avatar', $user->id, 'avatars/');
+        if($path != null){
+            $valueMongo['avatar'] = $path;
+        } else {
+            $valueMongo['avatar'] = 'avatars/blank-user.jpeg';
+        }
+
+        $this->mongoSync($user->id, $valueMongo, 'add');
+
         $rolesIds = $request->input('roles', []);
         $roles = Role::find($rolesIds); // Trova i ruoli basandoti sugli ID
         if ($roles) {
             $user->syncRoles($roles); // Assegna i ruoli all'utente
+        }
+    }
+
+    public function mongoSync($id, $valueMongo, $action)
+    {
+        if($action == 'add'){
+            $collection = DB::connection('mongodb')->getMongoDB()->selectCollection('users');
+            $collection->updateOne(
+                ['id' => intval($id)], // Criterio di ricerca
+                ['$set' => $valueMongo], // Aggiornamento
+                ['upsert' => true] // Opzioni
+            );
+        }
+        if($action == 'remove'){
+            $collection = DB::connection('mongodb')->getMongoDB()->selectCollection('users');
+            $collection->deleteOne(['id' => intval($id)]);
         }
     }
 
@@ -105,6 +148,7 @@ class MifracrudsUsersController extends Controller
                 if ($request->hard_delete == "1") {
                     $item->roles()->detach();
                     $item->forceDelete();
+                    $this->mongoSync($id, null, 'remove');
                 } else {
                     $item->updateActions('deleted');
                     $item->delete();
@@ -115,6 +159,7 @@ class MifracrudsUsersController extends Controller
             if ($request->hard_delete == "1") {
                 $item->roles()->detach();
                 $item->forceDelete();
+                $this->mongoSync($id, null, 'remove');
             } else {
                 $item->updateActions('deleted');
                 $item->delete();
