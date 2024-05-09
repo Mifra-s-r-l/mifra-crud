@@ -275,14 +275,16 @@ class CrudHelpers
             Role::firstOrCreate([
                 'name' => 'super-admin',
             ]);
-            $admin = $namespace::factory()->firstOrCreate([
-                'email' => 'admin@admin.it', // Il campo univoco per la verifica
-            ], [
+            // Utilizza il modello User direttamente
+            $userData = [
                 'name' => 'Super Admin',
                 'email_verified_at' => now(),
                 'password' => Hash::make('admin'),
                 'remember_token' => Str::random(30),
-            ]);
+            ];
+            $admin = $namespace::firstOrCreate([
+                'email' => 'admin@admin.it', // Il campo univoco per la verifica
+            ], $userData);
 
             // Assegna il ruolo solamente se l'utente è stato appena creato
             if ($admin->wasRecentlyCreated) {
