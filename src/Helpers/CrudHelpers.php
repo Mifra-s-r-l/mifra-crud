@@ -275,14 +275,19 @@ class CrudHelpers
             Role::firstOrCreate([
                 'name' => 'super-admin',
             ]);
-            $admin = $namespace::factory()->create([
+            $admin = $namespace::factory()->firstOrCreate([
+                'email' => 'admin@admin.it', // Il campo univoco per la verifica
+            ], [
                 'name' => 'Super Admin',
-                'email' => 'admin@admin.it',
                 'email_verified_at' => now(),
                 'password' => Hash::make('admin'),
                 'remember_token' => Str::random(30),
             ]);
-            $admin->assignRole(array("super-admin"));
+
+            // Assegna il ruolo solamente se l'utente è stato appena creato
+            if ($admin->wasRecentlyCreated) {
+                $admin->assignRole(['super-admin']);
+            }
 
             // 3. Aggiungi `id_admin=1` all'array
             $array['id_admin'] = $admin->id;
