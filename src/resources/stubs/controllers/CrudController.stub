@@ -157,7 +157,7 @@ class MifracrudsCrudsController extends Controller
 
         // Se non è specificato un nome di percorso, impostiamo il route_name su stringa vuota
         if (empty($request->route_name)) {
-            $elements['route_name'] = '';
+            $elements['route_name'] = 'submenu';
         }
 
         //TODO sistemare la forzatura della route_name tutta minuscola

@@ -223,7 +223,7 @@ class MifraCreateCrud extends Command
             'name' => 'super-admin',
         ]);
         // Creo il permesso per il nuovo CRUD
-        CrudHelpers::createPermissionNewCrud($this->permissions, $permissions, $routeName, $superAdmin);
+        CrudHelpers::createPermissionNewCrud($this, $this->permissions, $routeName, $superAdmin);
     }
 
 }
