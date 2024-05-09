@@ -66,6 +66,7 @@ return [
         "modify",
         "trash",
         "delete",
+        "restore",
     ],
 
     /*
