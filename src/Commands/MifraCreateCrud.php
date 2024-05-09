@@ -164,25 +164,30 @@ class MifraCreateCrud extends Command
     {
         $this->elements['permissions'] = $this->permissions;
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
-        $exists = $collection->where('id', intval($this->elements['id']))->first(); // Verifica l'esistenza dell'elemento
 
-        // Creo il ruolo super-admin se non esiste
-        $superAdmin = Role::firstOrCreate([
-            'name' => 'super-admin',
-        ]);
-        // Creo il permesso per il nuovo CRUD
-        $permissionName = CrudHelpers::conversionRouteName($this->elements['route_name'], 'permission');
-        foreach ($this->permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission . '_' . $permissionName]);
-            $superAdmin->givePermissionTo($permission . '_' . $permissionName);
-        }
+        if ($this->elements['route_name'] != 'submenu') {
+            $exists = $collection->where('id', intval($this->elements['id']))->first(); // Verifica l'esistenza dell'elemento
 
-        if (!$exists) {
-            $collection->insert($this->elements);
-            $this->info("Inserita nuova voce di menu: {$this->elements['title']}");
+            // Creo il ruolo super-admin se non esiste
+            $superAdmin = Role::firstOrCreate([
+                'name' => 'super-admin',
+            ]);
+            // Creo il permesso per il nuovo CRUD
+            $permissionName = CrudHelpers::conversionRouteName($this->elements['route_name'], 'permission');
+            foreach ($this->permissions as $permission) {
+                Permission::firstOrCreate(['name' => $permission . '_' . $permissionName]);
+                $superAdmin->givePermissionTo($permission . '_' . $permissionName);
+            }
+
+            if (!$exists) {
+                $collection->insert($this->elements);
+                $this->info("Inserita nuova voce di menu: {$this->elements['title']}");
+            } else {
+                $collection->where('id', intval($this->elements['id']))->update($this->elements);
+                $this->info("Aggiornata la voce di menu: {$this->elements['title']}");
+            }
         } else {
-            $collection->where('id', intval($this->elements['id']))->update($this->elements);
-            $this->info("Aggiornata la voce di menu: {$this->elements['title']}");
+            $this->info("Inserita nuova voce di submenu: {$this->elements['title']}");
         }
     }
 
@@ -195,10 +200,10 @@ class MifraCreateCrud extends Command
         $cleanedRoutePath = str_replace("mifracruds/", "", $routePath);
 
         // Creo il controller
-        CrudHelpers::createControllerFile($this, $routeName, 'app/Http/Controllers/MifraCrudsCreated');
+        CrudHelpers::createControllerFile($this, $routeName, base_path('app/Http/Controllers/MifraCrudsCreated'));
 
         // Creo il model
-        CrudHelpers::createModelFile($this, $routeName, 'app/Models/MifraCrudsCreated');
+        CrudHelpers::createModelFile($this, $routeName, base_path('app/Models/MifraCrudsCreated'));
 
         // Creo il view
         CrudHelpers::createViewFile($this, $routeName);
