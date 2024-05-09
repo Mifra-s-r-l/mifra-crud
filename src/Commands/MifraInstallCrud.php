@@ -189,16 +189,17 @@ class MifraInstallCrud extends Command
             $this->info('');
 
             // Creo il gruppo dei CRUD di default
-            DB::connection('mongodb')->collection($this->databaseConfig['group'])->delete();
+            //DB::connection('mongodb')->collection($this->databaseConfig['group'])->delete();
             $group = DB::connection('mongodb')->collection($this->databaseConfig['group']);
             // Se esiste, aggiornalo con i nuovi valori
             foreach ($this->groupsMenus as $groupsMenu) {
                 # code...
-                $group->where('id', $groupsMenu['id'])->insert($groupsMenu);
+                //$group->where('id', $groupsMenu['id'])->insert($groupsMenu);
+                $group->where('id', $groupsMenu['id'])->update($groupsMenu, ['upsert' => true]);
             }
 
-            DB::connection('mongodb')->collection($this->databaseConfig['collection'])->delete();
-            $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection'])->get();
+            //DB::connection('mongodb')->collection($this->databaseConfig['collection'])->delete();
+            //$collection = DB::connection('mongodb')->collection($this->databaseConfig['collection'])->get();
 
             $this->info("Creazione voci di menù principali...");
             // Messaggio di separazione per migliorare la leggibilità dell'output
