@@ -5,7 +5,7 @@ namespace Mifra\Crud\Helpers;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Spatie\Permission\Contracts\Permission;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class CrudHelpers
