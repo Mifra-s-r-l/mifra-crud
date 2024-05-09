@@ -297,7 +297,7 @@ class MifraInstallCrud extends Command
         File::put($routeFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n");
 
         // Creo il file delle rotte create future
-        $routeFilePathCreated = base_path($directoryPathRoute . '/cruds/created.php');
+        $routeFilePathCreated = base_path('route/cruds/created.php');
         if (!File::exists($routeFilePathCreated)) {
             File::put($routeFilePathCreated, "<?php");
         }
