@@ -22,7 +22,7 @@ class MifracrudsRolesController extends Controller
 
         $items = MifracrudsRolesModel::with('permissions_crud')->get();
 
-        $pathPermission = CrudHelpers::conversionRouteName($items[0]['route_name'], 'permission');
+        $pathPermission = CrudHelpers::conversionRouteName($menu['route_name'], 'permission');
         $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%' . $pathPermission)->get();
         $permissionNames = $permissions->pluck('name')->toArray();
 

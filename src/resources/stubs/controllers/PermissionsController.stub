@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\MifraCruds;
 
+use App\Models\MifraCruds\MifracrudsPermissionsModel;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Mifra\Crud\Helpers\CrudHelpers;
-use App\Models\MifraCruds\MifracrudsPermissionsModel;
+use Spatie\Permission\Models\Permission;
 
 class MifracrudsPermissionsController extends Controller
 {
@@ -14,14 +15,14 @@ class MifracrudsPermissionsController extends Controller
     {
         $database = config('mifracrud.database');
 
-        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name','mifracruds.permissions')->first();
+        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name', 'mifracruds.permissions')->first();
 
         $items = MifracrudsPermissionsModel::get();
 
-        $pathPermission = CrudHelpers::conversionRouteName($items[0]['route_name'], 'permission');
-        $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%'.$pathPermission)->get();
+        $pathPermission = CrudHelpers::conversionRouteName($menu['route_name'], 'permission');
+        $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%' . $pathPermission)->get();
         $permissionNames = $permissions->pluck('name')->toArray();
-        
+
         $contents = [
             "title" => $menu['title'],
             "route_name" => $menu['route_name'],
@@ -31,9 +32,9 @@ class MifracrudsPermissionsController extends Controller
             'filters_top_bar_tabulator' => [
                 "list" => [
                     "name" => "Nome",
-                    ]
+                ]
                 ,
-                "reset" => "name"
+                "reset" => "name",
             ],
         ];
 
@@ -54,16 +55,34 @@ class MifracrudsPermissionsController extends Controller
 
     public function update(Request $request, $id)
     {
-        
+
     }
 
     public function create(Request $request)
     {
-        
+        // Converto name tutto minuscolo
+        $name = strtolower($request->name);
+
+        // Lo unisco a crud
+        $permission = $name . "_" . $request->crud;
+
+        // Creo il permesso
+        Permission::firstOrCreate(['name' => $permission]);
+
+        $items = MifracrudsPermissionsModel::get();
+        return response()->json($items);
     }
 
     public function delete(Request $request, $id)
     {
-        
+        if ($id == "all") {
+            foreach ($request->lists as $elem) {
+                $permission = MifracrudsPermissionsModel::findById($elem['id']);
+                $permission->delete();
+            }
+        }
+
+        $items = MifracrudsPermissionsModel::get();
+        return response()->json($items);
     }
 }

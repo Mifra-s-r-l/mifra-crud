@@ -17,9 +17,9 @@ use App\Http\Requests\MifraCruds\MifracrudsUsersRequest;
 class MifracrudsUsersController extends Controller
 {
     use MifracrudsHelper;
-    
+
     public function index()
-    { 
+    {
         $user = auth()->user();
 
         $database = config('mifracrud.database');
@@ -28,7 +28,7 @@ class MifracrudsUsersController extends Controller
 
         $items = User::with('roles')->where('id', '!=', $user->id)->get();
 
-        $pathPermission = CrudHelpers::conversionRouteName($items[0]['route_name'], 'permission');
+        $pathPermission = CrudHelpers::conversionRouteName($menu['route_name'], 'permission');
         $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%' . $pathPermission)->get();
         $permissionNames = $permissions->pluck('name')->toArray();
 
@@ -188,7 +188,7 @@ class MifracrudsUsersController extends Controller
             $item->deleted_at = null;
             $item->save();
         }
-        
+
         $items = User::onlyTrashed()->with('roles')->get();
         return response()->json($items);
     }

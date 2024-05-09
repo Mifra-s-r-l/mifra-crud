@@ -3,12 +3,12 @@
 namespace Mifra\Crud\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
-use Mifra\Crud\Helpers\CrudHelpers;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Mifra\Crud\Helpers\CrudHelpers;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class MifraCreateCrud extends Command
 {
@@ -76,7 +76,9 @@ class MifraCreateCrud extends Command
                     $this->deleteMenuItem();
                 } else {
                     $this->insertMenuItem();
-                    $this->createRoute();
+                    if ($this->elements['route_name']) {
+                        $this->createRoute();
+                    }
                 }
 
                 //$nameCapitalize = ucwords($this->argument('name'));
@@ -98,27 +100,27 @@ class MifraCreateCrud extends Command
         $path = CrudHelpers::conversionRouteName($this->elements['route_name'], 'path');
 
         // Percorso del file che vuoi cancellare
-        $controllerFile = base_path('app/Http/Controllers/MifraCruds/'.$className.'Controller.php');
+        $controllerFile = base_path('app/Http/Controllers/MifraCruds/' . $className . 'Controller.php');
         // Controlla se il file controller esiste e cancellalo
         if (File::exists($controllerFile)) {
             File::delete($controllerFile);
         }
-        
+
         // Percorso del file che vuoi cancellare
-        $modelFile = base_path('app/Models/MifraCruds/'.$className.'Model.php');
+        $modelFile = base_path('app/Models/MifraCruds/' . $className . 'Model.php');
         // Controlla se il file model esiste e cancellalo
         if (File::exists($modelFile)) {
             File::delete($modelFile);
         }
 
         // Rimuovere i file delle view
-        $viewFile = base_path('resources/views/'.$path);
+        $viewFile = base_path('resources/views/' . $path);
         if (File::exists($viewFile)) {
             File::deleteDirectory($viewFile);
         }
 
         // Percorso del file che vuoi cancellare
-        $routeFile = base_path('routes/'.$path.'.php');
+        $routeFile = base_path('routes/' . $path . '.php');
         // Controlla se il file controller esiste e cancellalo
         if (File::exists($routeFile)) {
             File::delete($routeFile);
@@ -130,7 +132,7 @@ class MifraCreateCrud extends Command
         $contentRouteWeb = File::get($fileRouteWeb);
         // Rimuovi la riga
         $cleanedRoutePath = str_replace("mifracruds/", "", $path);
-        $updatedContentRouteWeb = str_replace("require __DIR__ . '/".$cleanedRoutePath.".php';", '', $contentRouteWeb);
+        $updatedContentRouteWeb = str_replace("require __DIR__ . '/" . $cleanedRoutePath . ".php';", '', $contentRouteWeb);
         // Salva il file aggiornato
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
@@ -192,10 +194,10 @@ class MifraCreateCrud extends Command
         $cleanedRoutePath = str_replace("mifracruds/", "", $routePath);
 
         // Creo il controller
-        CrudHelpers::createControllerFile($this, $routeName, 'app/Http/Controllers/MifraCruds');
+        CrudHelpers::createControllerFile($this, $routeName, 'app/Http/Controllers/MifraCrudsCreated');
 
         // Creo il model
-        CrudHelpers::createModelFile($this, $routeName, 'app/Models/MifraCruds');
+        CrudHelpers::createModelFile($this, $routeName, 'app/Models/MifraCrudsCreated');
 
         // Creo il view
         CrudHelpers::createViewFile($this, $routeName);
@@ -210,11 +212,11 @@ class MifraCreateCrud extends Command
         }
 
         // Aggiungi la nuova definizione di rotta al file
-        $routeDefinition = "<?php\n\nuse Illuminate\Support\Facades\Route;\nuse App\Http\Controllers\MifraCruds\\".$className."Controller;\n\nRoute::get('".$routePath."', [".$className."Controller::class, '".$methodName."'])->name('".$routeName."');\n";
+        $routeDefinition = "<?php\n\nuse Illuminate\Support\Facades\Route;\nuse App\Http\Controllers\MifraCrudsCreated\\" . $className . "Controller;\n\nRoute::get('" . $routePath . "', [" . $className . "Controller::class, '" . $methodName . "'])->name('" . $routeName . "');\n";
         File::put($routesFilePath, $routeDefinition);
 
         $routeFilePathCruds = base_path('routes/mifracruds/cruds.php');
-        File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/".$cleanedRoutePath.".php';");
+        File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/" . $cleanedRoutePath . ".php';");
     }
 
 }

@@ -10,7 +10,7 @@ class MifracrudsPermissionsModel extends SpatiePermission
 {
 
     protected $fillable = [
-        'name', 
+        'name',
         'guard_name',
         'crud_name',
         'crud_desc',
@@ -52,5 +52,13 @@ class MifracrudsPermissionsModel extends SpatiePermission
     public function roles_crud()
     {
         return $this->belongsToMany(MifracrudsRolesModel::class, 'role_has_permissions', 'permission_id', 'role_id');
+    }
+
+    public function delete()
+    {
+        // Rimuovi il permesso da tutti i ruoli
+        $this->roles()->detach();
+        // Chiamata al metodo delete del genitore per eliminare il permesso
+        return parent::delete();
     }
 }

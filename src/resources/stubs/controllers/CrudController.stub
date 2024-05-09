@@ -11,45 +11,63 @@ use Mifra\Crud\Helpers\CrudHelpers;
 
 class MifracrudsCrudsController extends Controller
 {
-    public function index()
+    public function createList(): array
     {
         $user = auth()->user();
-
         $database = config('mifracrud.database');
 
-        if ($user->hasAnyPermission('trash_mifracruds_cruds') && request()->trashed) {
-            // Recupera tutti gli elementi dalla collezione di partenza
-            $items = DB::connection('mongodb')->collection($database['collection'])->get();
-        } else {
-            // Recupera tutti gli elementi dalla collezione di partenza
-            $items = DB::connection('mongodb')->collection($database['collection'])->get();
+        // Recupera tutti i gruppi prima di iterare sui CRUD
+        $groups = DB::connection('mongodb')->collection('cruds_groups')->orderBy('order', 'asc')->get();
+        $menus = [];
+        $groupIndices = [];
+
+        // Inizializza l'array dei menus con tutti i gruppi disponibili
+        foreach ($groups as $group) {
+            $groupKey = $group['group']; // Assicurati che questo campo sia corretto
+            $groupIndex = count($menus); // Usa la lunghezza attuale dell'array come indice
+            $groupIndices[$groupKey] = $groupIndex; // Mappa il nome del gruppo all'indice
+            $menus[$groupIndex] = [
+                '_id' => $group['_id'],
+                'id' => $group['id'],
+                'icon' => $group['icon'],
+                'title' => $group['title'],
+                'desc' => $group['desc'] ?? null,
+                'route_name' => $group['group'],
+                'group' => 'Gruppo', // Considera se questo è il valore corretto
+                'order' => $group['order'],
+                '_children' => [],
+            ];
         }
 
-        // Preparare un array per contenere gli elementi arricchiti con i nomi dei gruppi
-        $itemsWithGroupNames = [];
-
-        // Cicla sugli elementi per recuperare i nomi dei gruppi dalla seconda collezione
-        foreach ($items as $item) {
-            // Assicurati che l'elemento abbia un campo 'group'
-            if (isset($item['group'])) {
-                // Recupera il gruppo corrispondente dall'altra collezione
-                $group = DB::connection('mongodb')->collection($database['group'])->where('group', $item['group'])->first();
-
-                // Aggiungi il nome del gruppo all'elemento, se il gruppo esiste
-                if ($group) {
-                    $item['groupName'] = $group['title']; // Assumendo che il gruppo abbia un campo 'name'
-                } else {
-                    // Gestisci il caso in cui il gruppo non viene trovato
-                    $item['groupName'] = 'Gruppo non trovato';
-                }
-            } else {
-                // Gestisci il caso in cui l'elemento non abbia un campo 'group'
-                $item['groupName'] = 'Nessun gruppo';
+        // Recupera tutti i CRUD in base al permesso e alla richiesta
+        $cruds = DB::connection('mongodb')->collection($database['collection'])->orderBy('order', 'asc')->get();
+        foreach ($cruds as $item) {
+            $groupKey = $item['group'];
+            if (isset($groupIndices[$groupKey])) {
+                $groupIndex = $groupIndices[$groupKey];
+                // Aggiungi l'elemento al suo gruppo
+                $menus[$groupIndex]['_children'][] = [
+                    '_id' => $item['_id'],
+                    'id' => $item['id'],
+                    'icon' => $item['icon'],
+                    'title' => $item['title'],
+                    'desc' => $item['desc'],
+                    'route_name' => $item['route_name'],
+                    'group' => $menus[$groupIndex]['title'],
+                    'order' => $item['order'],
+                ];
             }
-
-            // Aggiungi l'elemento arricchito all'array di risultati
-            $itemsWithGroupNames[] = $item;
         }
+
+        return ['menus' => $menus, 'items' => $cruds, 'user' => $user];
+    }
+
+    public function index()
+    {
+        $cruds = $this->createList();
+        $user = $cruds['user'];
+        $items = $cruds['items'];
+        $itemsWithGroupNames = $cruds['menus'];
 
         $pathPermission = CrudHelpers::conversionRouteName($items[0]['route_name'], 'permission');
         $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%' . $pathPermission)->get();
@@ -62,7 +80,7 @@ class MifracrudsCrudsController extends Controller
             "super-admin" => $user->hasAnyRole('super-admin'), // controllo se l'utente loggato è super-admin
             "controller_name" => 'App\\Http\\Controllers\\MifraCruds\\MifracrudsCrudsController', // fare riferimento a ThemeController::tabulator_delete
             'export_print' => true, // per visualizzare stampa e export
-            'init_sort' => [0 => ['column' => 'title', 'dir' => 'asc']], // ordinamento iniziale di tabulator
+            'init_sort' => [0 => ['column' => 'order', 'dir' => 'asc']], // ordinamento iniziale di tabulator
             'filters_top_bar_tabulator' => [], // filtri della pagina top-bar di tabulator se pieno compare
         ];
 
@@ -84,7 +102,22 @@ class MifracrudsCrudsController extends Controller
         return view('pages.mifracruds.cruds.modal.element', compact('id', 'modalID', 'routeName'));
     }
 
+    public function editGroup(Request $request)
+    {
+        $id = $request->id;
+        $modalID = $request->modal_id;
+        $routeName = $request->route_name;
+
+        // Restituisce la vista con le variabili passate dinamicamente
+        return view('pages.mifracruds.cruds.modal.element_parent', compact('id', 'modalID', 'routeName'));
+    }
+
     public function update(Request $request)
+    {
+        dd($request);
+    }
+
+    public function updateGroup(Request $request)
     {
         dd($request);
     }
@@ -93,14 +126,39 @@ class MifracrudsCrudsController extends Controller
     {
         $database = config('mifracrud.database');
         $items = DB::connection('mongodb')->collection($database['collection'])->count();
+        $lastItem = DB::connection('mongodb')
+            ->collection($database['collection'])
+            ->orderBy('order', 'desc') // Ordina in modo discendente
+            ->first();
+
+        $elements = [];
+
+        // Definizione dell'array di base per gli elementi del menu
         $elements = [
             'id' => intval($items + 1),
+            'parent_id' => intval($request->parent_id),
             'title' => $request->title,
             'icon' => $request->icon,
             'desc' => $request->desc,
             'route_name' => 'mifracruds.' . $request->route_name,
             'group' => $request->group,
+            'order' => intval($lastItem['order'] + 1),
         ];
+
+        // Se non è specificato un gruppo, impostiamo i valori per un divisore
+        if (empty($request->group)) {
+            $elements['parent_id'] = null;
+            $elements['title'] = 'divider';
+            $elements['icon'] = null;
+            $elements['desc'] = null;
+            $elements['route_name'] = null;
+            $elements['group'] = null;
+        }
+
+        // Se non è specificato un nome di percorso, impostiamo il route_name su stringa vuota
+        if (empty($request->route_name)) {
+            $elements['route_name'] = '';
+        }
 
         //TODO sistemare la forzatura della route_name tutta minuscola
 
@@ -109,51 +167,25 @@ class MifracrudsCrudsController extends Controller
             '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
         ]);
 
+        $cruds = $this->createList();
+        $items = $cruds['menus'];
+        return response()->json($items);
+    }
+
+    public function createGroup(Request $request)
+    {
         $database = config('mifracrud.database');
-        $items = DB::connection('mongodb')->collection($database['collection'])->get();
-        return response()->json($items);
-    }
-
-    public function delete(Request $request, $id)
-    {
-        if ($id == "all") {
-            foreach ($request->lists as $elem) {
-                $elements = [
-                    'id' => intval($elem['id']),
-                    'route_name' => $elem['route_name'],
-                ];
-                Artisan::call('mifra:createcrud', [
-                    'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
-                    '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
-                ]);
-            }
-        } else {
-            $elements = [
-                'id' => intval($id),
-                'route_name' => $request->data['route_name'],
-            ];
-            Artisan::call('mifra:createcrud', [
-                'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
-                '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
-            ]);
-        }
-
-        if ($request->hard_delete == "1") {
-            $items = User::onlyTrashed()->with('roles')->get();
-        } else {
-            $user = auth()->user();
-            $items = User::with('roles')->where('id', '!=', $user->id)->get();
-        }
-        return response()->json($items);
-    }
-
-    public function createGroup(Request $request, $id)
-    {
+        $items = DB::connection('mongodb')->collection($database['group'])->count();
+        $lastItem = DB::connection('mongodb')
+            ->collection($database['group'])
+            ->orderBy('order', 'desc') // Ordina in modo discendente
+            ->first();
         $elements = [
-            'id' => intval($id),
+            'id' => intval($items + 1),
             'title' => $request->title,
             'icon' => $request->icon,
             'group' => $request->group,
+            'order' => intval($lastItem['order'] + 1),
         ];
 
         Artisan::call('mifra:creategroupcrud', [
@@ -161,36 +193,59 @@ class MifracrudsCrudsController extends Controller
             '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
         ]);
 
-        if ($request->ajax()) {
-            return response()->json([
-                'status' => 'success',
-                'title' => 'Successo',
-                'message' => 'Elemento creato con successo',
-            ]);
-        } else {
-            return redirect('/')->with('message', 'Elemento creato con successo');
-        }
+        $cruds = $this->createList();
+        $items = $cruds['menus'];
+        return response()->json($items);
     }
 
-    public function deleteGroup(Request $request, $id)
+    public function delete(Request $request, $id)
+    {
+        //dd($request);
+        if ($id == "all") {
+            foreach ($request->lists as $elem) {
+                if (isset($elem['_children'])) {
+                    $this->deleteGroupANDChildren($elem);
+                } else {
+                    $this->deleteCruds($elem['route_name'], $elem['id']);
+                }
+            }
+        } else {
+            if (isset($request->data['_children'])) {
+                $this->deleteGroupANDChildren($request->data);
+            } else {
+                $this->deleteCruds($request->data['route_name'], $id);
+            }
+        }
+
+        $cruds = $this->createList();
+        $items = $cruds['menus'];
+        return response()->json($items);
+    }
+
+    public function deleteCruds($route_name, $id)
     {
         $elements = [
             'id' => intval($id),
+            'route_name' => $route_name,
+        ];
+        Artisan::call('mifra:createcrud', [
+            'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
+            '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
+        ]);
+    }
+
+    public function deleteGroupANDChildren($data)
+    {
+        foreach ($data['_children'] as $elem) {
+            $this->deleteCruds($elem['route_name'], $elem['id']);
+        }
+        $elements = [
+            'id' => intval($data['id']),
         ];
 
         Artisan::call('mifra:creategroupcrud', [
             'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
             '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
         ]);
-
-        if ($request->ajax()) {
-            return response()->json([
-                'status' => 'success',
-                'title' => 'Successo',
-                'message' => 'Elemento eliminato con successo',
-            ]);
-        } else {
-            return redirect('/')->with('message', 'Elemento eliminato con successo');
-        }
     }
 }

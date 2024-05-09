@@ -81,6 +81,7 @@ return [
     'menus' => [
         [
             "id" => 1,
+            "parent_id" => 0,
             "title" => "Crud",
             "icon" => "List",
             "desc" => "Pagina per la gestione dei CRUD",
@@ -96,6 +97,7 @@ return [
         ],
         [
             "id" => 2,
+            "parent_id" => 0,
             "title" => "Utenti",
             "icon" => "Users",
             "desc" => "Pagina per la gestione degli Utenti",
@@ -113,6 +115,7 @@ return [
         ],
         [
             "id" => 3,
+            "parent_id" => 0,
             "title" => "Ruoli",
             "icon" => "UserCog",
             "desc" => "Pagina per la gestione dei Ruoli",
@@ -128,6 +131,7 @@ return [
         ],
         [
             "id" => 4,
+            "parent_id" => 0,
             "title" => "Permessi",
             "icon" => "SlidersVertical",
             "desc" => "Pagina per la gestione dei Permessi",
