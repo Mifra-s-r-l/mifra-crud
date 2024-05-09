@@ -146,7 +146,7 @@ class MifraCreateCrud extends Command
         // Leggi il contenuto del file
         $contentRouteWeb = File::get($fileRouteWeb);
         // Rimuovi la riga
-        $updatedContentRouteWeb = str_replace("require __DIR__ . '/" . $path . ".php';", '', $contentRouteWeb);
+        $updatedContentRouteWeb = str_replace("\nrequire __DIR__ . '/" . $path . ".php';", '', $contentRouteWeb);
         // Salva il file aggiornato
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
@@ -237,7 +237,7 @@ class MifraCreateCrud extends Command
         File::put($routesFilePath, $routeDefinition);
 
         $routeFilePathCruds = base_path('routes/cruds/created.php');
-        File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/" . $routePath . ".php';");
+        File::append($routeFilePathCruds, "\nrequire __DIR__ . '/" . $routePath . ".php';");
     }
 
 }
