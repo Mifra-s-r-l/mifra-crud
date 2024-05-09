@@ -285,7 +285,7 @@ class MifraInstallCrud extends Command
             $routeContentHead .= "use App\Http\Controllers\MifraCruds\\{$className}Controller;\n";
 
             // Creo il permesso per il nuovo CRUD
-            CrudHelpers::createPermissionNewCrud($this, $menuItem['permissions'], $menuItem['route_name']);
+            CrudHelpers::createPermissionNewCrud($this, $menuItem['permissions'], $menuItem['route_name'], $superAdmin);
 
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');

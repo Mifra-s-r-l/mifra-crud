@@ -312,7 +312,7 @@ class CrudHelpers
         }
     }
 
-    public static function createPermissionNewCrud($commands, $permissions, $route_name)
+    public static function createPermissionNewCrud($commands, $permissions, $route_name, $superAdmin)
     {
         $permissionName = CrudHelpers::conversionRouteName($route_name, 'permission');
         foreach ($permissions as $permission) {
