@@ -125,6 +125,21 @@ class MifraCreateCrud extends Command
         if (File::exists($routeFile)) {
             File::delete($routeFile);
         }
+        // Split del path per ottenere le singole cartelle
+        $parts = explode('/', $path);
+        $directoryPath = base_path('routes/cruds');
+
+        while (!empty($parts)) {
+            $directoryPath .= '/' . array_pop($parts);
+
+            // Verifica se la cartella è vuota prima di eliminarla
+            if (File::isDirectory($directoryPath) && File::allFiles($directoryPath) == []) {
+                File::deleteDirectory($directoryPath);
+            } else {
+                // Se la cartella non è vuota, interrompi il ciclo
+                break;
+            }
+        }
 
         // Percorso al file web.php
         $fileRouteWeb = base_path('routes/cruds/created.php');
