@@ -127,7 +127,7 @@ class MifraCreateCrud extends Command
         }
 
         // Percorso al file web.php
-        $fileRouteWeb = base_path('routes/cruds/mifracruds/created.php');
+        $fileRouteWeb = base_path('routes/cruds/created.php');
         // Leggi il contenuto del file
         $contentRouteWeb = File::get($fileRouteWeb);
         // Rimuovi la riga
@@ -223,7 +223,7 @@ class MifraCreateCrud extends Command
         File::put($routesFilePath, $routeDefinition);
 
         $routeFilePathCruds = base_path('routes/cruds/created.php');
-        File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/" . $cleanedRoutePath . ".php';");
+        File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/" . $routePath . ".php';");
     }
 
 }
