@@ -217,6 +217,9 @@ class MifraCreateCrud extends Command
 
         $routeFilePathCruds = base_path('routes/mifracruds/cruds_created.php');
         File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/" . $cleanedRoutePath . ".php';");
+
+        // Creo il permesso per il nuovo CRUD
+        CrudHelpers::createPermissionNewCrud($this->permissions, $permissions, $routeName);
     }
 
 }

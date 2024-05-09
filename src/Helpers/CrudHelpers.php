@@ -311,6 +311,29 @@ class CrudHelpers
         }
     }
 
+    public static function createPermissionNewCrud($commands, $permissions, $route_name)
+    {
+        $permissionName = CrudHelpers::conversionRouteName($route_name, 'permission');
+        foreach ($permissions as $permission) {
+            $permissionValue = $permission . '_' . $permissionName;
+            $permissionCreate = Permission::firstOrCreate(['name' => $permissionValue]);
+            try {
+                // Tentativo di assegnazione permesso
+                $superAdmin->givePermissionTo($permissionCreate);
+            } catch (\Illuminate\Database\QueryException $exception) {
+                // Verifica se l'eccezione è una violazione dell'integrità per chiave duplicata
+                if ($exception->errorInfo[1] == 1062) {
+                    // Gestisci il caso di duplicazione (ad es., ignorandolo o registrando)
+                    $commands->info("Il permesso {$permissionValue} è già assegnato al ruolo.");
+                } else {
+                    // Rilancia l'eccezione se si tratta di un altro tipo di errore SQL
+                    throw $exception;
+                }
+            }
+
+        }
+    }
+
     public static function updateComposer()
     {
         //TODO creare un array che si riempe ogni volta che viene creato un file e salvarlo

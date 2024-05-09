@@ -285,26 +285,7 @@ class MifraInstallCrud extends Command
             $routeContentHead .= "use App\Http\Controllers\MifraCruds\\{$className}Controller;\n";
 
             // Creo il permesso per il nuovo CRUD
-            $permissions = $menuItem['permissions'];
-            $permissionName = CrudHelpers::conversionRouteName($menuItem['route_name'], 'permission');
-            foreach ($permissions as $permission) {
-                $permissionValue = $permission . '_' . $permissionName;
-                $permissionCreate = Permission::firstOrCreate(['name' => $permissionValue]);
-                try {
-                    // Tentativo di assegnazione permesso
-                    $superAdmin->givePermissionTo($permissionCreate);
-                } catch (\Illuminate\Database\QueryException $exception) {
-                    // Verifica se l'eccezione è una violazione dell'integrità per chiave duplicata
-                    if ($exception->errorInfo[1] == 1062) {
-                        // Gestisci il caso di duplicazione (ad es., ignorandolo o registrando)
-                        $this->info("Il permesso {$permissionValue} è già assegnato al ruolo.");
-                    } else {
-                        // Rilancia l'eccezione se si tratta di un altro tipo di errore SQL
-                        throw $exception;
-                    }
-                }
-
-            }
+            CrudHelpers::createPermissionNewCrud($this, $menuItem['permissions'], $menuItem['route_name']);
 
             // Messaggio di separazione per migliorare la leggibilità dell'output
             $this->info('');
@@ -322,7 +303,7 @@ class MifraInstallCrud extends Command
         }
 
         // Scrivi l'header e il contenuto delle rotte nel file
-        File::append($routeFilePath, $routeContentHead . $routeContent . "\n\nrequire __DIR__ . '/mifracruds/cruds_created.php';");
+        File::append($routeFilePath, $routeContentHead . $routeContent . "\n\nrequire __DIR__ . '/cruds_created.php';");
 
         // Aggiungo le rotte per la creazione e eliminazione dei CRUD di default
         $this->createCommandsDefault($routeFilePath);
