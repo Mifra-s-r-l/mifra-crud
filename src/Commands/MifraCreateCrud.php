@@ -162,6 +162,7 @@ class MifraCreateCrud extends Command
 
     public function insertMenuItem()
     {
+        $this->elements['permissions'] = $this->permissions;
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
         $exists = $collection->where('id', intval($this->elements['id']))->first(); // Verifica l'esistenza dell'elemento
 
@@ -217,13 +218,6 @@ class MifraCreateCrud extends Command
 
         $routeFilePathCruds = base_path('routes/mifracruds/cruds_created.php');
         File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/" . $cleanedRoutePath . ".php';");
-
-        // Creo il ruolo super-admin se non esiste
-        $superAdmin = Role::firstOrCreate([
-            'name' => 'super-admin',
-        ]);
-        // Creo il permesso per il nuovo CRUD
-        CrudHelpers::createPermissionNewCrud($this, $this->permissions, $routeName, $superAdmin);
     }
 
 }
