@@ -215,7 +215,7 @@ class MifraCreateCrud extends Command
         $routeDefinition = "<?php\n\nuse Illuminate\Support\Facades\Route;\nuse App\Http\Controllers\MifraCrudsCreated\\" . $className . "Controller;\n\nRoute::get('" . $routePath . "', [" . $className . "Controller::class, '" . $methodName . "'])->name('" . $routeName . "');\n";
         File::put($routesFilePath, $routeDefinition);
 
-        $routeFilePathCruds = base_path('routes/mifracruds/cruds.php');
+        $routeFilePathCruds = base_path('routes/mifracruds/cruds_created.php');
         File::append($routeFilePathCruds, "\n\nrequire __DIR__ . '/" . $cleanedRoutePath . ".php';");
     }
 
