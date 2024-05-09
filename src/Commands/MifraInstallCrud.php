@@ -276,7 +276,9 @@ class MifraInstallCrud extends Command
             }
 
             // Creo la view
-            CrudHelpers::createViewFile($this, $menuItem['route_name']);
+            $path = CrudHelpers::conversionRouteName($menuItem['route_name'], 'path');
+            $directoryPathViewCrud = base_path('resources/views/' . $path);
+            CrudHelpers::createViewFile($this, $menuItem['route_name'], $directoryPathViewCrud);
 
             $className = CrudHelpers::conversionRouteName($menuItem['route_name'], 'className');
 

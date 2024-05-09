@@ -206,7 +206,8 @@ class MifraCreateCrud extends Command
         CrudHelpers::createModelFile($this, $routeName, 'app/Models/MifraCrudsCreated');
 
         // Creo il view
-        CrudHelpers::createViewFile($this, $routeName);
+        $directoryPathViewCrud = base_path('resources/views/cruds/' . $routePath);
+        CrudHelpers::createViewFile($this, $routeName, $directoryPathViewCrud);
 
         // Assicurati che il file esista o crealo
         $routesFilePath = base_path('routes/cruds/' . $routePath . '.php');

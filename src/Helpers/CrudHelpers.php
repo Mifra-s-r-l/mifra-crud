@@ -195,7 +195,7 @@ class CrudHelpers
         }
     }
 
-    public static function createViewFile($commands, $route_name)
+    public static function createViewFile($commands, $route_name, $directoryPathViewCrud)
     {
         // Costruisci il percorso del file .stub
         $stubPath = __DIR__ . '/../resources/stubs/index.blade.stub';
@@ -208,7 +208,6 @@ class CrudHelpers
         // Assicurati che questa directory esista o sia creata
         $path = CrudHelpers::conversionRouteName($route_name, 'path');
 
-        $directoryPathViewCrud = base_path('resources/views/cruds/' . $path);
         if (!File::exists($directoryPathViewCrud)) {
             File::makeDirectory($directoryPathViewCrud, 0755, true);
         }
