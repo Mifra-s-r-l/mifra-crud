@@ -256,11 +256,11 @@ class MifraInstallCrud extends Command
             if ($menuItem['route_name'] == 'mifracruds.cruds') {
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/CrudController');
                 CrudHelpers::createRequestFile($this, $menuItem['route_name'], 'app/Http/Requests/MifraCruds');
-                CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds', 'model/CrudModel');
+                CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds', 'models/CrudModel', 'model/CrudModel');
             } else if ($menuItem['route_name'] == 'mifracruds.users') {
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/UsersController');
                 CrudHelpers::createRequestFile($this, $menuItem['route_name'], 'app/Http/Requests/MifraCruds', 'requests/UsersRequest');
-                CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds', 'model/UsersModel');
+                CrudHelpers::createModelFile($this, $menuItem['route_name'], 'app/Models/MifraCruds', 'models/UsersModel', 'model/UsersModel');
             } else if ($menuItem['route_name'] == 'mifracruds.roles') {
                 CrudHelpers::createControllerFile($this, $menuItem['route_name'], 'app/Http/Controllers/MifraCruds', 'controllers/RolesController');
                 CrudHelpers::createRequestFile($this, $menuItem['route_name'], 'app/Http/Requests/MifraCruds');
