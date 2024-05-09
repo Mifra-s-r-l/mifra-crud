@@ -312,11 +312,15 @@ class MifraInstallCrud extends Command
 
         // Creo il file delle rotte
         $routeFilePath = $directoryPathRoute . '/cruds.php';
-        // Creo il file delle rotte create future
-        $routeFilePathCreated = $directoryPathRoute . '/cruds_created.php';
         //File::put($routeFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n\nuse App\Http\Controllers\MifraCruds\MifracrudsController;\n");
         File::put($routeFilePath, "<?php\n\nuse Illuminate\Support\Facades\Route;\n");
-        File::put($routeFilePathCreated, "<?php");
+
+        // Creo il file delle rotte create future
+        $routeFilePathCreated = $directoryPathRoute . '/cruds_created.php';
+        if (!File::exists($routeFilePathCreated)) {
+            File::put($routeFilePathCreated, "<?php");
+        }
+
         // Scrivi l'header e il contenuto delle rotte nel file
         File::append($routeFilePath, $routeContentHead . $routeContent . "\n\n__DIR__ . '/mifracruds/cruds_created.php';");
 
