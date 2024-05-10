@@ -6,8 +6,9 @@ Route::middleware(['auth','role:super-admin'])->post('mifracruds/cruds/edit',[Mi
 Route::middleware(['auth','role:super-admin'])->post('mifracruds/cruds/parent/edit',[MifracrudsCrudsController::class, 'editGroup'])->name('mifracruds.cruds.parent.edit');
 Route::middleware(['auth','role:super-admin'])->post('mifracruds/cruds/delete/{id}',[MifracrudsCrudsController::class, 'delete'])->name('mifracruds.cruds.delete');
 
-Route::middleware(['auth','role:super-admin'])->post('mifracruds/cruds/group/create/{id}',[MifracrudsCrudsController::class, 'createGroup'])->name('mifracruds.cruds.group.create');
-Route::middleware(['auth','role:super-admin'])->post('mifracruds/cruds/group/update/{id}',[MifracrudsCrudsController::class, 'updateGroup'])->name('mifracruds.cruds.group.update');
+Route::middleware(['auth','role:super-admin'])->post('mifracruds/cruds/parent/edit',[MifracrudsCrudsController::class, 'editGroup'])->name('mifracruds.cruds.parent.edit');
+Route::middleware(['auth','role:super-admin'])->post('mifracruds/cruds/parent/create',[MifracrudsCrudsController::class, 'createGroup'])->name('mifracruds.cruds.group.create');
+Route::middleware(['auth','role:super-admin'])->post('mifracruds/cruds/parent/update/{id}',[MifracrudsCrudsController::class, 'updateGroup'])->name('mifracruds.cruds.group.update');
 
 // Rotte users
 Route::middleware(['auth','role:super-admin'])->post('mifracruds/users/update/{id}',[MifracrudsUsersController::class, 'update'])->name('mifracruds.users.update');
