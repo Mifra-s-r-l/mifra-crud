@@ -179,9 +179,16 @@ class MifraCreateCrud extends Command
         $this->elements['permissions'] = $this->permissions;
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
 
-        if ($this->elements['route_name'] != 'submenu') {
-            $exists = $collection->where('id', intval($this->elements['id']))->first(); // Verifica l'esistenza dell'elemento
+        $exists = $collection->where('id', intval($this->elements['id']))->first(); // Verifica l'esistenza dell'elemento
+        if (!$exists) {
+            $collection->insert($this->elements);
+            $this->info("Inserita nuova voce di menu: {$this->elements['title']}");
+        } else {
+            $collection->where('id', intval($this->elements['id']))->update($this->elements);
+            $this->info("Aggiornata la voce di menu: {$this->elements['title']}");
+        }
 
+        if ($this->elements['route_name'] != 'submenu') {
             // Creo il ruolo super-admin se non esiste
             $superAdmin = Role::firstOrCreate([
                 'name' => 'super-admin',
@@ -192,16 +199,6 @@ class MifraCreateCrud extends Command
                 Permission::firstOrCreate(['name' => $permission . '_' . $permissionName]);
                 $superAdmin->givePermissionTo($permission . '_' . $permissionName);
             }
-
-            if (!$exists) {
-                $collection->insert($this->elements);
-                $this->info("Inserita nuova voce di menu: {$this->elements['title']}");
-            } else {
-                $collection->where('id', intval($this->elements['id']))->update($this->elements);
-                $this->info("Aggiornata la voce di menu: {$this->elements['title']}");
-            }
-        } else {
-            $this->info("Inserita nuova voce di submenu: {$this->elements['title']}");
         }
     }
 
