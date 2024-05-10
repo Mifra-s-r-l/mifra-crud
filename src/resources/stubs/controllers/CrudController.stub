@@ -16,16 +16,26 @@ class MifracrudsCrudsController extends Controller
         $user = auth()->user();
         $database = config('mifracrud.database');
 
-        // Recupera tutti i gruppi prima di iterare sui CRUD
-        $groups = DB::connection('mongodb')->collection('cruds_groups')->orderBy('order', 'asc')->get();
-        $menus = [];
-        $groupIndices = [];
+        $groups = $this->fetchGroups();
+        $menus = $this->initializeMenus($groups);
+        $groupIndices = $this->getGroupIndices($groups);
 
-        // Inizializza l'array dei menus con tutti i gruppi disponibili
+        $cruds = $this->fetchCruds($database['collection']);
+        $menus = $this->populateMenusWithCruds($menus, $groupIndices, $cruds);
+
+        return ['menus' => $menus, 'items' => $cruds, 'user' => $user];
+    }
+
+    private function fetchGroups()
+    {
+        return DB::connection('mongodb')->collection('cruds_groups')->orderBy('order', 'asc')->get();
+    }
+
+    private function initializeMenus($groups)
+    {
+        $menus = [];
         foreach ($groups as $group) {
-            $groupKey = $group['group']; // Assicurati che questo campo sia corretto
-            $groupIndex = count($menus); // Usa la lunghezza attuale dell'array come indice
-            $groupIndices[$groupKey] = $groupIndex; // Mappa il nome del gruppo all'indice
+            $groupIndex = count($menus);
             $menus[$groupIndex] = [
                 '_id' => $group['_id'],
                 'id' => $group['id'],
@@ -33,19 +43,36 @@ class MifracrudsCrudsController extends Controller
                 'title' => $group['title'],
                 'desc' => $group['desc'] ?? null,
                 'route_name' => $group['group'],
-                'group' => 'Gruppo', // Considera se questo è il valore corretto
+                'group' => 'Group',
                 'order' => $group['order'],
                 '_children' => [],
             ];
         }
+        return $menus;
+    }
 
-        // Recupera tutti i CRUD in base al permesso e alla richiesta
-        $cruds = DB::connection('mongodb')->collection($database['collection'])->orderBy('order', 'asc')->get();
+    private function getGroupIndices($groups)
+    {
+        $groupIndices = [];
+        foreach ($groups as $group) {
+            $groupKey = $group['group'];
+            $groupIndex = count($groupIndices);
+            $groupIndices[$groupKey] = $groupIndex;
+        }
+        return $groupIndices;
+    }
+
+    private function fetchCruds($collection)
+    {
+        return DB::connection('mongodb')->collection($collection)->where('parent_id', 0)->orderBy('order', 'asc')->get();
+    }
+
+    private function populateMenusWithCruds($menus, $groupIndices, $cruds)
+    {
         foreach ($cruds as $item) {
             $groupKey = $item['group'];
             if (isset($groupIndices[$groupKey])) {
                 $groupIndex = $groupIndices[$groupKey];
-                // Aggiungi l'elemento al suo gruppo
                 $menus[$groupIndex]['_children'][] = [
                     '_id' => $item['_id'],
                     'id' => $item['id'],
@@ -56,10 +83,23 @@ class MifracrudsCrudsController extends Controller
                     'group' => $menus[$groupIndex]['title'],
                     'order' => $item['order'],
                 ];
+
+                $cruds_childs = DB::connection('mongodb')->collection('cruds')->where('parent_id', intval($item['id']))->orderBy('order', 'asc')->get();
+                foreach ($cruds_childs as $cruds_child) {
+                    $menus[$groupIndex]['_children'][array_key_last($menus[$groupIndex]['_children'])]['_children'][] = [
+                        '_id' => $cruds_child['_id'],
+                        'id' => $cruds_child['id'],
+                        'icon' => $cruds_child['icon'],
+                        'title' => $cruds_child['title'],
+                        'desc' => $cruds_child['desc'],
+                        'route_name' => $cruds_child['route_name'],
+                        'group' => $menus[$groupIndex]['title'],
+                        'order' => $cruds_child['order'],
+                    ];
+                }
             }
         }
-
-        return ['menus' => $menus, 'items' => $cruds, 'user' => $user];
+        return $menus;
     }
 
     public function index()
@@ -136,7 +176,7 @@ class MifracrudsCrudsController extends Controller
         // Definizione dell'array di base per gli elementi del menu
         $elements = [
             'id' => intval($items + 1),
-            'parent_id' => intval($request->parent_id),
+            'parent_id' => $request->type == "1" ? intval($request->parent_id) : 0,
             'title' => $request->title,
             'icon' => $request->icon,
             'desc' => $request->desc,
@@ -146,17 +186,17 @@ class MifracrudsCrudsController extends Controller
         ];
 
         // Se non è specificato un gruppo, impostiamo i valori per un divisore
-        if (empty($request->group)) {
-            $elements['parent_id'] = null;
-            $elements['title'] = 'divider';
+        if ($request->type == "2") {
+            $elements['parent_id'] = 0;
+            $elements['title'] = 'Divisore';
             $elements['icon'] = null;
             $elements['desc'] = null;
-            $elements['route_name'] = null;
+            $elements['route_name'] = 'submenu';
             $elements['group'] = null;
         }
 
         // Se non è specificato un nome di percorso, impostiamo il route_name su stringa vuota
-        if (empty($request->route_name)) {
+        if ($request->type == "1") {
             $elements['route_name'] = 'submenu';
         }
 
