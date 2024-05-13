@@ -240,7 +240,7 @@ class MifraInstallCrud extends Command
         foreach ($menuItems as $menuItem) {
 
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
-            $exists = $collection->where('_id', $menuItem['id'])->first(); // Verifica l'esistenza dell'elemento
+            $exists = $collection->where('_id', new \MongoDB\BSON\ObjectId($menuItem['_id']))->first(); // Verifica l'esistenza dell'elemento
 
             if (!$exists) {
                 // Se non esiste, inseriscilo nel database
@@ -248,7 +248,7 @@ class MifraInstallCrud extends Command
                 $this->info("Inserita nuova voce di menu: {$menuItem['title']}");
             } else {
                 // Se esiste, aggiornalo con i nuovi valori
-                $collection->where('id', new \MongoDB\BSON\ObjectId($menuItem['_id']))->update($menuItem);
+                $collection->where('_id', new \MongoDB\BSON\ObjectId($menuItem['_id']))->update($menuItem);
                 $this->info("Aggiorno la voce di menu: {$menuItem['title']}");
             }
 
