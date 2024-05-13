@@ -58,7 +58,7 @@ class MifraCreateGroupCrud extends Command
 
             if (File::exists($alreadyInstalledFlagPath)) {
 
-                $id = $this->elements['id'] ?? null;
+                $id = $this->elements['_id'] ?? null;
 
                 if (!$id) {
                     $this->error('ID non specificato per l\'eliminazione.');
@@ -85,25 +85,25 @@ class MifraCreateGroupCrud extends Command
     protected function deleteMenuItem()
     {
         $group = DB::connection('mongodb')->collection($this->databaseConfig['group']);
-        $deletedCount = $group->where('id', intval($this->elements['id']))->delete();
+        $deletedCount = $group->where('_id', new \MongoDB\BSON\ObjectId($this->elements['_id']))->delete();
 
         if ($deletedCount > 0) {
-            $this->info("Elemento con ID {$this->elements['id']} eliminato con successo.");
+            $this->info("Elemento con ID {$this->elements['_id']} eliminato con successo.");
         } else {
-            $this->error("Nessun elemento trovato con ID {$this->elements['id']} da eliminare.");
+            $this->error("Nessun elemento trovato con ID {$this->elements['_id']} da eliminare.");
         }
     }
 
     public function insertMenuItem()
     {
         $group = DB::connection('mongodb')->collection($this->databaseConfig['group']);
-        $exists = $group->where('id', intval($this->elements['id']))->first(); // Verifica l'esistenza dell'elemento
+        $exists = $group->where('_id', new \MongoDB\BSON\ObjectId($this->elements['_id']))->first(); // Verifica l'esistenza dell'elemento
 
         if (!$exists) {
             $group->insert($this->elements);
             $this->info("Inserita nuova voce di menu: {$this->elements['title']}");
         } else {
-            $group->where('id', intval($this->elements['id']))->update($this->elements);
+            $group->where('_id', intval($this->elements['_id']))->update($this->elements);
             $this->info("Aggiornata la voce di menu: {$this->elements['title']}");
         }
     }
