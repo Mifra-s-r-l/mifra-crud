@@ -164,9 +164,10 @@ class MifraInstallCrud extends Command
     public function installCrud()
     {
         $alreadyInstalledFlagPath = base_path('mifra_crud_installed.json');
-
-        // Crea un file di flag per indicare che l'installazione è stata completata
-        File::put($alreadyInstalledFlagPath, json_encode([]));
+        if (!File::exists($alreadyInstalledFlagPath)) {
+            // Crea un file di flag per indicare che l'installazione è stata completata
+            File::put($alreadyInstalledFlagPath, json_encode([]));
+        }
 
         // Assicurati che questa directory esista o sia creata
         $directoryPathRoute = base_path('routes/mifracruds');
