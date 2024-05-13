@@ -151,7 +151,7 @@ class MifraCreateCrud extends Command
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
-        $deletedCount = $collection->where('id', intval($this->elements['id']))->delete();
+        $deletedCount = $collection->where('_id', new \MongoDB\BSON\ObjectId($this->elements['id']))->delete();
 
         $permissionName = CrudHelpers::conversionRouteName($this->elements['route_name'], 'permission');
         foreach ($this->permissions as $permission) {
@@ -179,13 +179,12 @@ class MifraCreateCrud extends Command
         $this->elements['permissions'] = $this->permissions;
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
 
-        $exists = $collection->where('id', intval($this->elements['id']))->first(); // Verifica l'esistenza dell'elemento
-        if (!$exists) {
+        if (isset($this->elements['_id'])) {
+            $collection->where('_id', new \MongoDB\BSON\ObjectId($this->elements['id']))->update($this->elements);
+            $this->info("Aggiornata la voce di menu: {$this->elements['title']}");
+        } else {
             $collection->insert($this->elements);
             $this->info("Inserita nuova voce di menu: {$this->elements['title']}");
-        } else {
-            $collection->where('id', intval($this->elements['id']))->update($this->elements);
-            $this->info("Aggiornata la voce di menu: {$this->elements['title']}");
         }
 
         if ($this->elements['route_name'] != 'submenu') {

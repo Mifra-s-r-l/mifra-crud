@@ -2,8 +2,8 @@
 
 namespace App\Models\MifraCruds;
 
-use Illuminate\Support\Facades\DB;
 use App\Models\MifraCruds\MifracrudsRolesModel;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission as SpatiePermission;
 
 class MifracrudsPermissionsModel extends SpatiePermission
@@ -37,7 +37,7 @@ class MifracrudsPermissionsModel extends SpatiePermission
         $parts = explode('_', $this->name);
         $searchPattern = str_replace('_', '.', implode('_', array_slice($parts, 1)));
         $crud = DB::connection('mongodb')->collection($database['collection'])->where('route_name', $searchPattern)->first();
-        return $crud['title'];
+        return isset($crud['title']) ? $crud['title'] : "";
     }
 
     public function getCrudDescAttribute()
@@ -46,7 +46,7 @@ class MifracrudsPermissionsModel extends SpatiePermission
         $parts = explode('_', $this->name);
         $searchPattern = str_replace('_', '.', implode('_', array_slice($parts, 1)));
         $crud = DB::connection('mongodb')->collection($database['collection'])->where('route_name', $searchPattern)->first();
-        return $crud['desc'];
+        return isset($crud['desc']) ? $crud['desc'] : "";
     }
 
     public function roles_crud()
