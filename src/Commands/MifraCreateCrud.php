@@ -151,7 +151,7 @@ class MifraCreateCrud extends Command
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
-        $deletedCount = $collection->where('_id', new \MongoDB\BSON\ObjectId($this->elements['id']))->delete();
+        $deletedCount = $collection->where('_id', new \MongoDB\BSON\ObjectId($this->elements['_id']))->delete();
 
         $permissionName = CrudHelpers::conversionRouteName($this->elements['route_name'], 'permission');
         foreach ($this->permissions as $permission) {
@@ -180,7 +180,7 @@ class MifraCreateCrud extends Command
         $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
 
         if (isset($this->elements['_id'])) {
-            $collection->where('_id', new \MongoDB\BSON\ObjectId($this->elements['id']))->update($this->elements);
+            $collection->where('_id', new \MongoDB\BSON\ObjectId($this->elements['_id']))->update($this->elements);
             $this->info("Aggiornata la voce di menu: {$this->elements['title']}");
         } else {
             $collection->insert($this->elements);
