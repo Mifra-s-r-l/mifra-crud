@@ -85,30 +85,44 @@ class MifracrudsCrudsController extends Controller
         foreach ($cruds as $item) {
             $groupKey = $item['group'];
 
-            $groupIndex = $groupIndices[$groupKey];
+            if ($groupKey != 'main') {
 
-            $menus[$groupIndex]['_children'][] = [
-                '_id' => $item['_id'],
-                'id' => $item['id'],
-                'icon' => $item['icon'],
-                'title' => $item['title'],
-                'desc' => $item['desc'],
-                'route_name' => $item['route_name'],
-                'group' => $menus[$groupIndex]['title'],
-                'order' => $item['order'],
-            ];
+                $groupIndex = $groupIndices[$groupKey];
 
-            $cruds_childs = DB::connection('mongodb')->collection('cruds')->where('parent_id', intval($item['id']))->orderBy('order', 'asc')->get();
-            foreach ($cruds_childs as $cruds_child) {
-                $menus[$groupIndex]['_children'][array_key_last($menus[$groupIndex]['_children'])]['_children'][] = [
-                    '_id' => $cruds_child['_id'],
-                    'id' => $cruds_child['id'],
-                    'icon' => $cruds_child['icon'],
-                    'title' => $cruds_child['title'],
-                    'desc' => $cruds_child['desc'],
-                    'route_name' => $cruds_child['route_name'],
+                $menus[$groupIndex]['_children'][] = [
+                    '_id' => $item['_id'],
+                    'id' => $item['id'],
+                    'icon' => $item['icon'],
+                    'title' => $item['title'],
+                    'desc' => $item['desc'],
+                    'route_name' => $item['route_name'],
                     'group' => $menus[$groupIndex]['title'],
-                    'order' => $cruds_child['order'],
+                    'order' => $item['order'],
+                ];
+
+                $cruds_childs = DB::connection('mongodb')->collection('cruds')->where('parent_id', intval($item['id']))->orderBy('order', 'asc')->get();
+                foreach ($cruds_childs as $cruds_child) {
+                    $menus[$groupIndex]['_children'][array_key_last($menus[$groupIndex]['_children'])]['_children'][] = [
+                        '_id' => $cruds_child['_id'],
+                        'id' => $cruds_child['id'],
+                        'icon' => $cruds_child['icon'],
+                        'title' => $cruds_child['title'],
+                        'desc' => $cruds_child['desc'],
+                        'route_name' => $cruds_child['route_name'],
+                        'group' => $menus[$groupIndex]['title'],
+                        'order' => $cruds_child['order'],
+                    ];
+                }
+            } else {
+                $menus[] = [
+                    '_id' => $item['_id'],
+                    'id' => $item['id'],
+                    'icon' => $item['icon'],
+                    'title' => $item['title'],
+                    'desc' => $item['desc'],
+                    'route_name' => $item['route_name'],
+                    'group' => 'Main',
+                    'order' => $item['order'],
                 ];
             }
         }
@@ -251,7 +265,7 @@ class MifracrudsCrudsController extends Controller
 
     public function createGroup(Request $request)
     {
-        if (isset($request->type) && $request->type == "2") {
+        if (isset($request->divider)) {
             $elements['title'] = 'divider';
             $elements['icon'] = null;
             $elements['group'] = 'unique_divider';
@@ -271,8 +285,6 @@ class MifracrudsCrudsController extends Controller
             ];
         }
 
-        //dd($elements);
-
         Artisan::call('mifra:creategroupcrud', [
             'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
             '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
@@ -285,10 +297,14 @@ class MifracrudsCrudsController extends Controller
 
     public function delete(Request $request, $id)
     {
+        dd($request);
         if ($id == "all") {
             foreach ($request->lists as $elem) {
                 if (isset($elem['_children']) || $elem['route_name'] == 'unique_divider') {
                     $this->deleteGroupANDChildren($elem);
+                    if ($elem['route_name'] == 'submenu') {
+                        $this->deleteGroupANDChildren($elem);
+                    }
                 } else {
                     $objectId = $elem['_id'];
                     $idString = $objectId['$oid'];
