@@ -265,17 +265,20 @@ class MifracrudsCrudsController extends Controller
 
     public function createGroup(Request $request)
     {
+        $database = config('mifracrud.database');
+        $items = DB::connection('mongodb')->collection($database['group'])->count();
+        $lastItem = DB::connection('mongodb')
+            ->collection($database['group'])
+            ->orderBy('order', 'desc') // Ordina in modo discendente
+            ->first();
+
         if (isset($request->divider)) {
+            $elements['id'] = intval($items + 1);
             $elements['title'] = 'divider';
             $elements['icon'] = null;
             $elements['group'] = 'unique_divider';
+            $elements['order'] = intval($lastItem['order'] + 1);
         } else {
-            $database = config('mifracrud.database');
-            $items = DB::connection('mongodb')->collection($database['group'])->count();
-            $lastItem = DB::connection('mongodb')
-                ->collection($database['group'])
-                ->orderBy('order', 'desc') // Ordina in modo discendente
-                ->first();
             $elements = [
                 'id' => intval($items + 1),
                 'title' => $request->title,
