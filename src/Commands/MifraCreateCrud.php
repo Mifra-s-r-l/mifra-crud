@@ -65,14 +65,13 @@ class MifraCreateCrud extends Command
 
             if (File::exists($alreadyInstalledFlagPath)) {
 
-                $id = $this->elements['_id'] ?? null;
-
-                if (!$id) {
-                    $this->error('ID non specificato per l\'eliminazione.');
-                    return;
-                }
-
                 if ($this->option('delete')) {
+                    $id = $this->elements['_id'] ?? null;
+
+                    if (!$id) {
+                        $this->error('ID non specificato per l\'eliminazione.');
+                        return;
+                    }
                     $this->deleteMenuItem();
                 } else {
                     $this->insertMenuItem();
