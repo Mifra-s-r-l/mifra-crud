@@ -232,7 +232,7 @@ class MifracrudsCrudsController extends Controller
             ];
 
             // Se non è specificato un nome di percorso, impostiamo il route_name come submenu
-            if (empty($request->route_name)) {
+            if ($request->route_name == 'submenu') {
                 $elements['route_name'] = 'submenu';
             }
 
@@ -328,7 +328,7 @@ class MifracrudsCrudsController extends Controller
             foreach ($data['_children'] as $elem) {
                 $objectId = $elem['_id'];
                 $idString = $objectId['$oid'];
-                $this->deleteCruds($elem['route_name'], $elem['_id']);
+                $this->deleteCruds($elem['route_name'], $idString);
             }
         }
 
