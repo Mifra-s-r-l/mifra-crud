@@ -248,7 +248,7 @@ class MifracrudsCrudsController extends Controller
 
     public function createGroup(Request $request)
     {
-        if ($request->type == "2") {
+        if (isset($request->type) && $request->type == "2") {
             $elements['title'] = 'divider';
             $elements['icon'] = null;
             $elements['group'] = 'unique_divider';
@@ -268,6 +268,8 @@ class MifracrudsCrudsController extends Controller
             ];
         }
 
+        dd($elements);
+
         Artisan::call('mifra:creategroupcrud', [
             'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
             '--delete' => false, // Se vuoi utilizzare l'opzione delete, cambia in true
@@ -285,14 +287,18 @@ class MifracrudsCrudsController extends Controller
                 if (isset($elem['_children']) || $elem['route_name'] == 'unique_divider') {
                     $this->deleteGroupANDChildren($elem);
                 } else {
+                    $objectId = $elem['_id'];
+                    $idString = $objectId['$oid'];
                     $this->deleteCruds($elem['route_name'], $elem['_id']);
                 }
             }
         } else {
+            $objectId = $request->data['_id'];
+            $idString = $objectId['$oid'];
             if (isset($request->data['_children']) || $request->data['route_name'] == 'unique_divider') {
                 $this->deleteGroupANDChildren($request->data);
             } else {
-                $this->deleteCruds($request->data['route_name'], $request->data['_id']);
+                $this->deleteCruds($request->data['route_name'], $idString);
             }
         }
 
@@ -304,7 +310,7 @@ class MifracrudsCrudsController extends Controller
     public function deleteCruds($route_name, $_id)
     {
         $elements = [
-            '_id' => intval($_id),
+            '_id' => $_id,
             'route_name' => $route_name,
         ];
         Artisan::call('mifra:createcrud', [
@@ -317,11 +323,14 @@ class MifracrudsCrudsController extends Controller
     {
         if (isset($data['_children'])) {
             foreach ($data['_children'] as $elem) {
+                $objectId = $elem['_id'];
+                $idString = $objectId['$oid'];
                 $this->deleteCruds($elem['route_name'], $elem['_id']);
             }
         }
+
         $elements = [
-            '_id' => intval($data['_id']),
+            'id' => $data['id'],
         ];
 
         Artisan::call('mifra:creategroupcrud', [
