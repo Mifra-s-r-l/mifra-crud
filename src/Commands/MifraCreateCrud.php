@@ -75,7 +75,7 @@ class MifraCreateCrud extends Command
                     $this->deleteMenuItem();
                 } else {
                     $this->insertMenuItem();
-                    if ($this->elements['route_name']) {
+                    if ($this->elements['route_name'] != 'submenu') {
                         $this->createRoute();
                     }
                 }
