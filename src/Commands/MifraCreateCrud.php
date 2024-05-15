@@ -148,13 +148,6 @@ class MifraCreateCrud extends Command
         // Salva il file aggiornato
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
-        if (isset($this->elements['deleteGroup'])) {
-            $collection = DB::connection('mongodb')->collection($this->databaseConfig['group']);
-        } else {
-            $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
-        }
-        $deletedCount = $collection->where('_id', new \MongoDB\BSON\ObjectId($this->elements['_id']))->delete();
-
         $permissionName = CrudHelpers::conversionRouteName($this->elements['route_name'], 'permission');
         foreach ($this->permissions as $permission) {
             // Costruisce il nome del permesso
@@ -168,6 +161,13 @@ class MifraCreateCrud extends Command
                 $permissionToDelete->delete();
             }
         }
+
+        if (isset($this->elements['deleteGroup'])) {
+            $collection = DB::connection('mongodb')->collection($this->databaseConfig['group']);
+        } else {
+            $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
+        }
+        $deletedCount = $collection->where('_id', new \MongoDB\BSON\ObjectId($this->elements['_id']))->delete();
 
         if ($deletedCount > 0) {
             $this->info("Elemento con ID {$this->elements['id']} eliminato con successo.");
