@@ -148,7 +148,7 @@ class MifraCreateCrud extends Command
         // Salva il file aggiornato
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
-        if (isset($this->elements['createGroup'])) {
+        if (isset($this->elements['deleteGroup'])) {
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['group']);
         } else {
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);

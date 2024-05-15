@@ -419,9 +419,11 @@ class MifracrudsCrudsController extends Controller
             }
         }
 
+        //dd($data);
+
         $elements = [
             'id' => $data['id'],
-            'createGroup' => true,
+            'deleteGroup' => true,
         ];
 
         Artisan::call('mifra:createcrud', [
