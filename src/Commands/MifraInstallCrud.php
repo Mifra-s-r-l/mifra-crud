@@ -194,7 +194,7 @@ class MifraInstallCrud extends Command
             $group = DB::connection('mongodb')->collection($this->databaseConfig['group']);
             // Se esiste, aggiornalo con i nuovi valori
             foreach ($this->groupsMenus as $groupsMenu) {
-                $group->where('group', $groupsMenu['managements'])->update($groupsMenu, ['upsert' => true]);
+                $group->where('group', $groupsMenu['group'])->update($groupsMenu, ['upsert' => true]);
             }
 
             //DB::connection('mongodb')->collection($this->databaseConfig['collection'])->delete();
