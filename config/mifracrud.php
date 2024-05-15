@@ -80,7 +80,6 @@ return [
 
     'menus' => [
         [
-            "id" => 1,
             "parent_id" => "0",
             "title" => "Crud",
             "icon" => "List",
@@ -96,7 +95,6 @@ return [
             ],
         ],
         [
-            "id" => 2,
             "parent_id" => "0",
             "title" => "Utenti",
             "icon" => "Users",
@@ -114,7 +112,6 @@ return [
             ],
         ],
         [
-            "id" => 3,
             "parent_id" => "0",
             "title" => "Ruoli",
             "icon" => "UserCog",
@@ -130,7 +127,6 @@ return [
             ],
         ],
         [
-            "id" => 4,
             "parent_id" => "0",
             "title" => "Permessi",
             "icon" => "SlidersVertical",

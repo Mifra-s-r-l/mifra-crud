@@ -431,4 +431,20 @@ class MifracrudsCrudsController extends Controller
             '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
         ]);
     }
+
+    public function checkGroupExsistKey(Request $request, $key)
+    {
+        $database = config('mifracrud.database');
+        $items = DB::connection('mongodb')->collection($database['group'])->where('group', $key)->count();
+        return response()->json($items);
+    }
+
+    public function checkPathExsistKey(Request $request, $key)
+    {
+        $database = config('mifracrud.database');
+        $groupExists = DB::connection('mongodb')->collection($database['group'])->where('route_name', 'mifracruds.' . $key)->count();
+        $collectionExists = DB::connection('mongodb')->collection($database['collection'])->where('route_name', 'mifracruds.' . $key)->count();
+        $items = $groupExists || $collectionExists ? 1 : 0;
+        return response()->json($items);
+    }
 }

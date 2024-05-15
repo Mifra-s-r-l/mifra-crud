@@ -231,13 +231,6 @@ class MifraInstallCrud extends Command
             'name' => 'super-admin',
         ]);
 
-        if ($this->option('update')) {
-            // recupero gli _id dei crud installati dal file mifra_crud_installed.json tramite la chiave crud e li inserisco in un array
-            $json = File::get(base_path('mifra_crud_installed.json'));
-            $data = json_decode($json, true);
-            $_ids = $data['crud'];
-        }
-
         $menuItems = $this->jsonConfig; // Voci di menu del file di config
 
         $routeContentHead = "";
@@ -249,25 +242,12 @@ class MifraInstallCrud extends Command
 
             if ($this->option('update')) {
                 // Se esiste, aggiornalo con i nuovi valori
-                $collection->where('id', $menuItem['id'])->where('_id', new \MongoDB\BSON\ObjectId($_ids[$menuItem['id']]['_id']))->update($menuItem);
+                $collection->where('route_name', $menuItem['route_name'])->update($menuItem);
                 $this->info("Aggiorno la voce di menu: {$menuItem['title']}");
             } else {
                 // Se non esiste, inseriscilo nel database
                 $collection->insert($menuItem);
                 $this->info("Inserita nuova voce di menu: {$menuItem['title']}");
-
-                if (File::exists(base_path('mifra_crud_installed.json'))) {
-                    $json = File::get(base_path('mifra_crud_installed.json'));
-                    $data = json_decode($json, true);
-                } else {
-                    $data = ['crud' => []];
-                }
-
-                $data['crud'][$collection['id']] = [
-                    '_id' => $collection['_id'],
-                ];
-                File::put(base_path('mifra_crud_installed.json'), json_encode($data));
-
             }
 
             // Creo la struttura dei file
