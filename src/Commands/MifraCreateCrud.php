@@ -178,7 +178,9 @@ class MifraCreateCrud extends Command
 
     public function insertItem()
     {
-        $this->elements['permissions'] = $this->permissions;
+        if (isset($this->elements['route_name']) && $this->elements['route_name'] != 'submenu') {
+            $this->elements['permissions'] = $this->permissions;
+        }
 
         if (isset($this->elements['createGroup'])) {
             $collection = DB::connection('mongodb')->collection($this->databaseConfig['group']);
