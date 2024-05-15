@@ -58,14 +58,13 @@ class MifraCreateGroupCrud extends Command
 
             if (File::exists($alreadyInstalledFlagPath)) {
 
-                $id = $this->elements['id'] ?? null;
-
-                if (!$id) {
-                    $this->error('ID non specificato.');
-                    return;
-                }
-
                 if ($this->option('delete')) {
+                    $id = $this->elements['_id'] ?? null;
+
+                    if (!$id) {
+                        $this->error('ID non specificato per l\'eliminazione.');
+                        return;
+                    }
                     $this->deleteMenuItem();
                 } else {
                     $this->insertMenuItem();
@@ -97,14 +96,13 @@ class MifraCreateGroupCrud extends Command
     public function insertMenuItem()
     {
         $group = DB::connection('mongodb')->collection($this->databaseConfig['group']);
-        $exists = $group->where('id', intval($this->elements['id']))->first(); // Verifica l'esistenza dell'elemento
 
-        if (!$exists) {
-            $group->insert($this->elements);
-            $this->info("Inserita nuova voce di menu: {$this->elements['title']}");
+        if (isset($this->elements['_id'])) {
+            $group->where('_id', new \MongoDB\BSON\ObjectId($this->elements['_id']))->update($this->elements);
+            $this->info("Aggiornata la voce di menu\gruppo: {$this->elements['title']}");
         } else {
-            $group->where('id', intval($this->elements['id']))->update($this->elements);
-            $this->info("Aggiornata la voce di menu: {$this->elements['title']}");
+            $group->insert($this->elements);
+            $this->info("Inserita nuova voce di menu\gruppo: {$this->elements['title']}");
         }
     }
 }

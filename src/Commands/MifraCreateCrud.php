@@ -72,9 +72,14 @@ class MifraCreateCrud extends Command
                         $this->error('ID non specificato per l\'eliminazione.');
                         return;
                     }
-                    $this->deleteMenuItem();
+                    $this->deleteItem();
                 } else {
-                    $this->insertMenuItem();
+                    if (isset($this->elements['createGroup'])) {
+                        $this->insertGroupItem();
+                    } else {
+                        $this->insertMenuItem();
+                    }
+
                     if ($this->elements['route_name'] != 'submenu') {
                         $this->createRoute();
                     }
@@ -93,7 +98,7 @@ class MifraCreateCrud extends Command
         }
     }
 
-    protected function deleteMenuItem()
+    protected function deleteItem()
     {
         $className = CrudHelpers::conversionRouteName($this->elements['route_name'], 'className');
         $path = CrudHelpers::conversionRouteName($this->elements['route_name'], 'path');
@@ -149,7 +154,11 @@ class MifraCreateCrud extends Command
         // Salva il file aggiornato
         File::put($fileRouteWeb, $updatedContentRouteWeb);
 
-        $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
+        if (isset($this->elements['createGroup'])) {
+            $collection = DB::connection('mongodb')->collection($this->databaseConfig['group']);
+        } else {
+            $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
+        }
         $deletedCount = $collection->where('_id', new \MongoDB\BSON\ObjectId($this->elements['_id']))->delete();
 
         $permissionName = CrudHelpers::conversionRouteName($this->elements['route_name'], 'permission');
@@ -173,6 +182,19 @@ class MifraCreateCrud extends Command
         }
     }
 
+    public function insertGroupItem()
+    {
+        $group = DB::connection('mongodb')->collection($this->databaseConfig['group']);
+
+        if (isset($this->elements['_id'])) {
+            $group->where('_id', new \MongoDB\BSON\ObjectId($this->elements['_id']))->update($this->elements);
+            $this->info("Aggiornata la voce di menu\gruppo: {$this->elements['title']}");
+        } else {
+            $group->insert($this->elements);
+            $this->info("Inserita nuova voce di menu\gruppo: {$this->elements['title']}");
+        }
+    }
+
     public function insertMenuItem()
     {
         $this->elements['permissions'] = $this->permissions;
@@ -185,23 +207,21 @@ class MifraCreateCrud extends Command
             $collection->insert($this->elements);
             $this->info("Inserita nuova voce di menu: {$this->elements['title']}");
         }
-
-        if ($this->elements['route_name'] != 'submenu') {
-            // Creo il ruolo super-admin se non esiste
-            $superAdmin = Role::firstOrCreate([
-                'name' => 'super-admin',
-            ]);
-            // Creo il permesso per il nuovo CRUD
-            $permissionName = CrudHelpers::conversionRouteName($this->elements['route_name'], 'permission');
-            foreach ($this->permissions as $permission) {
-                Permission::firstOrCreate(['name' => $permission . '_' . $permissionName]);
-                $superAdmin->givePermissionTo($permission . '_' . $permissionName);
-            }
-        }
     }
 
     protected function createRoute()
     {
+        // Creo il ruolo super-admin se non esiste
+        $superAdmin = Role::firstOrCreate([
+            'name' => 'super-admin',
+        ]);
+        // Creo il permesso per il nuovo CRUD
+        $permissionName = CrudHelpers::conversionRouteName($this->elements['route_name'], 'permission');
+        foreach ($this->permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission . '_' . $permissionName]);
+            $superAdmin->givePermissionTo($permission . '_' . $permissionName);
+        }
+
         $routePath = CrudHelpers::conversionRouteName($this->elements['route_name'], 'path');
         $className = CrudHelpers::conversionRouteName($this->elements['route_name'], 'className');
         $methodName = $this->elements['method'] ?? 'index';
