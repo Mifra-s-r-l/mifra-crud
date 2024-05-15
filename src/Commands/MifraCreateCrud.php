@@ -67,20 +67,14 @@ class MifraCreateCrud extends Command
 
                 if ($this->option('delete')) {
                     $id = $this->elements['_id'] ?? null;
-
                     if (!$id) {
                         $this->error('ID non specificato per l\'eliminazione.');
                         return;
                     }
                     $this->deleteItem();
                 } else {
-                    if (isset($this->elements['createGroup'])) {
-                        $this->insertGroupItem();
-                    } else {
-                        $this->insertMenuItem();
-                    }
-
-                    if ($this->elements['route_name'] != 'submenu') {
+                    $this->insertItem();
+                    if (isset($this->elements['route_name']) && $this->elements['route_name'] != 'submenu') {
                         $this->createRoute();
                     }
                 }
@@ -182,23 +176,15 @@ class MifraCreateCrud extends Command
         }
     }
 
-    public function insertGroupItem()
-    {
-        $group = DB::connection('mongodb')->collection($this->databaseConfig['group']);
-
-        if (isset($this->elements['_id'])) {
-            $group->where('_id', new \MongoDB\BSON\ObjectId($this->elements['_id']))->update($this->elements);
-            $this->info("Aggiornata la voce di menu\gruppo: {$this->elements['title']}");
-        } else {
-            $group->insert($this->elements);
-            $this->info("Inserita nuova voce di menu\gruppo: {$this->elements['title']}");
-        }
-    }
-
-    public function insertMenuItem()
+    public function insertItem()
     {
         $this->elements['permissions'] = $this->permissions;
-        $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
+
+        if (isset($this->elements['createGroup'])) {
+            $collection = DB::connection('mongodb')->collection($this->databaseConfig['group']);
+        } else {
+            $collection = DB::connection('mongodb')->collection($this->databaseConfig['collection']);
+        }
 
         if (isset($this->elements['_id'])) {
             $collection->where('_id', new \MongoDB\BSON\ObjectId($this->elements['_id']))->update($this->elements);
