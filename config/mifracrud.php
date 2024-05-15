@@ -43,7 +43,6 @@ return [
 
     'groups_menus' => [
         [
-            "id" => 1,
             "title" => "Gestione",
             "icon" => "Settings",
             "group" => "managements", // deve corrispondere a quello delle voci di menu
