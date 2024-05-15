@@ -206,32 +206,6 @@ class MifracrudsCrudsController extends Controller
             $cruds = $this->createList();
             $items = $cruds['menus'];
             return response()->json($items);
-
-            $request->merge(['parent_id' => "0"]);
-            $items = DB::connection('mongodb')
-                ->collection($database['collection'])
-                ->where('parent_id', "0")
-                ->where('group', 'main')
-                ->count();
-            $lastItem = DB::connection('mongodb')
-                ->collection($database['collection'])
-                ->where('parent_id', "0")
-                ->where('group', 'main')
-                ->orderBy('order', 'desc') // Ordina in modo discendente
-                ->first();
-            if ($lastItem == null) {
-                $lastItem = ['order' => 0];
-            }
-            // Definizione dell'array di base per gli elementi del menu
-            $elements = [
-                'parent_id' => $request->parent_id,
-                'title' => $request->title,
-                'icon' => $request->icon,
-                'desc' => $request->desc,
-                'route_name' => 'mifracruds.' . strtolower($request->route_name),
-                'group' => 'main',
-                'order' => intval($lastItem['order'] + 1),
-            ];
         }
 
         if ($request->type_main == "4") { // Sotto gruppo
@@ -281,6 +255,17 @@ class MifracrudsCrudsController extends Controller
                 if ($lastItem == null) {
                     $lastItem = ['order' => 0];
                 }
+
+                // Definizione dell'array di base per gli elementi del menu
+                $elements = [
+                    'parent_id' => $request->parent_id,
+                    'title' => $request->title,
+                    'icon' => $request->icon,
+                    'desc' => $request->desc,
+                    'route_name' => 'mifracruds.' . strtolower($request->route_name),
+                    'group' => $request->group,
+                    'order' => intval($lastItem['order'] + 1),
+                ];
             } else { // Sottovoce
                 $items = DB::connection('mongodb')
                     ->collection($database['collection'])
@@ -300,17 +285,29 @@ class MifracrudsCrudsController extends Controller
                     ->collection($database['collection'])
                     ->where('_id', new \MongoDB\BSON\ObjectId($request->parent_id))
                     ->first();
+
+                // Definizione dell'array di base per gli elementi del menu
+                $elements = [
+                    'parent_id' => $request->parent_id,
+                    'title' => $request->title,
+                    'icon' => $request->icon,
+                    'desc' => $request->desc,
+                    'route_name' => 'mifracruds.' . strtolower($request->route_name),
+                    'group' => $groupParent['group'],
+                    'order' => intval($lastItem['order'] + 1),
+                ];
+
+                // Definizione dell'array di base per gli elementi del menu
+                $elements = [
+                    'parent_id' => $request->parent_id,
+                    'title' => $request->title,
+                    'icon' => $request->icon,
+                    'desc' => $request->desc,
+                    'route_name' => 'mifracruds.' . strtolower($request->route_name),
+                    'group' => $groupParent['group'],
+                    'order' => intval($lastItem['order'] + 1),
+                ];
             }
-            // Definizione dell'array di base per gli elementi del menu
-            $elements = [
-                'parent_id' => $request->parent_id,
-                'title' => $request->title,
-                'icon' => $request->icon,
-                'desc' => $request->desc,
-                'route_name' => 'mifracruds.' . strtolower($request->route_name),
-                'group' => $groupParent['group'],
-                'order' => intval($lastItem['order'] + 1),
-            ];
 
         }
 
@@ -373,9 +370,6 @@ class MifracrudsCrudsController extends Controller
             foreach ($request->lists as $elem) {
                 if (isset($elem['_children']) || $elem['route_name'] == 'unique_divider') {
                     $this->deleteGroupANDChildren($elem);
-                    if ($elem['route_name'] == 'submenu') {
-                        $this->deleteGroupANDChildren($elem);
-                    }
                 } else {
                     $objectId = $elem['_id'];
                     $idString = $objectId['$oid'];
@@ -394,7 +388,7 @@ class MifracrudsCrudsController extends Controller
 
         $cruds = $this->createList();
         $items = $cruds['menus'];
-        return response()->json($items);
+        //return response()->json($items);
     }
 
     public function deleteCruds($route_name, $_id)
@@ -419,10 +413,9 @@ class MifracrudsCrudsController extends Controller
             }
         }
 
-        //dd($data);
-
         $elements = [
-            'id' => $data['id'],
+            '_id' => $data['_id']['$oid'],
+            'route_name' => $data['route_name'],
             'deleteGroup' => true,
         ];
 
