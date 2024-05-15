@@ -51,7 +51,7 @@ class MifracrudsCrudsController extends Controller
                     'icon' => $group['icon'],
                     'title' => $group['title'],
                     'desc' => $group['desc'] ?? null,
-                    'route_name' => $group['group'],
+                    'route_name' => $group['route_name'],
                     'group' => 'Main',
                     'order' => $group['order'],
                 ];
@@ -371,32 +371,34 @@ class MifracrudsCrudsController extends Controller
                 if (isset($elem['_children']) || $elem['route_name'] == 'unique_divider') {
                     $this->deleteGroupANDChildren($elem);
                 } else {
-                    $objectId = $elem['_id'];
-                    $idString = $objectId['$oid'];
-                    $this->deleteCruds($elem['route_name'], $elem['_id']);
+                    $objectId = $elem['_id']['$oid'];
+                    $this->deleteCruds($elem['route_name'], $objectId, $elem['group']);
                 }
             }
         } else {
             if (isset($request->data['_children']) || $request->data['route_name'] == 'unique_divider') {
                 $this->deleteGroupANDChildren($request->data);
             } else {
-                $objectId = $request->data['_id'];
-                $idString = $objectId['$oid'];
-                $this->deleteCruds($request->data['route_name'], $idString);
+                $objectId = $elem['_id']['$oid'];
+                $this->deleteCruds($request->data['route_name'], $objectId, $request->data['group']);
             }
         }
 
         $cruds = $this->createList();
         $items = $cruds['menus'];
-        //return response()->json($items);
+        return response()->json($items);
     }
 
-    public function deleteCruds($route_name, $_id)
+    public function deleteCruds($route_name, $_id, $group)
     {
         $elements = [
             '_id' => $_id,
             'route_name' => $route_name,
         ];
+        if (strtolower($group) == 'main') {
+            $elements['deleteGroup'] = true;
+        }
+
         Artisan::call('mifra:createcrud', [
             'elements' => json_encode($elements), // Passa gli elementi come stringa JSON
             '--delete' => true, // Se vuoi utilizzare l'opzione delete, cambia in true
@@ -407,9 +409,14 @@ class MifracrudsCrudsController extends Controller
     {
         if (isset($data['_children'])) {
             foreach ($data['_children'] as $elem) {
-                $objectId = $elem['_id'];
-                $idString = $objectId['$oid'];
-                $this->deleteCruds($elem['route_name'], $idString);
+                $objectId = $elem['_id']['$oid'];
+                $this->deleteCruds($elem['route_name'], $objectId, $elem['group']);
+                if (isset($elem['_children'])) {
+                    foreach ($elem['_children'] as $elem2) {
+                        $objectId = $elem2['_id']['$oid'];
+                        $this->deleteCruds($elem2['route_name'], $objectId, $elem2['group']);
+                    }
+                }
             }
         }
 

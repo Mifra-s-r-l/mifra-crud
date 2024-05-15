@@ -22,21 +22,20 @@ class MifraCrudServiceProvider extends ServiceProvider
         // comandi da web
         $this->commands([
             Commands\MifraCreateCrud::class,
-            Commands\MifraCreateGroupCrud::class,
         ]);
     }
 
     public function register()
     {
         // Controlla se il service provider di MongoDB è già registrato
-        if (!app()->getProvider(\MongoDB\Laravel\MongoDBServiceProvider::class,)) {
+        if (!app()->getProvider(\MongoDB\Laravel\MongoDBServiceProvider::class, )) {
             // Registra il ServiceProvider
-            app()->register(\MongoDB\Laravel\MongoDBServiceProvider::class,);
+            app()->register(\MongoDB\Laravel\MongoDBServiceProvider::class, );
         }
 
         // Registra il file di configurazione
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/mifracrud.php', 
+            __DIR__ . '/../config/mifracrud.php',
             'mifracrud'
         );
     }
