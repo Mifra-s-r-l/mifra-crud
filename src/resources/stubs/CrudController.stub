@@ -85,7 +85,6 @@ class {{crud_name}}Controller extends Controller
             foreach ($request->lists as $elem) {
                 $item = {{crud_name}}Model::where('_id', $elem['_id'])->withTrashed()->first();
                 if ($request->hard_delete == "1") {
-                    $item->roles()->detach();
                     $item->forceDelete();
                     $this->mongoSync($id, null, 'remove');
                 } else {
@@ -96,7 +95,6 @@ class {{crud_name}}Controller extends Controller
         } else {
             $item = {{crud_name}}Model::where('_id', $id)->withTrashed()->first();
             if ($request->hard_delete == "1") {
-                $item->roles()->detach();
                 $item->forceDelete();
                 $this->mongoSync($id, null, 'remove');
             } else {
