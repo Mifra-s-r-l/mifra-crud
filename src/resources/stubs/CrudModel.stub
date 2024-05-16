@@ -1,13 +1,18 @@
 <?php
 
-namespace App\Models\MifraCrudsCreated;
+namespace App\Models\MifraCruds;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use MongoDB\Laravel\Eloquent\Model;
+use MongoDB\Laravel\Eloquent\SoftDeletes;
+use App\Traits\MifraCruds\MifracrudsActionable;
 
 class {{crud_name}}Model extends Model
 {
-    use HasFactory;
+    use MifracrudsActionable;
+    use SoftDeletes;
+
+    protected $connection = 'mongodb';
+    protected $collection = '{{route_name}}';
 
     protected $fillable = [
         // Definisci qui i campi assegnabili in massa
