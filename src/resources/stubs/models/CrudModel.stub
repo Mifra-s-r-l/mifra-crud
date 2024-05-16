@@ -2,12 +2,12 @@
 
 namespace App\Models\MifraCruds;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use MongoDB\Laravel\Eloquent\Model;
 
 class {{crud_name}}Model extends Model
 {
-    use HasFactory;
+    protected $connection = 'mongodb';
+    protected $collection = '{{route_name}}';
 
     protected $fillable = [
         // Definisci qui i campi assegnabili in massa

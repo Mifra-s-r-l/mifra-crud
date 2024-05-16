@@ -239,9 +239,9 @@ class MifraCreateCrud extends Command
         $routeDefinition = "<?php\n\nuse Illuminate\Support\Facades\Route;\n";
         $routeDefinition .= "use App\Http\Controllers\MifraCrudsCreated\\" . $className . "Controller;\n\n";
         $routeDefinition .= "Route::get('" . $routePath . "', [" . $className . "Controller::class, '" . $methodName . "'])->name('" . $routeName . "');\n";
-        $routeDefinition .= "Route::get('" . $routePath . "/update/{id}', [" . $className . "Controller::class, 'update'])->name('" . $routeName . ".update');\n";
-        $routeDefinition .= "Route::get('" . $routePath . "/create', [" . $className . "Controller::class, 'create'])->name('" . $routeName . ".create');\n";
-        $routeDefinition .= "Route::get('" . $routePath . "/edit', [" . $className . "Controller::class, 'edit'])->name('" . $routeName . ".edit');\n";
+        $routeDefinition .= "Route::post('" . $routePath . "/update/{id}', [" . $className . "Controller::class, 'update'])->name('" . $routeName . ".update');\n";
+        $routeDefinition .= "Route::post('" . $routePath . "/create', [" . $className . "Controller::class, 'create'])->name('" . $routeName . ".create');\n";
+        $routeDefinition .= "Route::post('" . $routePath . "/edit', [" . $className . "Controller::class, 'edit'])->name('" . $routeName . ".edit');\n";
         File::put($routesFilePath, $routeDefinition);
 
         $routeFilePathCruds = base_path('routes/cruds/created.php');
