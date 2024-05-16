@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\MifraCrudsCreated;
 
+use App\Models\MifraCrudsCreated\{{crud_name}}Model;
+use App\Models\MifraCruds\MifracrudsPermissionsModel;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Mifra\Crud\Helpers\CrudHelpers;
 
 class {{crud_name}}Controller extends Controller
 {
@@ -11,7 +15,34 @@ class {{crud_name}}Controller extends Controller
     {
         // PLACEHOLDER_FOR_INDEX_FUNCION
 
-        return view('{{route_name}}.index');
+        $database = config('mifracrud.database');
+
+        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name', '{{route_name}}')->first();
+
+        $items = {{crud_name}}Model::get();
+
+        $pathPermission = CrudHelpers::conversionRouteName($menu['route_name'], 'permission');
+        $permissions = MifracrudsPermissionsModel::where('name', 'LIKE', '%' . $pathPermission)->get();
+        $permissionNames = $permissions->pluck('name')->toArray();
+
+        $contents = [
+            "title" => $menu['title'],
+            "route_name" => $menu['route_name'],
+            "permissions" => $permissionNames,
+            "controller_name" => 'App\\Http\\Controllers\\MifraCrudsCreated\\{{crud_name}}Controller',
+            'init_sort' => [0 => ['column' => 'id', 'dir' => 'asc']],
+            'filters_top_bar_tabulator' => [
+                "list" => [
+                    "id" => "ID",
+                ]
+                ,
+                "reset" => "id",
+            ],
+        ];
+
+        return view('cruds.{{route_name}}.index')
+            ->with('contents', $contents)
+            ->with('items', collect($items));
     }
 
     // PLACEHOLDER_FOR_NEW_METHODS
