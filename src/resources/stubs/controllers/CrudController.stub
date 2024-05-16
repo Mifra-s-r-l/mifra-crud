@@ -212,11 +212,6 @@ class MifracrudsCrudsController extends Controller
 
         if ($request->type_main == "4") { // Sotto gruppo
             $request->merge(['parent_id' => "0"]);
-            $items = DB::connection('mongodb')
-                ->collection($database['collection'])
-                ->where('parent_id', "0")
-                ->where('group', $request->group)
-                ->count();
             $lastItem = DB::connection('mongodb')
                 ->collection($database['collection'])
                 ->where('parent_id', "0")
@@ -243,11 +238,6 @@ class MifracrudsCrudsController extends Controller
 
             if (!isset($request->switch_submenu_crud)) {
                 $request->merge(['parent_id' => "0"]);
-                $items = DB::connection('mongodb')
-                    ->collection($database['collection'])
-                    ->where('parent_id', "0")
-                    ->where('group', $request->group)
-                    ->count();
                 $lastItem = DB::connection('mongodb')
                     ->collection($database['collection'])
                     ->where('parent_id', "0")
@@ -269,11 +259,6 @@ class MifracrudsCrudsController extends Controller
                     'order' => intval($lastItem['order'] + 1),
                 ];
             } else { // Sottovoce
-                $items = DB::connection('mongodb')
-                    ->collection($database['collection'])
-                    ->where('parent_id', $request->parent_id)
-                    ->where('group', $request->group)
-                    ->count();
                 $lastItem = DB::connection('mongodb')
                     ->collection($database['collection'])
                     ->where('parent_id', $request->parent_id)
@@ -328,7 +313,6 @@ class MifracrudsCrudsController extends Controller
     public function createGroup(Request $request)
     {
         $database = config('mifracrud.database');
-        $items = DB::connection('mongodb')->collection($database['group'])->count();
         $lastItem = DB::connection('mongodb')
             ->collection($database['group'])
             ->orderBy('order', 'desc') // Ordina in modo discendente
