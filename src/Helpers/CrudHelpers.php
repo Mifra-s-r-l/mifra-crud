@@ -62,7 +62,7 @@ class CrudHelpers
         $className = CrudHelpers::conversionRouteName($route_name, 'className');
 
         $controllerTemplate = File::get($stubPath);
-        $controllerContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, "cruds." . $route_name], $controllerTemplate);
+        $controllerContent = str_replace(['{{crud_name}}', '{{route_name}}'], [$className, $route_name], $controllerTemplate);
 
         $controllerFilePath = base_path($directoryPathController . "/{$className}Controller.php");
         File::put($controllerFilePath, $controllerContent);
