@@ -54,7 +54,7 @@ class {{crud_name}}Controller extends Controller
         $routeName = $request->route_name;
 
         // Restituisce la vista con le variabili passate dinamicamente
-        return view('pages.cruds.{{route_name}}.modal.element', compact('id', 'modalID', 'routeName'));
+        return view('pages.{{route_name}}.modal.element', compact('id', 'modalID', 'routeName'));
     }
 
     public function update(Request $request)
