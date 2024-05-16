@@ -75,12 +75,13 @@ class MifracrudsCrudsController extends Controller
     private function getGroupIndices($groups)
     {
         $groupIndices = [];
+        $index = 0; // Initialize index to keep track of each group including duplicates
         foreach ($groups as $group) {
             $groupKey = $group['group'];
-            $groupIndex = count($groupIndices);
-            $groupIndices[$groupKey] = $groupIndex;
+            // Assign the current index to the group key and then increment the index
+            $groupIndices[$groupKey] = $index++;
         }
-        return $groupIndices;
+        return $groupIndices; // Return the final array of indices
     }
 
     private function fetchCruds($collection)
@@ -142,6 +143,7 @@ class MifracrudsCrudsController extends Controller
             'export_print' => true, // per visualizzare stampa e export
             'init_sort' => [0 => ['column' => 'order', 'dir' => 'asc']], // ordinamento iniziale di tabulator
             'filters_top_bar_tabulator' => [], // filtri della pagina top-bar di tabulator se pieno compare
+            'movable_rows' => true, // se si possono spostare le righe
         ];
 
         //TODO possiamo inserire i parametri sopra direttamente nel database mongo
@@ -262,7 +264,7 @@ class MifracrudsCrudsController extends Controller
                     'title' => $request->title,
                     'icon' => $request->icon,
                     'desc' => $request->desc,
-                    'route_name' => 'mifracruds.' . strtolower($request->route_name),
+                    'route_name' => 'mifracruds.' . strtolower(str_replace(' ', '', $request->route_name)),
                     'group' => $request->group,
                     'order' => intval($lastItem['order'] + 1),
                 ];
@@ -292,7 +294,7 @@ class MifracrudsCrudsController extends Controller
                     'title' => $request->title,
                     'icon' => $request->icon,
                     'desc' => $request->desc,
-                    'route_name' => 'mifracruds.' . strtolower($request->route_name),
+                    'route_name' => 'mifracruds.' . strtolower(str_replace(' ', '', $request->route_name)),
                     'group' => $groupParent['group'],
                     'order' => intval($lastItem['order'] + 1),
                 ];
@@ -303,7 +305,7 @@ class MifracrudsCrudsController extends Controller
                     'title' => $request->title,
                     'icon' => $request->icon,
                     'desc' => $request->desc,
-                    'route_name' => 'mifracruds.' . strtolower($request->route_name),
+                    'route_name' => 'mifracruds.' . strtolower(str_replace(' ', '', $request->route_name)),
                     'group' => $groupParent['group'],
                     'order' => intval($lastItem['order'] + 1),
                 ];
@@ -343,7 +345,7 @@ class MifracrudsCrudsController extends Controller
             $elements['title'] = $request->title;
             $elements['icon'] = $request->icon;
             $elements['desc'] = $request->desc;
-            $elements['route_name'] = 'mifracruds.' . strtolower($request->route_name);
+            $elements['route_name'] = 'mifracruds.' . strtolower(str_replace(' ', '', $request->route_name));
             $elements['group'] = 'main';
             $elements['order'] = intval($lastItem['order'] + 1);
         }
@@ -379,7 +381,7 @@ class MifracrudsCrudsController extends Controller
             if (isset($request->data['_children']) || $request->data['route_name'] == 'unique_divider') {
                 $this->deleteGroupANDChildren($request->data);
             } else {
-                $objectId = $elem['_id']['$oid'];
+                $objectId = $request->data['_id']['$oid'];
                 $this->deleteCruds($request->data['route_name'], $objectId, $request->data['group']);
             }
         }
