@@ -242,6 +242,10 @@ class MifraCreateCrud extends Command
         $routeDefinition .= "Route::post('" . $routePath . "/update/{id}', [" . $className . "Controller::class, 'update'])->name('" . $routeName . ".update');\n";
         $routeDefinition .= "Route::post('" . $routePath . "/create', [" . $className . "Controller::class, 'create'])->name('" . $routeName . ".create');\n";
         $routeDefinition .= "Route::post('" . $routePath . "/edit', [" . $className . "Controller::class, 'edit'])->name('" . $routeName . ".edit');\n";
+        $routeDefinition .= "Route::post('" . $routePath . "/delete/{id}', [" . $className . "Controller::class, 'delete'])->name('" . $routeName . ".delete');\n";
+        $routeDefinition .= "Route::post('" . $routePath . "/restore/{id}', [" . $className . "Controller::class, 'restore'])->name('" . $routeName . ".restore');\n";
+        $routeDefinition .= "Route::post('" . $routePath . "/trashed/get', [" . $className . "Controller::class, 'getTrashed'])->name('" . $routeName . ".trashed.get');\n";
+        $routeDefinition .= "Route::post('" . $routePath . "/get', [" . $className . "Controller::class, 'getData'])->name('" . $routeName . ".get');\n";
         File::put($routesFilePath, $routeDefinition);
 
         $routeFilePathCruds = base_path('routes/cruds/created.php');

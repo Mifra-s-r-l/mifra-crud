@@ -59,11 +59,88 @@ class {{crud_name}}Controller extends Controller
 
     public function update(Request $request)
     {
-        dd($request);
+        // aggiorno il record
+        $item = {{crud_name}}Model::find($request->id);
+        $item->fill($request->all());
+        $item->save();
+
+        $items = {{crud_name}}Model::get();
+        return response()->json($items);
     }
 
     public function create(Request $request)
     {
-        dd($request);
+        // creo un nuovo record
+        $item = new {{crud_name}}Model();
+        $item->fill($request->all());
+        $item->save();
+
+        $items = {{crud_name}}Model::get();
+        return response()->json($items);
+    }
+
+    public function delete(Request $request, $id)
+    {
+        if ($id == "all") {
+            foreach ($request->lists as $elem) {
+                $item = {{crud_name}}Model::where('_id', $elem['_id'])->withTrashed()->first();
+                if ($request->hard_delete == "1") {
+                    $item->roles()->detach();
+                    $item->forceDelete();
+                    $this->mongoSync($id, null, 'remove');
+                } else {
+                    $item->updateActions('deleted');
+                    $item->delete();
+                }
+            }
+        } else {
+            $item = {{crud_name}}Model::where('_id', $id)->withTrashed()->first();
+            if ($request->hard_delete == "1") {
+                $item->roles()->detach();
+                $item->forceDelete();
+                $this->mongoSync($id, null, 'remove');
+            } else {
+                $item->updateActions('deleted');
+                $item->delete();
+            }
+        }
+
+        if ($request->hard_delete == "1") {
+            $items = {{crud_name}}Model::onlyTrashed()->get();
+        } else {
+            $user = auth()->user();
+            $items = {{crud_name}}Model::get();
+        }
+        return response()->json($items);
+    }
+
+    public function restore(Request $request, $id)
+    {
+        if ($id == "all") {
+            foreach ($request->lists as $elem) {
+                $item = {{crud_name}}Model::withTrashed()->first();
+                $item->deleted_at = null;
+                $item->save();
+            }
+        } else {
+            $item = {{crud_name}}Model::withTrashed()->first();
+            $item->deleted_at = null;
+            $item->save();
+        }
+
+        $items = {{crud_name}}Model::onlyTrashed()->get();
+        return response()->json($items);
+    }
+
+    public function getData()
+    {
+        $items = {{crud_name}}Model::get();
+        return response()->json($items);
+    }
+
+    public function getTrashed()
+    {
+        $items = {{crud_name}}Model::onlyTrashed()->get();
+        return response()->json($items);
     }
 }
