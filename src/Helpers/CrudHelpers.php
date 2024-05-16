@@ -164,7 +164,10 @@ class CrudHelpers
             $middlewareArrayContent = $matches[1];
 
             if ($action === 'add') {
-                $middlewareArrayContent .= "\n        // Spatie Permission di MifraCruds\n\n    ";
+                // Aggiungi il commento solo se non è già presente
+                if (!str_contains($middlewareArrayContent, "// Spatie Permission di MifraCruds")) {
+                    $middlewareArrayContent .= "\n        // Spatie Permission di MifraCruds\n\n    ";
+                }
             }
 
             foreach ($middlewaresToAdd as $key => $class) {
