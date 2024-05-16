@@ -15,4 +15,24 @@ class {{crud_name}}Controller extends Controller
     }
 
     // PLACEHOLDER_FOR_NEW_METHODS
+
+    public function edit(Request $request)
+    {
+        $id = $request->id;
+        $modalID = $request->modal_id;
+        $routeName = $request->route_name;
+
+        // Restituisce la vista con le variabili passate dinamicamente
+        return view('pages.{{route_name}}.modal.element', compact('id', 'modalID', 'routeName'));
+    }
+
+    public function update(Request $request)
+    {
+        dd($request);
+    }
+
+    public function create(Request $request)
+    {
+        dd($request);
+    }
 }

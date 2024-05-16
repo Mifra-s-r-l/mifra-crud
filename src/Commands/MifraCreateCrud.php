@@ -236,7 +236,12 @@ class MifraCreateCrud extends Command
         }
 
         // Aggiungi la nuova definizione di rotta al file
-        $routeDefinition = "<?php\n\nuse Illuminate\Support\Facades\Route;\nuse App\Http\Controllers\MifraCrudsCreated\\" . $className . "Controller;\n\nRoute::get('" . $routePath . "', [" . $className . "Controller::class, '" . $methodName . "'])->name('" . $routeName . "');\n";
+        $routeDefinition = "<?php\n\nuse Illuminate\Support\Facades\Route;\n";
+        $routeDefinition .= "use App\Http\Controllers\MifraCrudsCreated\\" . $className . "Controller;\n\n";
+        $routeDefinition .= "Route::get('" . $routePath . "', [" . $className . "Controller::class, '" . $methodName . "'])->name('" . $routeName . "');\n";
+        $routeDefinition .= "Route::get('" . $routePath . "/update/{id}', [" . $className . "Controller::class, 'update'])->name('" . $routeName . ".update');\n";
+        $routeDefinition .= "Route::get('" . $routePath . "/create', [" . $className . "Controller::class, 'create'])->name('" . $routeName . ".create');\n";
+        $routeDefinition .= "Route::get('" . $routePath . "/edit', [" . $className . "Controller::class, 'edit'])->name('" . $routeName . ".edit');\n";
         File::put($routesFilePath, $routeDefinition);
 
         $routeFilePathCruds = base_path('routes/cruds/created.php');
