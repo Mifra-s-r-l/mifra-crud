@@ -86,7 +86,6 @@ class {{crud_name}}Controller extends Controller
                 $item = {{crud_name}}Model::where('_id', $elem['_id'])->withTrashed()->first();
                 if ($request->hard_delete == "1") {
                     $item->forceDelete();
-                    $this->mongoSync($id, null, 'remove');
                 } else {
                     $item->updateActions('deleted');
                     $item->delete();
@@ -96,7 +95,6 @@ class {{crud_name}}Controller extends Controller
             $item = {{crud_name}}Model::where('_id', $id)->withTrashed()->first();
             if ($request->hard_delete == "1") {
                 $item->forceDelete();
-                $this->mongoSync($id, null, 'remove');
             } else {
                 $item->updateActions('deleted');
                 $item->delete();
