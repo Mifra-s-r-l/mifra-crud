@@ -311,57 +311,6 @@ class MifraInstallCrud extends Command
 
     protected function createCommandsDefault($routeFilePath)
     {
-        /* CrudHelpers::createControllerFile($this, 'mifracruds', 'app/Http/Controllers/MifraCruds');
-
-        // Segnaposto da cercare
-        $placeholderHead = 'use Illuminate\Routing\Controller;';
-
-        // Segnaposto da cercare
-        $placeholder = '// PLACEHOLDER_FOR_NEW_METHODS';
-
-        // Definizione del pattern per identificare esattamente il metodo index()
-        $pattern = '/\s*public\s+function\s+index\(\)\s*\{[^\}]*\}\s/s';
-
-        INSERIRE ASTERISCO QUI APPOSTO DELLA CHIOCCIOLA @/s';
-
-        // Percorsi e lettura dei file stub per le funzioni create e delete
-        $stubPathDefault = __DIR__ . '/../resources/stubs/functions/cruds/default.stub';
-
-        // Verifica dell'esistenza e lettura dei contenuti degli stub
-        if (!File::exists($stubPathDefault)) {
-        $this->error("Il file stub {$stubPathDefault} non esiste.");
-        return;
-        }
-
-        // Lettura del contenuto dei file stub
-        $defaultContent = File::get($stubPathDefault);
-
-        // Costruisci i percorsi del file .stub
-        $stubPathController = base_path('app/Http/Controllers/MifraCruds/MifracrudsController.php');
-
-        // Verifica dell'esistenza dello stub
-        if (!File::exists($stubPathController)) {
-        $this->error("Il file stub {$stubPathController} non esiste.");
-        return;
-        }
-
-        // Lettura del contenuto dei file controller
-        $controllerTemplate = File::get($stubPathController);
-
-        // Rimozione del metodo index()
-        $controllerContent = preg_replace($pattern, "\n", $controllerTemplate);
-
-        // Prepara la linea da aggiungere
-        $useArtisanLine = "use Illuminate\Support\Facades\Artisan;";
-
-        // Trova la posizione del segnaposto per l'header e aggiungi la nuova linea dopo
-        $newControllerContent = preg_replace("/(" . preg_quote($placeholderHead, '/') . ")/", "$1\n" . $useArtisanLine, $controllerContent);
-
-        // Sostituisci il segnaposto con il contenuto delle nuove funzioni
-        $newControllerContent = str_replace($placeholder, $defaultContent . "\n    " . $placeholder, $newControllerContent);
-
-        File::put($stubPathController, $newControllerContent); */
-
         // Costruisci il percorso del file .stub
         $stubPath = __DIR__ . '/../resources/stubs/routes/cruds/default.stub';
 

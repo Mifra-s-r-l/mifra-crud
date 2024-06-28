@@ -114,12 +114,12 @@ class {{crud_name}}Controller extends Controller
     {
         if ($id == "all") {
             foreach ($request->lists as $elem) {
-                $item = {{crud_name}}Model::withTrashed()->first();
+                $item = {{crud_name}}Model::where('_id', $elem['_id'])->withTrashed()->first();
                 $item->deleted_at = null;
                 $item->save();
             }
         } else {
-            $item = {{crud_name}}Model::withTrashed()->first();
+            $item = {{crud_name}}Model::where('_id', $id)->withTrashed()->first();
             $item->deleted_at = null;
             $item->save();
         }

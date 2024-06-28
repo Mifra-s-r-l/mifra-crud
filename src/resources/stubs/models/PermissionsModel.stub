@@ -37,6 +37,9 @@ class MifracrudsPermissionsModel extends SpatiePermission
         $parts = explode('_', $this->name);
         $searchPattern = str_replace('_', '.', implode('_', array_slice($parts, 1)));
         $crud = DB::connection('mongodb')->collection($database['collection'])->where('route_name', $searchPattern)->first();
+        if (!$crud) {
+            $crud = DB::connection('mongodb')->collection($database['group'])->where('route_name', $searchPattern)->first();
+        }
         return isset($crud['title']) ? $crud['title'] : "";
     }
 
@@ -46,6 +49,9 @@ class MifracrudsPermissionsModel extends SpatiePermission
         $parts = explode('_', $this->name);
         $searchPattern = str_replace('_', '.', implode('_', array_slice($parts, 1)));
         $crud = DB::connection('mongodb')->collection($database['collection'])->where('route_name', $searchPattern)->first();
+        if (!$crud) {
+            $crud = DB::connection('mongodb')->collection($database['group'])->where('route_name', $searchPattern)->first();
+        }
         return isset($crud['desc']) ? $crud['desc'] : "";
     }
 

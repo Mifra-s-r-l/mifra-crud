@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers\MifraCruds;
 
+use App\Helpers\MifraCruds\MifracrudsHelper;
+use App\Http\Requests\MifraCruds\MifracrudsUsersRequest;
+use App\Models\MifraCruds\MifracrudsPermissionsModel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
-use Mifra\Crud\Helpers\CrudHelpers;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use App\Helpers\MifraCruds\MifracrudsHelper;
-use App\Models\MifraCruds\MifracrudsPermissionsModel;
-use App\Http\Requests\MifraCruds\MifracrudsUsersRequest;
+use Mifra\Crud\Helpers\CrudHelpers;
+use Spatie\Permission\Models\Role;
 
 class MifracrudsUsersController extends Controller
 {
@@ -67,6 +66,7 @@ class MifracrudsUsersController extends Controller
 
     public function update(Request $request, $id)
     {
+        //dd($request->all());
         $authUser = auth()->user();
         $user = User::findOrFail($id);
         $user->name = $request->name;
@@ -78,10 +78,29 @@ class MifracrudsUsersController extends Controller
         }
         $user->save();
 
-        $valueMongo = ['type' => 'employee'];
+        $valueMongo = [];
+
+        // controllo se esiste branches, customers e structures
+        if (!$request->branches) {
+            $request->branches = [];
+        }
+        if (!$request->customers) {
+            $request->customers = [];
+        }
+        if (!$request->structures) {
+            $request->structures = [];
+        }
+        // elimino da branches, customers e structures i valori null
+        $request->branches = array_filter($request->branches);
+        $request->customers = array_filter($request->customers);
+        $request->structures = array_filter($request->structures);
+
+        $valueMongo['branches'] = $request->branches;
+        $valueMongo['customers'] = $request->customers;
+        $valueMongo['structures'] = $request->structures;
 
         $path = $this->processFile($request, 'avatar', $id, 'avatars/');
-        if($path != null){
+        if ($path != null) {
             $valueMongo['avatar'] = $path;
         } else {
             $valueMongo['avatar'] = 'avatars/blank-user.jpeg';
@@ -106,10 +125,29 @@ class MifracrudsUsersController extends Controller
         $user->updateActions('created');
         $user->save();
 
-        $valueMongo = ['type' => 'employee'];
+        $valueMongo = [];
+
+        // controllo se esiste branches, customers e structures
+        if (!$request->branches) {
+            $request->branches = [];
+        }
+        if (!$request->customers) {
+            $request->customers = [];
+        }
+        if (!$request->structures) {
+            $request->structures = [];
+        }
+        // elimino da branches, customers e structures i valori null
+        $request->branches = array_filter($request->branches);
+        $request->customers = array_filter($request->customers);
+        $request->structures = array_filter($request->structures);
+
+        $valueMongo['branches'] = $request->branches;
+        $valueMongo['customers'] = $request->customers;
+        $valueMongo['structures'] = $request->structures;
 
         $path = $this->processFile($request, 'avatar', $user->id, 'avatars/');
-        if($path != null){
+        if ($path != null) {
             $valueMongo['avatar'] = $path;
         } else {
             $valueMongo['avatar'] = 'avatars/blank-user.jpeg';
@@ -126,15 +164,63 @@ class MifracrudsUsersController extends Controller
 
     public function mongoSync($id, $valueMongo, $action)
     {
-        if($action == 'add'){
+        if ($action == 'add') {
+            // rimuovo da valueMongo branches, customers e structures e creo una nuova variabile
+            $userMongo = $valueMongo;
+            unset($userMongo['branches']);
+            unset($userMongo['customers']);
+            unset($userMongo['structures']);
             $collection = DB::connection('mongodb')->getMongoDB()->selectCollection('users');
             $collection->updateOne(
                 ['id' => intval($id)], // Criterio di ricerca
-                ['$set' => $valueMongo], // Aggiornamento
-                ['upsert' => true] // Opzioni
+                ['$set' => $userMongo], // Aggiornamento
+                ['upsert' => true]// Opzioni
             );
+
+            // Connessione alla collezione users.branches
+            $collection = DB::connection('mongodb')->getMongoDB()->selectCollection('users.branches');
+
+            // Step 1: Elimina tutti i branches associati all'utente
+            $collection->deleteMany(['user_id' => intval($id)]);
+
+            // Step 2: Reinserisci i nuovi branches
+            foreach ($valueMongo['branches'] as $branch) {
+                $collection->insertOne([
+                    'user_id' => intval($id),
+                    'branch_id' => $branch,
+                ]);
+            }
+
+            // Connessione alla collezione users.customers
+            $collection = DB::connection('mongodb')->getMongoDB()->selectCollection('users.customers');
+
+            // Step 1: Elimina tutti i customers associati all'utente
+            $collection->deleteMany(['user_id' => intval($id)]);
+
+            // Step 2: Reinserisci i nuovi customers
+            foreach ($valueMongo['customers'] as $customer) {
+                $collection->insertOne([
+                    'user_id' => intval($id),
+                    'customer_id' => $customer,
+                ]);
+            }
+
+            // Connessione alla collezione users.structures
+            $collection = DB::connection('mongodb')->getMongoDB()->selectCollection('users.structures');
+
+            // Step 1: Elimina tutte le structures associate all'utente
+            $collection->deleteMany(['user_id' => intval($id)]);
+
+            // Step 2: Reinserisci le nuove structures
+            foreach ($valueMongo['structures'] as $structure) {
+                $collection->insertOne([
+                    'user_id' => intval($id),
+                    'structure_id' => $structure,
+                ]);
+            }
+
         }
-        if($action == 'remove'){
+        if ($action == 'remove') {
             $collection = DB::connection('mongodb')->getMongoDB()->selectCollection('users');
             $collection->deleteOne(['id' => intval($id)]);
         }

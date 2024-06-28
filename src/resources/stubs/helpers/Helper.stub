@@ -32,7 +32,7 @@ trait MifracrudsHelper
      */
     public function processFile(Request $request, $inputName, $id, $folder)
     {
-        
+
         if ($request->hasFile($inputName)) {
             $file = $request->file($inputName);
             if($file->isValid()){

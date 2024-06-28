@@ -1,2 +1,2 @@
 
-Route::middleware('role:super-admin')->get('{{path}}', [{{crud_name}}Controller::class, 'index'])->name('{{route_name}}');
+Route::middleware(['auth', 'role:super-admin'])->get('{{path}}', [{{crud_name}}Controller::class, 'index'])->name('{{route_name}}');

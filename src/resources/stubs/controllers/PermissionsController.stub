@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Mifra\Crud\Helpers\CrudHelpers;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class MifracrudsPermissionsController extends Controller
 {
@@ -60,14 +61,29 @@ class MifracrudsPermissionsController extends Controller
 
     public function create(Request $request)
     {
+        // recupero il crud su mongo tramite il route_name
+        $database = config('mifracrud.database');
+        $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name', $request->crud)->first();
+
+        // ripulisco la $request->name eliminando spazi e caratteri che nn siano lettere
+        $request->name = preg_replace('/[^a-zA-Z]/', '', $request->name);
+
+        // aggiorno il campo permissions di menu aggiungendo un elemento all'array
+        $menu['permissions'][] = $request->name;
+        DB::connection('mongodb')->collection($database['collection'])->where('route_name', $request->crud)->update($menu);
+
         // Converto name tutto minuscolo
         $name = strtolower($request->name);
 
         // Lo unisco a crud
-        $permission = $name . "_" . $request->crud;
+        $permission = $name . "_" . str_replace(".", "_", $request->crud);
 
         // Creo il permesso
         Permission::firstOrCreate(['name' => $permission]);
+
+        // Assegno il nuovo permesso al ruolo super-admin
+        $role = Role::where('name', 'super-admin')->first();
+        $role->givePermissionTo($permission);
 
         $items = MifracrudsPermissionsModel::get();
         return response()->json($items);
@@ -78,6 +94,17 @@ class MifracrudsPermissionsController extends Controller
         if ($id == "all") {
             foreach ($request->lists as $elem) {
                 $permission = MifracrudsPermissionsModel::findById($elem['id']);
+                // faccio l'explode di $permission->name per il primo elemento
+                $parts = explode('_', $permission->name);
+                // creo una stringa con tutti gli elementi tranne il primo
+                $searchPattern = str_replace('_', '.', implode('_', array_slice($parts, 1)));
+                // recupero il crud su mongo tramite il route_name
+                $database = config('mifracrud.database');
+                $menu = DB::connection('mongodb')->collection($database['collection'])->where('route_name', $searchPattern)->first();
+                // elimino l'elemento da menu uguale a $parts[0]
+                $menu['permissions'] = array_diff($menu['permissions'], [$parts[0]]);
+                // aggiorno il menu
+                DB::connection('mongodb')->collection($database['collection'])->where('route_name', $searchPattern)->update($menu);
                 $permission->delete();
             }
         }

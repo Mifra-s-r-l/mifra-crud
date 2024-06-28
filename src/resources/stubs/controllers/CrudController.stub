@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\MifraCruds;
 
+use App\Main\MainMenu;
 use App\Models\MifraCruds\MifracrudsPermissionsModel;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Mifra\Crud\Helpers\CrudHelpers;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class MifracrudsCrudsController extends Controller
 {
@@ -432,5 +435,64 @@ class MifracrudsCrudsController extends Controller
         $collectionExists = DB::connection('mongodb')->collection($database['collection'])->where('route_name', 'mifracruds.' . $key)->count();
         $items = $groupExists || $collectionExists ? 1 : 0;
         return response()->json($items);
+    }
+
+    public function sync(Request $request, $apikey)
+    {
+        if ($apikey == 'fef13082-c5c0-478a-a3ef-46fb6c9fc400') {
+            $mainMenu = new MainMenu();
+            $menus = $mainMenu->menu(true);
+
+            $allPermissions = [];
+
+            $this->processMenu($menus, $allPermissions);
+
+            // Aggiungi i permessi al ruolo super-admin
+            $superAdminRole = Role::where('name', 'super-admin')->first();
+            if ($superAdminRole) {
+                $superAdminRole->syncPermissions($allPermissions);
+            }
+
+            // Elimina i permessi orfani
+            $orphanPermissions = Permission::whereNotIn('name', $allPermissions)->get();
+            foreach ($orphanPermissions as $orphanPermission) {
+                $orphanPermission->roles()->detach();
+                $orphanPermission->delete();
+            }
+
+            //dd($allPermissions);
+            return response()->json(['status' => 'ok']);
+        } else {
+            return response()->json(['status' => 'error']);
+        }
+
+    }
+
+    private function processMenu($menuItems, &$allPermissions, $prefix = '')
+    {
+        foreach ($menuItems as $key => $item) {
+            $currentPrefix = $prefix;
+
+            // Se l'elemento corrente non ha una route_name ma ha un titolo,
+            // usiamo il titolo come parte del prefisso
+            if (!isset($item['route_name']) && isset($item['title'])) {
+                $currentPrefix .= strtolower(str_replace(' ', '_', $item['title'])) . '_';
+            }
+
+            if (isset($item['sub_menu'])) {
+                $this->processMenu($item['sub_menu'], $allPermissions, $currentPrefix);
+            }
+
+            if (isset($item['permissions'])) {
+                $routeName = $item['route_name'] ?? $key;
+                foreach ($item['permissions'] as $permission) {
+                    $permissionName = $permission . '_' . str_replace('.', '_', $routeName);
+                    $permissionName = rtrim($permissionName, '_'); // Rimuove eventuali underscore finali
+                    $allPermissions[] = $permissionName;
+
+                    Permission::firstOrCreate(['name' => $permissionName]);
+                }
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 
 // Rotte cruds
+Route::middleware(['auth', 'role:super-admin'])->get('mifracruds/cruds/sync', [MifracrudsCrudsController::class, 'sync'])->name('mifracruds.cruds.sync');
 Route::middleware(['auth', 'role:super-admin'])->post('mifracruds/cruds/update/{id}', [MifracrudsCrudsController::class, 'update'])->name('mifracruds.cruds.update');
 Route::middleware(['auth', 'role:super-admin'])->post('mifracruds/cruds/create', [MifracrudsCrudsController::class, 'create'])->name('mifracruds.cruds.create');
 Route::middleware(['auth', 'role:super-admin'])->post('mifracruds/cruds/edit', [MifracrudsCrudsController::class, 'edit'])->name('mifracruds.cruds.edit');
