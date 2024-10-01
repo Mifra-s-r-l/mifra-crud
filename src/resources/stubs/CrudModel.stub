@@ -23,5 +23,20 @@ class {{crud_name}}Model extends Model
         // Definisci qui i campi nascosti
     ];
 
+    protected $appends = [
+        'formatted_created_at',
+        'formatted_deleted_at',
+    ];
+
+    public function getFormattedCreatedAtAttribute()
+    {
+        return $this->created_at != null ? $this->created_at->format('d/m/Y H:i') : null;
+    }
+
+    public function getFormattedDeletedAtAttribute()
+    {
+        return $this->deleted_at != null ? $this->deleted_at->format('d/m/Y H:i') : null;
+    }
+
     // Aggiungi qui eventuali relazioni, accessori, mutatori o metodi personalizzati
 }

@@ -62,6 +62,7 @@ class {{crud_name}}Controller extends Controller
         // aggiorno il record
         $item = {{crud_name}}Model::find($request->id);
         $item->fill($request->all());
+        $item->updateActions('updated');
         $item->save();
 
         $items = {{crud_name}}Model::get();
@@ -73,6 +74,7 @@ class {{crud_name}}Controller extends Controller
         // creo un nuovo record
         $item = new {{crud_name}}Model();
         $item->fill($request->all());
+        $item->updateActions('created');
         $item->save();
 
         $items = {{crud_name}}Model::get();
@@ -116,13 +118,17 @@ class {{crud_name}}Controller extends Controller
             foreach ($request->lists as $elem) {
                 $item = {{crud_name}}Model::where('_id', $elem['_id'])->withTrashed()->first();
                 $item->deleted_at = null;
+                $item->updateActions('restored');
                 $item->save();
             }
         } else {
             $item = {{crud_name}}Model::where('_id', $id)->withTrashed()->first();
             $item->deleted_at = null;
+            $item->updateActions('restored');
             $item->save();
         }
+
+
 
         $items = {{crud_name}}Model::onlyTrashed()->get();
         return response()->json($items);
